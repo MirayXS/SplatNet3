@@ -8,10 +8,10 @@ from dataclasses_json import dataclass_json
 class Image:
     filename: str
     idiom: str
-    
+
     def __init__(self, rowId: str):
-      self.filename = f"{rowId}.png"
-      self.idiom = "universal"
+        self.filename = f"{rowId}.png"
+        self.idiom = "universal"
 
 
 @dataclass_json
@@ -21,8 +21,8 @@ class Info:
     version: int
 
     def __init__(self):
-      self.author = "xcode"
-      self.version = 1
+        self.author = "xcode"
+        self.version = 1
 
 
 @dataclass_json
@@ -32,5 +32,5 @@ class Content:
     info: Info
 
     def __init__(self, rowId: str):
-      self.info = Info()
-      self.images = [Image(rowId)]
+        self.info = Info()
+        self.images = [Image(rowId)]

@@ -11,38 +11,57 @@ import Alamofire
 import Common
 
 extension SplatNet3 {
-    /// イカスミセッションをセッショントークンから取得
-    internal func refreshToken(sessionToken: String) async throws -> UserInfo {
-        // AppStoreから最新のバージョンを取得
-        guard let result: XVersion.Information = try await getVersion().results.first else {
-            // なければエラーを返す
-            throw AFError.responseValidationFailed(reason: .unacceptableStatusCode(code: 404))
+    /// GameWebTokenから生成
+    internal func refreshTokenByGameWebToken(gameWebToken: String) async throws -> UserInfo {
+        guard let account = account else {
+            throw Failure.API(error: NXError.API.account)
         }
+        
+        let bulletToken: BulletToken.Response = try await getBulletToken(accessToken: gameWebToken)
+
+        return UserInfo(
+            nickname: account.nickname,
+            membership: account.membership,
+            friendCode: account.friendCode,
+            thumbnailURL: account.thumbnailURL,
+            nsaid: account.credential.nsaid,
+            iksmSession: account.credential.iksmSession,
+            bulletToken: bulletToken.bulletToken,
+            sessionToken: account.credential.sessionToken,
+            gameServiceToken: account.credential.gameServiceToken,
+            gameWebToken: account.credential.gameWebToken
+        )
+    }
+
+    /// SessionTokenから生成
+    internal func refreshToken(sessionToken: String) async throws -> UserInfo {
         // バージョンを取得
-        let version: String = result.version
+        let version: String = try await getVersionFromAppStore().version
         // アクセストークン
         let accessToken: AccessToken.Response = try await getAccessToken(sessionToken: sessionToken)
         // F
         let iminkNSO: Imink.Response = try await getIminkToken(accessToken: accessToken)
         // スプラトゥーントークン
-        let splatoonToken: SplatoonToken.Response = try await getSplatoonToken(accessToken: accessToken, imink: iminkNSO, version: version)
+        let gameServiceToken: SplatoonToken.Response = try await getSplatoonToken(accessToken: accessToken, imink: iminkNSO, version: version)
         // F
-        let iminkAPP: Imink.Response = try await getIminkToken(accessToken: splatoonToken)
+        let iminkAPP: Imink.Response = try await getIminkToken(accessToken: gameServiceToken)
         // スプラトゥーンアクセストークン
-        let splatoonAccessToken: SplatoonAccessToken.Response = try await getSplatoonAccessToken(accessToken: splatoonToken, imink: iminkAPP, version: version)
+        let gameWebToken: SplatoonAccessToken.Response = try await getSplatoonAccessToken(accessToken: gameServiceToken, imink: iminkAPP, version: version)
         // WebVersionをアップデートしてみる(リアルタイムアップデートされる？)
         try setVersion(version: try await getWebVersion())
 
         // トークン
-        let bulletToken: BulletToken.Response = try await getBulletToken(accessToken: splatoonAccessToken)
+        let bulletToken: BulletToken.Response = try await getBulletToken(accessToken: gameWebToken)
 
         return UserInfo(
             sessionToken: sessionToken,
-            splatoonToken: splatoonToken,
+            gameServiceToken: gameServiceToken,
+            gameWebToken: gameWebToken,
             bulletToken: bulletToken
         )
     }
 
+    /// ハッシュバージョンを取得
     internal func getWebVersion() async throws -> WebVersion.Response {
         return try await request(WebVersion())
     }
@@ -51,6 +70,11 @@ extension SplatNet3 {
     internal func getVersion() async throws -> XVersion.Response {
         let request: XVersion = XVersion()
         return try await authorize(request)
+    }
+
+    /// スクレイピングで最新のバージョンを取得
+    internal func getVersionFromAppStore() async throws -> Version.Response {
+        return try await request(Version())
     }
 
     /// イカスミセッションをコードとベリファイアから取得
@@ -104,6 +128,12 @@ extension SplatNet3 {
 
     /// イカスミセッション取得
     internal func getBulletToken(accessToken: SplatoonAccessToken.Response) async throws -> BulletToken.Response {
+        let request: BulletToken = BulletToken(accessToken: accessToken, version: version)
+        return try await authorize(request)
+    }
+
+    /// イカスミセッション取得
+    private func getBulletToken(accessToken: String) async throws -> BulletToken.Response {
         let request: BulletToken = BulletToken(accessToken: accessToken, version: version)
         return try await authorize(request)
     }

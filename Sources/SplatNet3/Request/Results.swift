@@ -8,13 +8,12 @@
 
 import Foundation
 import Alamofire
+import SwiftUI
 
 public class SplatNet2 {
     public struct Result: Codable {
         /// ID
         public let id: String
-        /// ルール
-        public let rule: Rule
         /// ウロコ
         public let scale: [Int?]
         /// バイトスコア
@@ -58,9 +57,9 @@ public class SplatNet2 {
         /// シナリオコード
         public let scenarioCode: String?
 
-        public init(from response: CoopResult.Response) {
+        public init(from response: CoopHistoryDetail.Response, schedule: CoopHistoryElement) {
             let formatter: ISO8601DateFormatter = ISO8601DateFormatter()
-            let result: CoopResult.CoopHistoryDetail = response.data.coopHistoryDetail
+            let result: CoopHistoryDetail.Detail = response.data.coopHistoryDetail
 
             let specialCounts: [[Int]] = result.waveResults.map({ $0.specialWeapons.map({ $0.id })})
 
@@ -78,34 +77,34 @@ public class SplatNet2 {
             self.bossCounts = result.enemyResults.popCounts()
             self.bossKillCounts = result.enemyResults.teamDefeatedCounts()
             self.grade = GradeType(id: result.afterGrade?.id)
-            self.rule = result.afterGrade?.id == nil ? Rule.PRIVATE : Rule.REGULAR
             self.scale = [result.scale?.bronze, result.scale?.silver, result.scale?.gold]
             self.jobResult = JobResult(from: result)
-            self.schedule = Schedule(from: result)
+            self.schedule = Schedule(schedule: schedule)
             self.smellMeter = result.smellMeter
             self.scenarioCode = result.scenarioCode
 
-            let players: [CoopResult.PlayerResult] = [result.myResult] + result.memberResults
+            let players: [CoopHistoryDetail.PlayerResult] = [result.myResult] + result.memberResults
             self.ikuraNum = players.map({ $0.deliverCount }).reduce(0, +)
             self.goldenIkuraNum = players.map({ $0.goldenDeliverCount }).reduce(0, +)
             self.goldenIkuraAssistNum = players.map({ $0.goldenAssistCount }).reduce(0, +)
         }
     }
 
-    public enum Rule: String, Codable, CaseIterable, Identifiable {
-        public var id: String { rawValue }
-        case REGULAR    = "RULE_REGULAR"
-        case PRIVATE    = "RULE_PRIVATE"
-        case CONTEST    = "RULE_CONTEST"
-    }
-
     public struct Schedule: Codable {
+        public let startTime: String?
+        public let endTime: String?
+        public let mode: Common.Mode
+        public let rule: Common.Rule
         public let weaponLists: [WeaponType]
         public let stage: StageType
 
-        public init(from result: CoopResult.CoopHistoryDetail) {
-            self.weaponLists = result.weapons.compactMap({ WeaponType(id: $0.id) })
-            self.stage = StageType(id: result.coopStage.id) ?? StageType.Unknown
+        public init(schedule: CoopHistoryElement) {
+            self.startTime = schedule.startTime
+            self.endTime = schedule.endTime
+            self.mode = schedule.mode
+            self.rule = schedule.rule
+            self.weaponLists = schedule.weaponList
+            self.stage = schedule.stage
         }
     }
 
@@ -117,7 +116,7 @@ public class SplatNet2 {
         /// オカシラシャケ討伐したか
         public let isBossDefeated: Bool?
 
-        public init(from result: CoopResult.CoopHistoryDetail) {
+        public init(from result: CoopHistoryDetail.Detail) {
             self.isClear = result.resultWave == 0
             self.failureWave = result.resultWave == 0 ? nil : result.resultWave
             self.isBossDefeated = result.bossResult?.hasDefeatBoss
@@ -128,7 +127,7 @@ public class SplatNet2 {
         public let badges: [BadgeType?]
         public let background: Background
 
-        public init(from nameplate: CoopResult.Nameplate) {
+        public init(from nameplate: Common.Nameplate) {
             self.badges = nameplate.badges.map({ badge in
                 if let id = badge?.id {
                     return BadgeType(rawValue: id)
@@ -140,10 +139,10 @@ public class SplatNet2 {
     }
 
     public struct Background: Codable {
-        public let textColor: CoopResult.TextColor
+        public let textColor: Common.TextColor
         public let id: NamePlateType
 
-        public init(from background: CoopResult.Background) {
+        public init(from background: Common.Background) {
             self.textColor = background.textColor
             self.id = NamePlateType(rawValue: background.id) ?? NamePlateType.Npl_Tutorial00
         }
@@ -166,12 +165,12 @@ public class SplatNet2 {
         public let specialCounts: [Int]
         public let bossKillCounts: [Int]
         public let bossKillCountsTotal: Int
-        public let species: CoopResult.Species
+        public let species: SpeciesType
 
-        public init(from player: CoopResult.PlayerResult, enemies: [CoopResult.EnemyResult], counts: [[Int]]) {
+        public init(from player: CoopHistoryDetail.PlayerResult, enemies: [CoopHistoryDetail.EnemyResult], counts: [[Int]]) {
             let specialId: Int? = player.specialWeapon?.id
 
-            self.id = player.player.id.base64DecodedString
+            self.id = player.player.id
             self.isMyself = player.player.isMyself
             self.nameId = player.player.nameId
             self.name = player.player.name
@@ -204,7 +203,7 @@ public class SplatNet2 {
         public let quotaNum: Int?
         public let goldenIkuraPopNum: Int
 
-        public init(from result: CoopResult.WaveResult) {
+        public init(from result: CoopHistoryDetail.WaveResult) {
             self.id = result.waveNumber
             self.waterLevel = WaterType(id: result.waterLevel) ?? WaterType.Middle_Tide
             self.eventType = EventType(id: result.eventWave?.id) ?? EventType.Water_Levels
@@ -216,13 +215,13 @@ public class SplatNet2 {
 
 }
 
-extension CoopResult.Response {
-    public func asSplatNet2() -> SplatNet2.Result {
-        return SplatNet2.Result(from: self)
+extension CoopHistoryDetail.Response {
+    public func asSplatNet2(schedule: CoopHistoryElement) -> SplatNet2.Result {
+        return SplatNet2.Result(from: self, schedule: schedule)
     }
 }
 
-extension Collection where Element == CoopResult.EnemyResult {
+extension Collection where Element == CoopHistoryDetail.EnemyResult {
     public func teamDefeatedCounts() -> [Int] {
         SakelienType.allCases.compactMap({ sakelien in self.first(where: { $0.enemy.id == sakelien.id })?.teamDefeatCount ?? 0 })
     }

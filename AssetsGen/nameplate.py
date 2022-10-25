@@ -38,5 +38,3 @@ class NamePlateBgElement:
     UrokoPrice: UrokoPrice
     UrokoUhlockLevel: int
     RowId: str
-
-

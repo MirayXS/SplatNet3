@@ -37,7 +37,7 @@ open class SplatNet3: Authenticator {
         let configuration: URLSessionConfiguration = {
             let config = URLSessionConfiguration.default
             config.httpMaximumConnectionsPerHost = 1
-            config.timeoutIntervalForRequest = 5
+            config.timeoutIntervalForRequest = 30
             return config
         }()
         return Session(configuration: configuration, rootQueue: .main, requestQueue: .main)
@@ -75,45 +75,102 @@ open class SplatNet3: Authenticator {
         self.account = account
     }
 
+    /// レギュラースケジュール一括取得
+    public func getAllCoopSchedule() async throws -> [CoopSchedule.Response] {
+        return try await request(CoopSchedule())
+    }
+
+    /// レギュラースケジュール取得
+    public func getCoopSchedule() async throws -> [CoopSchedule.Response] {
+        let request: StageSchedule = StageSchedule()
+        return (try await publish(request)).data.coopGroupingSchedule.regularSchedules.nodes.map({ $0.asSplatNet2() })
+    }
+
     /// サーモンラン概要取得
-    open func getCoopSummary() async throws -> CoopSummary.Response {
-        let request: CoopSummary = CoopSummary()
+    open func getCoopHistory() async throws -> CoopHistory.Response {
+        let request: CoopHistory = CoopHistory()
         return try await publish(request)
     }
 
     /// サーモンランリザルト取得
-    open func getCoopResult(id: String) async throws -> SplatNet2.Result {
-        let request: CoopResult = CoopResult(id: id)
-        let result: CoopResult.Response = try await publish(request)
-        return result.asSplatNet2()
+    open func getCoopResult(element: CoopHistoryElement) async throws -> SplatNet2.Result {
+        let request: CoopHistoryDetail = CoopHistoryDetail(id: element.id)
+        let result: CoopHistoryDetail.Response = try await publish(request)
+        return result.asSplatNet2(schedule: element)
     }
 
-    /// サーモンランリザルト全件取得
-    open func getCoopResultIds(resultId: String? = nil) async throws -> [String] {
-        let summary: CoopSummary.Response = try await getCoopSummary()
+    /// サーモンランリザルト一覧をプレイ時間でソートして取得
+    open func getCoopResultIds(resultId: String? = nil) async throws -> [CoopHistoryElement] {
+        /// リザルト一覧取得
+        let summary: CoopHistory.Response = try await getCoopHistory()
 
         // 全件のIDを取得する
-        let ids: [String] = summary.data.coopResult.historyGroups.nodes.flatMap({ node in node.historyDetails.nodes.map({ $0.id }) })
+        let historyGroups: [CoopHistory.HistoryGroupsNode] = summary.data.coopResult.historyGroups.nodes
 
         // リザルトIDが指定されていれば、そのIDよりも大きい値を返す
         // 新しいリザルトしか取得しない
         if let resultId = resultId {
-            return ids.filter({ $0.playTime > resultId.playTime })
+            return historyGroups.map({ group -> CoopHistory.HistoryGroupsNode in
+                var historyGroup: CoopHistory.HistoryGroupsNode = group
+                historyGroup.historyDetails.nodes = group.historyDetails.nodes.filter({ $0.id.playTime > resultId.playTime })
+                return historyGroup
+            }).asElement().sorted(by: { $0.id.playTime < $1.id.playTime })
         }
-        return ids
+        return historyGroups.asElement().sorted(by: { $0.id.playTime < $1.id.playTime })
     }
 
     /// 認証のプロセス
     open func authorize<T: RequestType>(_ request: T) async throws -> T.ResponseType {
         do {
             return try await session.request(request)
-                .cURLDescription(calling: { request in
-                    #if DEBUG
-                    print(request)
-                    #endif
-                })
+                .cURLDescription()
                 .validationWithNXError()
                 .serializingDecodable(T.ResponseType.self, decoder: decoder)
+                .value
+        } catch(let error) {
+            if let failure: Error = error.asAFError?.underlyingError {
+                let code: Int = (failure as NSError).code
+                // エラーコード1001はタイムアウトなので再送する意味がない
+                if code == -1001 {
+                    logger.error(error.localizedDescription)
+                    throw error
+                }
+            }
+
+            // エラーが発生したらとりあえずJSONSerializationで変換してデータ送信
+            let data: Data = try await session.request(request)
+                .serializingData()
+                .value
+            if let response = String(data: data, encoding: .utf8) {
+                logger.warning(response)
+            }
+            logger.error(error.localizedDescription)
+            throw error
+        }
+    }
+
+    /// バージョンのプロセス
+    open func request(_ request: Version) async throws -> Version.Response {
+        do {
+            let response: String = try await session.request(request)
+                .cURLDescription()
+                .validationWithNXError()
+                .serializingString()
+                .value
+            return Version.Response(from: response)
+        } catch(let error) {
+            throw error
+        }
+    }
+
+    /// スケジュールのプロセス
+    open func request(_ request: CoopSchedule) async throws -> [CoopSchedule.Response] {
+        do {
+            /// インターセプターを利用せずリクエスト
+            return try await session.request(request)
+                .cURLDescription()
+                .validationWithNXError()
+                .serializingDecodable([CoopSchedule.Response].self, decoder: decoder)
                 .value
         } catch(let error) {
             if let failure: Error = error.asAFError?.underlyingError {
@@ -126,7 +183,6 @@ open class SplatNet3: Authenticator {
 
                 // エラーが発生したらとりあえずJSONSerializationで変換してデータ送信
                 let data: Data = try await session.request(request)
-                    .validationWithNXError()
                     .serializingData()
                     .value
                 if let response = String(data: data, encoding: .utf8) {
@@ -139,19 +195,16 @@ open class SplatNet3: Authenticator {
         }
     }
 
+
     /// リクエストのプロセス
     open func request(_ request: WebVersion) async throws -> WebVersion.Response {
         do {
-        let response: String = try await session.request(request)
-            .cURLDescription(calling: { request in
-                #if DEBUG
-                print(request)
-                #endif
-            })
-            .validationWithNXError()
-            .serializingString()
-            .value
-        return WebVersion.Response(from: response)
+            let response: String = try await session.request(request)
+                .cURLDescription()
+                .validationWithNXError()
+                .serializingString()
+                .value
+            return WebVersion.Response(from: response)
         } catch(let error) {
             if let failure: Error = error.asAFError?.underlyingError {
                 let code: Int = (failure as NSError).code
@@ -163,7 +216,6 @@ open class SplatNet3: Authenticator {
 
                 // エラーが発生したらとりあえずJSONSerializationで変換してデータ送信
                 let data: Data = try await session.request(request)
-                    .validationWithNXError()
                     .serializingData()
                     .value
                 if let response = String(data: data, encoding: .utf8) {
@@ -177,7 +229,7 @@ open class SplatNet3: Authenticator {
     }
 
     /// イカリング3のリクエスト
-    open func publish<T: RequestType>(_ request: T) async throws -> T.ResponseType {
+    open func publish<T: GraphQL>(_ request: T) async throws -> T.ResponseType {
         // 選択されているアカウントから認証情報を取得
         let credential: OAuthCredential = try {
             guard let account = account else {
@@ -200,11 +252,7 @@ open class SplatNet3: Authenticator {
         do {
             /// インターセプターを利用してリクエスト
             return try await session.request(request, interceptor: interceptor)
-                .cURLDescription(calling: { request in
-    #if DEBUG
-                    print(request)
-    #endif
-                })
+                .cURLDescription()
                 .validationWithNXError()
                 .serializingDecodable(T.ResponseType.self, decoder: decoder)
                 .value
@@ -219,7 +267,6 @@ open class SplatNet3: Authenticator {
 
                 // エラーが発生したらとりあえずJSONSerializationで変換してデータ送信
                 let data: Data = try await session.request(request)
-                    .validationWithNXError()
                     .serializingData()
                     .value
                 if let response = String(data: data, encoding: .utf8) {

@@ -9,12 +9,12 @@
 import Foundation
 import Alamofire
 
-public class CoopResult: GraphQL {
-    public typealias ResponseType = CoopResult.Response
+public class CoopHistoryDetail: GraphQL {
+    public typealias ResponseType = CoopHistoryDetail.Response
 
     public var parameters: Parameters?
     //  swiftlint:disable:next discouraged_optional_collection
-    public var hash: SHA256Hash = .COOP_RESULT
+    public var hash: SHA256Hash = .CoopHistoryDetailQuery
     public var variables: [String: String] = [:]
 
     internal init(id: String) {
@@ -30,20 +30,15 @@ public class CoopResult: GraphQL {
 
     // MARK: - DataClass
     public struct DataClass: Codable {
-        public let coopHistoryDetail: CoopHistoryDetail
-    }
-
-    // MARK: - Rule
-    public enum Rule: String, CaseIterable, Codable {
-        case REGULAR = "REGULAR"
+        public let coopHistoryDetail: Detail
     }
 
     // MARK: - CoopHistoryDetail
-    public struct CoopHistoryDetail: Codable {
+    public struct Detail: Codable {
         public let typename: String
         public let id: String
-        public let afterGrade: Ref?
-        public let rule: Rule
+        public let afterGrade: Common.Grade?
+        public let rule: Common.Rule
         public let myResult: PlayerResult
         public let memberResults: [PlayerResult]
         public let bossResult: BossResult?
@@ -57,7 +52,7 @@ public class CoopResult: GraphQL {
         public let smellMeter: Int?
         public let weapons: [ImageRef]
         public let afterGradePoint: Int?
-        public let scale: Scale?
+        public let scale: Common.Scale?
         public let jobPoint: Int?
         public let jobScore: Int?
         public let jobRate: Double?
@@ -91,13 +86,6 @@ public class CoopResult: GraphQL {
             case nextHistoryDetail = "nextHistoryDetail"
             case previousHistoryDetail = "previousHistoryDetail"
         }
-    }
-
-    // MARK: - Scale
-    public struct Scale: Codable {
-        public let gold: Int
-        public let silver: Int
-        public let bronze: Int
     }
 
     // MARK: - EnemyResult
@@ -136,7 +124,7 @@ public class CoopResult: GraphQL {
     // MARK: - Ref
     public struct ImageRef: Codable {
         public let name: String
-        public let image: Image
+        public let image: Common.Image
         public let id: Int
 
         enum CodingKeys: String, CodingKey {
@@ -149,7 +137,7 @@ public class CoopResult: GraphQL {
             let container = try decoder.container(keyedBy: CodingKeys.self)
 
             self.name = try container.decode(String.self, forKey: .name)
-            self.image = try container.decode(Image.self, forKey: .image)
+            self.image = try container.decode(Common.Image.self, forKey: .image)
 
             // 文字列をbase64デコードして末尾の数字を取得
             if let id: String = try container.decodeIfPresent(String.self, forKey: .id),
@@ -171,27 +159,17 @@ public class CoopResult: GraphQL {
         }
     }
 
-    // MARK: - Image
-    public struct Image: Codable {
-        @URLRawValue public var url: String
-    }
-
-    public enum Species: String, CaseIterable, Codable {
-        case INKLING = "INKLING"
-        case OCTOLING = "OCTOLING"
-    }
-
     // MARK: - ResultPlayer
     public struct ResultPlayer: Codable {
         public let isPlayer: String
         public let byname: String
         public let name: String
         public let nameId: String
-        public let nameplate: Nameplate
+        public let nameplate: Common.Nameplate
         public let uniform: ImageRef
         public let id: String
         public let isMyself: Bool
-        public let species: Species
+        public let species: SpeciesType
 
         enum CodingKeys: String, CodingKey {
             case isPlayer = "__isPlayer"
@@ -204,33 +182,26 @@ public class CoopResult: GraphQL {
             case isMyself = "isMyself"
             case species = "species"
         }
-    }
 
-    // MARK: - PurpleNameplate
-    public struct Nameplate: Codable {
-        public let badges: [Badge?]
-        public let background: Background
-    }
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
 
-    // MARK: - Background
-    public struct Background: Codable {
-        public let textColor: TextColor
-        public let image: Image
-        @IntegerRawValue public var id: Int
-    }
+            self.isPlayer = try container.decode(String.self, forKey: .isPlayer)
+            self.byname = try container.decode(String.self, forKey: .byname)
+            self.name = try container.decode(String.self, forKey: .name)
+            self.nameId = try container.decode(String.self, forKey: .nameId)
+            self.nameplate = try container.decode(Common.Nameplate.self, forKey: .nameplate)
+            self.uniform = try container.decode(ImageRef.self, forKey: .uniform)
 
-    // MARK: - TextColor
-    public struct TextColor: Codable {
-        public let a: Double
-        public let b: Double
-        public let g: Double
-        public let r: Double
-    }
+            let id: String = try container.decode(String.self, forKey: .id)
 
-    // MARK: - Badge
-    public struct Badge: Codable {
-        @IntegerRawValue public var id: Int
-        public let image: Image
+            guard let decodedId: String = id.base64DecodedString else {
+                throw DecodingError.dataCorrupted(.init(codingPath: container.codingPath, debugDescription: "Invalid user id"))
+            }
+            self.id = decodedId
+            self.isMyself = try container.decode(Bool.self, forKey: .isMyself)
+            self.species = try container.decode(SpeciesType.self, forKey: .species)
+        }
     }
 
     // MARK: - HistoryDetailId
