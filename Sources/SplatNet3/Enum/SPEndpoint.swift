@@ -44,6 +44,8 @@ public enum SPEndpoint: String, CaseIterable, Identifiable {
     case UNKNOWN                = "unknown"
     /// Salmon Stats
     case STATS                  = "api/salmonstats"
+    /// Salmon Stats
+    case COOP_SCHEDULES         = "v1/schedules"
 
     init<T: RequestType>(request: T) {
         let path: String = request.path.replacingOccurrences(of: "connect/1.0.0/", with: "")
@@ -52,7 +54,7 @@ public enum SPEndpoint: String, CaseIterable, Identifiable {
             return
         }
         /// Salmon Stats
-        if path.contains("results") {
+        if path.contains("v2/results") {
             self = .STATS
             return
         }
@@ -95,7 +97,7 @@ public enum SPEndpoint: String, CaseIterable, Identifiable {
             return SPColor.SplatNet3.SPSalmonGreen
         case .GAME_WEB_TOKEN, .GAME_SERVICE_TOKEN, .BULLET_TOKEN:
             return SPColor.SplatNet3.SPRed
-        case .WEB_VERSION, .VERSION, .WEB_REVISION, .STATS:
+        case .WEB_VERSION, .VERSION, .WEB_REVISION, .STATS, .COOP_SCHEDULES:
             return SPColor.SplatNet3.SPBlue
         case .F, .FLAPG, .NXAPI:
             return SPColor.SplatNet3.SPPink

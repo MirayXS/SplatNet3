@@ -19,6 +19,10 @@ public extension Text {
         self.init(NSLocalizedString("CoopEnemy_\(String(describing: enemyKey))", bundle: .module, comment: ""))
     }
 
+    init(_ value: EnemyKey) {
+        self.init(NSLocalizedString("CoopEnemy_\(String(describing: value))", bundle: .module, comment: ""))
+    }
+
     /// 称号をテキストに変換
     init(_ value: GradeId?) {
         if let value = value {
@@ -71,6 +75,12 @@ public extension Image {
 
     init(_ value: EnemyId) {
         self.init("Enemies/\(value.rawValue)", bundle: .module)
+    }
+
+    init(_ value: EnemyKey) {
+        let enemyId: EnemyId = EnemyId.allCases[EnemyKey.allCases.firstIndex(of: value) ?? 0]
+
+        self.init("Enemies/\(enemyId.rawValue)", bundle: .module)
     }
 
     init(_ value: CoopStageId, size: ImageSize = .Regular) {

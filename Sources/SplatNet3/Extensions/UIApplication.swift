@@ -10,10 +10,12 @@ import UIKit
 import SwiftUI
 
 extension UIApplication {
+    /// iOS13以上でのDeprecated対策
     public var window: UIWindow? {
         UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first?.windows.first
     }
 
+    /// 現在表示されているViewの親View
     public var rootViewController: UIViewController? {
         UIApplication.shared.connectedScenes
             .filter({ $0.activationState == .foregroundActive })
@@ -24,11 +26,33 @@ extension UIApplication {
             .rootViewController
     }
 
+    /// 現在表示されている最も上位のView
     public var presentedViewController: UIViewController? {
         if let current = rootViewController?.presentedViewController {
+            if let presentedViewController = current.presentedViewController {
+                return presentedViewController
+            }
             return current
         }
         return rootViewController
+    }
+
+    /// ロード画面を表示して処理を実行する
+    public func startAnimating(completion: @escaping () -> Void) {
+        let controller: UIViewController = UIViewController(nibName: nil, bundle: nil)
+
+        let progress: UIActivityIndicatorView = UIActivityIndicatorView(style: .medium)
+        progress.overrideUserInterfaceStyle = .dark
+        progress.hidesWhenStopped = true
+        progress.startAnimating()
+        progress.center = controller.view.center
+        controller.modalTransitionStyle = .crossDissolve
+        controller.modalPresentationStyle = .overFullScreen
+        controller.overrideUserInterfaceStyle = .dark
+        controller.view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.3)
+        controller.view.addSubview(progress)
+        UIApplication.shared.presentedViewController?.present(controller, animated: true, completion: completion)
+        UIApplication.shared.presentedViewController?.dismiss(animated: true)
     }
 
     public func authorize(sessionToken: String, contentId: ContentId) {
@@ -42,6 +66,7 @@ extension UIApplication {
         })
     }
 
+    /// 一番上にジャンプする
     public func popToRootView() {
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let rootViewController = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController,

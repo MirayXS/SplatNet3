@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Charts
 
 public enum SpecialKey: String, CaseIterable, Identifiable, Codable {
     public var id: String { rawValue }
@@ -20,3 +21,6 @@ public enum SpecialKey: String, CaseIterable, Identifiable, Codable {
     case SpTripleTornado    = "380e541b5bc5e49d77ff1a616f1343aeba01d500fee36aaddf8f09d74bd3d3bc"
     case SpMicroLaser       = "fa8d49e8c850ee69f0231976208a913384e73dc0a39e6fb00806f6aa3da8a1ee"
 }
+
+@available(iOS 16.0, *)
+extension SpecialKey: Plottable {}

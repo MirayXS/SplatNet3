@@ -151,6 +151,14 @@ extension GearInfoKey {
     }
 }
 
+extension GearKey {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue: String = try container.decode(String.self)
+        self = unsafeEnumCast(rawValue: rawValue, defaultValue: .Clt_AMB000)
+    }
+}
+
 extension RuleType {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()

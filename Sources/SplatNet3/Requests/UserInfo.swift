@@ -20,7 +20,7 @@ public struct UserInfo: SPCredential {
     /// ID
     var nsaid: String
     /// イカスミセッション
-    var iksmSession: String? = nil
+    public internal(set) var iksmSession: String? = nil
     /// イカリング3トークン
     public internal(set) var bulletToken: String? = nil
     /// セッショントークン

@@ -121,5 +121,12 @@ public enum Common {
         public let b: Decimal
         public let g: Decimal
         public let r: Decimal
+
+        public init(r: Decimal, g: Decimal, b: Decimal, a: Decimal) {
+            self.r = r
+            self.g = g
+            self.b = b
+            self.a = a
+        }
     }
 }

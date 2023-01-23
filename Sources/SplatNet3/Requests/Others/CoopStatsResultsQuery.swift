@@ -21,6 +21,12 @@ public class CoopStatsResultsQuery: RequestType {
     public var headers: [String: String]?
     public var method: HTTPMethod = .post
 
+    init(results: [[String: Any]]) {
+        self.parameters = [
+            "results": results
+        ]
+    }
+
     init(result: CoopResult) {
         self.parameters = [
             "results": [result].map({ $0.asJSON() })
@@ -36,11 +42,12 @@ public class CoopStatsResultsQuery: RequestType {
     public struct Response: Codable {
         public let uuid: String
         public let salmonId: Int
+        public let id: String
     }
 }
 
-fileprivate extension Encodable {
-    func asJSON() -> [String: Any] {
+extension Encodable {
+    public func asJSON() -> [String: Any] {
         let encoder: JSONEncoder = {
             let encoder = JSONEncoder()
             encoder.outputFormatting = .withoutEscapingSlashes

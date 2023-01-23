@@ -48,6 +48,41 @@ public struct CoopResult: Codable {
             self.weaponList = content.weapons.map({ $0.image.url.asWeaponId() })
             self.stageId = content.coopStage.id
         }
+
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+
+            if let startTime = startTime {
+                try container.encode(startTime, forKey: .startTime)
+            } else {
+                try container.encodeNil(forKey: .startTime)
+            }
+            if let endTime = endTime {
+                try container.encode(endTime, forKey: .endTime)
+            } else {
+                try container.encodeNil(forKey: .endTime)
+            }
+            try container.encode(mode, forKey: .mode)
+            try container.encode(rule, forKey: .rule)
+            try container.encode(weaponList, forKey: .weaponList)
+            try container.encode(stageId, forKey: .stageId)
+        }
+
+        public init(
+            startTime: Date? = nil,
+            endTime: Date? = nil,
+            mode: ModeType,
+            rule: RuleType,
+            weaponList: [WeaponId],
+            stageId: CoopStageId
+        ) {
+            self.startTime = startTime
+            self.endTime = endTime
+            self.mode = mode
+            self.rule = rule
+            self.weaponList = weaponList
+            self.stageId = stageId
+        }
     }
 
     public struct PlayerResult: Codable {
@@ -103,6 +138,48 @@ public struct CoopResult: Codable {
             self.bossKillCountsTotal = content.defeatEnemyCount
             self.species = content.player.species
         }
+
+        public init(
+            id: String,
+            pid: String,
+            isMyself: Bool,
+            byname: String,
+            name: String,
+            nameId: String,
+            nameplate: CoopResult.Nameplate,
+            goldenIkuraAssistNum: Int,
+            goldenIkuraNum: Int,
+            ikuraNum: Int,
+            deadCount: Int,
+            helpCount: Int,
+            weaponList: [WeaponId],
+            specialId: SpecialId? = nil,
+            specialCounts: [Int],
+            bossKillCounts: [Int],
+            bossKillCountsTotal: Int,
+            uniform: SkinInfoId,
+            species: SpeciesType
+        ) {
+            self.id = id
+            self.pid = pid
+            self.isMyself = isMyself
+            self.byname = byname
+            self.name = name
+            self.nameId = nameId
+            self.nameplate = nameplate
+            self.goldenIkuraAssistNum = goldenIkuraAssistNum
+            self.goldenIkuraNum = goldenIkuraNum
+            self.ikuraNum = ikuraNum
+            self.deadCount = deadCount
+            self.helpCount = helpCount
+            self.weaponList = weaponList
+            self.specialId = specialId
+            self.specialCounts = specialCounts
+            self.bossKillCounts = bossKillCounts
+            self.bossKillCountsTotal = bossKillCountsTotal
+            self.uniform = uniform
+            self.species = species
+        }
     }
 
     public struct WaveResult: Codable, Identifiable {
@@ -131,6 +208,24 @@ public struct CoopResult: Codable {
             self.quotaNum = content.deliverNorm
             self.goldenIkuraPopNum = content.goldenPopCount
         }
+
+        public init(
+            id: Int,
+            isClear: Bool,
+            waterLevel: WaterLevelId,
+            eventType: EventId,
+            goldenIkuraNum: Int? = nil,
+            quotaNum: Int? = nil,
+            goldenIkuraPopNum: Int
+        ) {
+            self.id = id
+            self.isClear = isClear
+            self.waterLevel = waterLevel
+            self.eventType = eventType
+            self.goldenIkuraNum = goldenIkuraNum
+            self.quotaNum = quotaNum
+            self.goldenIkuraPopNum = goldenIkuraPopNum
+        }
     }
 
     public struct JobResult: Codable {
@@ -145,16 +240,46 @@ public struct CoopResult: Codable {
             self.isBossDefeated = content.bossResult?.hasDefeatBoss
             self.bossId = content.bossResult?.boss.id
         }
+
+        public init(
+            isClear: Bool,
+            failureWave: Int? = nil,
+            isBossDefeated: Bool? = nil,
+            bossId: EnemyId? = nil
+        ) {
+            self.isClear = isClear
+            self.failureWave = failureWave
+            self.isBossDefeated = isBossDefeated
+            self.bossId = bossId
+        }
+
     }
 
     public struct Nameplate: Codable {
         public let badges: [BadgeId?]
         public let background: Background
+
+        public init(
+            badges: [BadgeId?],
+            background: CoopResult.Background
+        ) {
+            self.badges = badges
+            self.background = background
+        }
+
     }
 
     public struct Background: Codable {
         public let textColor: Common.TextColor
         public let id: NameplateId
+
+        public init(
+            textColor: Common.TextColor,
+            id: NameplateId
+        ) {
+            self.textColor = textColor
+            self.id = id
+        }
     }
 
     public init(history: CoopHistoryQuery.CoopSchedule, content: CoopHistoryDetailQuery.CoopHistoryDetail) {
@@ -183,6 +308,57 @@ public struct CoopResult: Codable {
         self.smellMeter = content.smellMeter
         self.scenarioCode = content.scenarioCode
     }
+
+    public init(
+        id: String,
+        uuid: String,
+        scale: [Int?],
+        jobScore: Int? = nil,
+        gradeId: GradeId? = nil,
+        kumaPoint: Int? = nil,
+        waveDetails: [CoopResult.WaveResult],
+        jobResult: CoopResult.JobResult,
+        myResult: CoopResult.PlayerResult,
+        otherResults: [CoopResult.PlayerResult],
+        gradePoint: Int? = nil,
+        jobRate: Decimal? = nil,
+        playTime: Date,
+        bossCounts: [Int],
+        bossKillCounts: [Int],
+        dangerRate: Decimal,
+        jobBonus: Int? = nil,
+        schedule: CoopResult.Schedule,
+        goldenIkuraNum: Int,
+        goldenIkuraAssistNum: Int,
+        ikuraNum: Int,
+        smellMeter: Int? = nil,
+        scenarioCode: String? = nil
+    ) {
+        self.id = id
+        self.uuid = uuid
+        self.scale = scale
+        self.jobScore = jobScore
+        self.gradeId = gradeId
+        self.kumaPoint = kumaPoint
+        self.waveDetails = waveDetails
+        self.jobResult = jobResult
+        self.myResult = myResult
+        self.otherResults = otherResults
+        self.gradePoint = gradePoint
+        self.jobRate = jobRate
+        self.playTime = playTime
+        self.bossCounts = bossCounts
+        self.bossKillCounts = bossKillCounts
+        self.dangerRate = dangerRate
+        self.jobBonus = jobBonus
+        self.schedule = schedule
+        self.goldenIkuraNum = goldenIkuraNum
+        self.goldenIkuraAssistNum = goldenIkuraAssistNum
+        self.ikuraNum = ikuraNum
+        self.smellMeter = smellMeter
+        self.scenarioCode = scenarioCode
+    }
+
 }
 
 extension Collection where Element == CoopHistoryDetailQuery.EnemyResult {

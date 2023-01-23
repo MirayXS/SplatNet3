@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Charts
 
 public enum EventKey: String, Identifiable,CaseIterable, Codable {
     public var id: String { rawValue }
@@ -20,3 +21,6 @@ public enum EventKey: String, Identifiable,CaseIterable, Codable {
     case Giant              = "3657f12385cd1cde2c9ce89144e2b5369cdea5bedc47ec602bda08e626ee9e7b"
     case Mudmouth           = "83112387a9106ecf254ca291f831fbbf5925f9712387449de2d8ca75796b6e7c"
 }
+
+@available(iOS 16.0, *)
+extension EventKey: Plottable {}

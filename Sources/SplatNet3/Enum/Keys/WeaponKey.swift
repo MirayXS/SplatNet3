@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Charts
 
 public enum WeaponKey: String, Codable, CaseIterable, Identifiable {
     public var id: String { rawValue }
@@ -81,3 +82,6 @@ public enum WeaponKey: String, Codable, CaseIterable, Identifiable {
         return WeaponId.allCases[index]
     }
 }
+
+@available(iOS 16.0, *)
+extension WeaponKey: Plottable {}

@@ -8,6 +8,7 @@
 
 
 import Foundation
+import Charts
 
 public enum GearInfoClothesKey: String, CaseIterable, Identifiable, Codable {
 	public var id: String { rawValue }
@@ -140,3 +141,6 @@ public enum GearInfoClothesKey: String, CaseIterable, Identifiable, Codable {
 	case Clt_VST012 = "26f54b493c09cdcf2b58c4f259a484d82457178395648ce282efbc7df1a1078c"
 	case Clt_VST013 = "c218428aced65b2b211c2c6c04dc2fcd90f911b65b6d38a2259a0a3b2a5ba6fa"
 }
+
+@available(iOS 16.0, *)
+extension GearInfoClothesKey: Plottable {}

@@ -7,10 +7,10 @@
 
 import Foundation
 import RealmSwift
-3
 
 final class RealmCoopResult: Object, Identifiable, Codable {
     @Persisted(primaryKey: true) var id: String
+    @Persisted var uuid: String
     @Persisted var salmonId: Int?
     @Persisted var gradePoint: Int?
     @Persisted var grade: GradeId?
@@ -42,6 +42,7 @@ final class RealmCoopResult: Object, Identifiable, Codable {
     convenience init(content: CoopResult) {
         self.init()
         self.id = content.id
+        self.uuid = content.uuid
         self.grade = content.grade
         self.gradePoint = content.gradePoint
         self.isClear = content.jobResult.isClear
@@ -72,6 +73,7 @@ final class RealmCoopResult: Object, Identifiable, Codable {
 
     enum CodingKeys: String, CodingKey {
         case id
+        case uuid
         case salmonId
         case grade
         case gradePoint
@@ -80,7 +82,7 @@ final class RealmCoopResult: Object, Identifiable, Codable {
         case isBossDefeated
         case ikuraNum
         case goldenIkuraNum
-        case goldenIkuraAssitNum
+        case goldenIkuraAssistNum
         case bossCounts
         case bossKillCounts
         case dangerRate
@@ -100,6 +102,7 @@ final class RealmCoopResult: Object, Identifiable, Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         self.id = try container.decode(String.self, forKey: .id)
+        self.uuid = try container.decode(String.self, forKey: .uuid)
         self.salmonId = try container.decodeIfPresent(Int.self, forKey: .salmonId)
         self.grade = try container.decodeIfPresent(GradeId.self, forKey: .grade)
         self.gradePoint = try container.decodeIfPresent(Int.self, forKey: .gradePoint)
@@ -108,7 +111,7 @@ final class RealmCoopResult: Object, Identifiable, Codable {
         self.isBossDefeated = try container.decodeIfPresent(Bool.self, forKey: .isBossDefeated)
         self.ikuraNum = try container.decode(Int.self, forKey: .ikuraNum)
         self.goldenIkuraNum = try container.decode(Int.self, forKey: .goldenIkuraNum)
-        self.goldenIkuraAssistNum = try container.decode(Int.self, forKey: .goldenIkuraAssitNum)
+        self.goldenIkuraAssistNum = try container.decode(Int.self, forKey: .goldenIkuraAssistNum)
         self.bossCounts.append(objectsIn: try container.decode([Int].self, forKey: .bossCounts))
         self.bossKillCounts.append(objectsIn: try container.decode([Int].self, forKey: .bossKillCounts))
         self.dangerRate = try container.decode(Decimal128.self, forKey: .dangerRate)
@@ -127,6 +130,7 @@ final class RealmCoopResult: Object, Identifiable, Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try container.encode(salmonId, forKey: .salmonId)
+        try container.encode(uuid, forKey: .uuid)
         try container.encode(id, forKey: .id)
         try container.encode(grade, forKey: .grade)
         try container.encode(gradePoint, forKey: .gradePoint)
@@ -135,7 +139,7 @@ final class RealmCoopResult: Object, Identifiable, Codable {
         try container.encode(isBossDefeated, forKey: .isBossDefeated)
         try container.encode(ikuraNum, forKey: .ikuraNum)
         try container.encode(goldenIkuraNum, forKey: .goldenIkuraNum)
-        try container.encode(goldenIkuraAssistNum, forKey: .goldenIkuraAssitNum)
+        try container.encode(goldenIkuraAssistNum, forKey: .goldenIkuraAssistNum)
         try container.encode(bossCounts, forKey: .bossCounts)
         try container.encode(bossKillCounts, forKey: .bossKillCounts)
         try container.encode(dangerRate, forKey: .dangerRate)

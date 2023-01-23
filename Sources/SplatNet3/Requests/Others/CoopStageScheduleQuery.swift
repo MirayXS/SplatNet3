@@ -10,8 +10,12 @@ import Alamofire
 
 public class CoopStageScheduleQuery: RequestType {
     public typealias ResponseType = [CoopSchedule]
-    public var baseURL: URL = URL(unsafeString: "https://asia-northeast1-tkgstratorwork.cloudfunctions.net/")
-    public var path: String = "api/schedules/all"
+    #if DEBUG
+    public var baseURL: URL = URL(unsafeString: "http://localhost:8080/")
+    #else
+    public var baseURL: URL = URL(unsafeString: "https://api.splatnet3.com/")
+    #endif
+    public var path: String = "v1/schedules"
     public var parameters: Parameters?
     public var headers: [String: String]?
     public var method: HTTPMethod = .get

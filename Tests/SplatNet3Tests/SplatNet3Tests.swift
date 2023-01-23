@@ -26,7 +26,7 @@ final class SplatNet3Tests: XCTestCase {
     func testCoopHistoryDetail() throws {
         do {
             let paths: [URL] = getListContents(.CoopHistoryDetail).sorted(by: { $0.absoluteString < $1.absoluteString })
-
+            print("Test Case: \(paths.count)")
             for path in paths {
                 try autoreleasepool(invoking: {
                     let data: Data = try Data(contentsOf: path)

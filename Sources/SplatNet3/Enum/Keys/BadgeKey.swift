@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Charts
 
 public enum BadgeKey: String, CaseIterable, Identifiable, Codable {
 	public var id: String { rawValue }
@@ -337,3 +338,6 @@ public enum BadgeKey: String, CaseIterable, Identifiable, Codable {
 	case WinCount_WeaponSp_SpUltraStamp_Lv01 = "0a538e5856eeba8c4236eccffb4c3d4cc34a7336c1ac21abcffc3e10bbbc6e9f"
 	case WinCount_WeaponSp_SpUltraStamp_Lv02 = "f73b4e92482dfc1566cdc7cb581eb26e538e04dbcf2da37414ca7956f8bd58ed"
 }
+
+@available(iOS 16.0, *)
+extension BadgeKey: Plottable {}

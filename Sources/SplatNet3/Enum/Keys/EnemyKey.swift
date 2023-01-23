@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Charts
 
 public enum EnemyKey: String, CaseIterable, Identifiable, Codable {
     public var id: String { rawValue }
@@ -26,3 +27,13 @@ public enum EnemyKey: String, CaseIterable, Identifiable, Codable {
     case SakeBigMouth       = "f0dd8c7eb5c2e96f347564cac71affe055f6c45a3339145ecc81287f800759d2"
     case SakelienGiant      = "9bc1c1d0341a2049db2ae54546b7335074dda0d2ea88f32c1499771850b7a904"
 }
+
+
+extension EnemyKey {
+    public var localized: String {
+        NSLocalizedString("CoopEnemy_\(String(describing: self))", bundle: .module, comment: "")
+    }
+}
+
+@available(iOS 16.0, *)
+extension EnemyKey: Plottable {}

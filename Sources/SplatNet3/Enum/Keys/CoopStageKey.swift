@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Charts
 
 public enum CoopStageKey: String, CaseIterable, Identifiable, Codable {
     public var id: String { rawValue }
@@ -28,3 +29,6 @@ public enum CoopStageKey: String, CaseIterable, Identifiable, Codable {
         self = CoopStageKey(rawValue: rawValue) ?? .Unknown
     }
 }
+
+@available(iOS 16.0, *)
+extension CoopStageKey: Plottable {}

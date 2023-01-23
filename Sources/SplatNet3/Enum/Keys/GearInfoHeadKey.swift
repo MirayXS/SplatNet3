@@ -8,6 +8,7 @@
 
 
 import Foundation
+import Charts
 
 public enum GearInfoHeadKey: String, CaseIterable, Identifiable, Codable {
 	public var id: String { rawValue }
@@ -109,3 +110,6 @@ public enum GearInfoHeadKey: String, CaseIterable, Identifiable, Codable {
 	case Hed_VIS003 = "510fa5cc020119717a0c229be4a67873893dfcc65be2df86f031fe41c1ef43a5"
 	case Hed_VIS004 = "c4853cb0cbd6acca147ca5bfb907a8fd342aca4d83d977e82ff07eedb5ff53e7"
 }
+
+@available(iOS 16.0, *)
+extension GearInfoHeadKey: Plottable {}

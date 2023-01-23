@@ -31,19 +31,26 @@ open class SP3Session: Session {
         return response
     }
 
+    /// 通常のリクエスト
     override open func request<T>(_ request: T, interceptor: RequestInterceptor? = nil) async throws -> T.ResponseType where T : RequestType {
         do {
             DispatchQueue.main.async(execute: {
-                self.requests.append(SPProgress(request))
+                if request.path != "v2/results" {
+                    self.requests.append(SPProgress(request))
+                }
             })
             let response: T.ResponseType = try await super.request(request)
             DispatchQueue.main.async(execute: {
-                self.requests.success()
+                if request.path != "v2/results" {
+                    self.requests.success()
+                }
             })
             return response
         } catch(let error) {
             DispatchQueue.main.async(execute: {
-                self.requests.failure()
+                if request.path != "v2/results" {
+                    self.requests.failure()
+                }
             })
             throw error
         }
@@ -79,25 +86,33 @@ open class SP3Session: Session {
         return nodes.map({ CoopSchedule(schedule: $0) })
     }
 
+    open func getCoopHistoryQuery() async throws -> CoopHistoryQuery.CoopResult {
+        return try await request(CoopHistoryQuery()).data.coopResult
+    }
+
     @discardableResult
     open func getAllCoopHistoryDetailQuery(playTime: Date? = nil, upload: Bool = false, completion: Completion) async throws -> [CoopResult] {
         completion(0, 1)
-        let nodes: [CoopHistoryQuery.HistoryGroup] = try await getCoopHistoryQuery().historyGroups.nodes
+        let coopResult: CoopHistoryQuery.CoopResult = try await getCoopHistoryQuery()
+        /// ノード
+        let nodes: [CoopHistoryQuery.HistoryGroup] = coopResult.historyGroups.nodes
+        /// 取得すべきリザルトのID
         let resultIds: [Common.ResultId] = {
             if let playTime = playTime {
                 return nodes.flatMap({ $0.historyDetails.nodes.map({ $0.id }) }).filter({ $0.playTime > playTime })
             }
             return nodes.flatMap({ $0.historyDetails.nodes.map({ $0.id }) })
         }()
-
+        /// 取得するIDがないなら何もせずに返す
         if resultIds.isEmpty {
             completion(1, 1)
             return []
         }
-
+        /// 進捗を更新
         DispatchQueue.main.async(execute: {
             self.requests.append(SPProgress(.COOP_RESULT))
         })
+        /// 並列ダウンロード
         let response: [CoopResult] = try await withThrowingTaskGroup(of: CoopResult.self, body: { task in
             nodes.forEach({ node in
                 node.historyDetails.nodes.forEach({ result in
@@ -113,12 +128,36 @@ open class SP3Session: Session {
                 completion(Float(results.count), Float(resultIds.count))
             }
         })
+        /// 一括アップロード
         if upload {
-            try await uploadResults(response)
+            try await uploadAllCoopHistoryDetailQuery(response)
         }
+        /// 進捗を更新
         DispatchQueue.main.async(execute: {
             self.requests.success()
         })
+        return response
+    }
+
+    @discardableResult
+    open func uploadAllCoopResultDetailQuery(results: [CoopResult] = [], completion: Completion) async throws -> [CoopStatsResultsQuery.Response] {
+        var count: Int = 0
+        completion(Float(count), Float(results.count))
+
+        DispatchQueue.main.async(execute: {
+            self.requests.append(SPProgress(.STATS))
+        })
+
+        let response: [CoopStatsResultsQuery.Response] = try await results.chunked(by: 200).asyncFlatMap({ result in
+            count += result.count
+            completion(Float(count), Float(results.count))
+            return try await uploadAllCoopHistoryDetailQuery(result)
+        })
+
+        DispatchQueue.main.async(execute: {
+            self.requests.success()
+        })
+        
         return response
     }
 }
@@ -151,6 +190,7 @@ extension SP3Session: Authenticator {
         return false
     }
 
+    /// GraphQLを利用したリクエスト
     private func request<T>(_ request: T) async throws -> T.ResponseType where T : GraphQL {
         let interceptor: AuthenticationInterceptor<SP3Session>? = {
             guard let account = account else {
@@ -159,6 +199,7 @@ extension SP3Session: Authenticator {
             return AuthenticationInterceptor(authenticator: self, credential: account)
         }()
         do {
+            /// リザルト取得時はプログレスバーを非表示にする
             DispatchQueue.main.async(execute: {
                 if request.hash != .CoopHistoryDetailQuery {
                     self.requests.append(SPProgress(request))
@@ -168,6 +209,7 @@ extension SP3Session: Authenticator {
                 .validationWithNXError()
                 .serializingDecodable(T.ResponseType.self, decoder: decoder)
                 .value
+            /// リザルト取得時はプログレスバーを非表示にする
             DispatchQueue.main.async(execute: {
                 if request.hash != .CoopHistoryDetailQuery {
                     self.requests.success()
@@ -188,16 +230,12 @@ extension SP3Session: Authenticator {
         return try await request(StageScheduleQuery()).data.coopGroupingSchedule.regularSchedules.nodes
     }
 
-    private func getCoopHistoryQuery() async throws -> CoopHistoryQuery.CoopResult {
-        return try await request(CoopHistoryQuery()).data.coopResult
-    }
-
     private func getCoopHistoryDetailQuery(resultId: Common.ResultId) async throws -> CoopHistoryDetailQuery.CoopHistoryDetail {
         return try await request(CoopHistoryDetailQuery(resultId: resultId)).data.coopHistoryDetail
     }
 
     @discardableResult
-    private func uploadResults(_ results: [CoopResult]) async throws -> [CoopStatsResultsQuery.Response] {
+    private func uploadAllCoopHistoryDetailQuery(_ results: [CoopResult]) async throws -> [CoopStatsResultsQuery.Response] {
         return try await request(CoopStatsResultsQuery(results: results))
     }
 

@@ -37,7 +37,7 @@ open class Session: ObservableObject {
     @Published public var account: UserInfo?
 
     init() {
-        // 起動時にアカウントを読み込み
+        // インスタンス生成時にアカウントを読み込み
         self.account = keychain.get()
     }
 

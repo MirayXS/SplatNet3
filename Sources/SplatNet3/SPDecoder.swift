@@ -15,3 +15,11 @@ public class SPDecoder: JSONDecoder {
         self.keyDecodingStrategy = .convertFromSnakeCase
     }
 }
+
+public class SPEncoder: JSONEncoder {
+    public override init() {
+        super.init()
+        self.dateEncodingStrategy = .iso8601
+        self.keyEncodingStrategy = .convertToSnakeCase
+    }
+}
