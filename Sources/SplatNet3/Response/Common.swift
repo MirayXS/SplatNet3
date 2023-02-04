@@ -9,7 +9,7 @@ import Foundation
 
 
 public enum Common {
-    static let dateFormatter: DateFormatter = {
+    public static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyyMMdd'T'HHmmss"
         formatter.timeZone = TimeZone(identifier: "UTC")
@@ -69,6 +69,11 @@ public enum Common {
         public let uid: String
         public let playTime: Date
         public let uuid: String
+
+        public var primaryKey: String {
+            let playTime: String = Common.dateFormatter.string(from: playTime)
+            return "\(playTime)_\(uuid)"
+        }
 
         public var description: String {
             let playTime: String = Common.dateFormatter.string(from: playTime)

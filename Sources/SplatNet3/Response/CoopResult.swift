@@ -283,7 +283,7 @@ public struct CoopResult: Codable {
     }
 
     public init(history: CoopHistoryQuery.CoopSchedule, content: CoopHistoryDetailQuery.CoopHistoryDetail) {
-        self.id = content.id.description
+        self.id = content.id.primaryKey
         self.uuid = content.id.uuid
         self.scale = [content.scale?.bronze, content.scale?.silver, content.scale?.gold]
         self.jobScore = content.jobScore
@@ -303,7 +303,7 @@ public struct CoopResult: Codable {
         self.jobBonus = content.jobBonus
         self.schedule = Schedule(schedule: history, content: content)
         self.ikuraNum = ([content.myResult] + content.memberResults).map({ $0.deliverCount }).reduce(0, +)
-        self.goldenIkuraNum = ([content.myResult] + content.memberResults).map({ $0.goldenDeliverCount }).reduce(0, +)
+        self.goldenIkuraNum = content.waveResults.compactMap({ $0.teamDeliverCount }).reduce(0, +)
         self.goldenIkuraAssistNum = ([content.myResult] + content.memberResults).map({ $0.goldenAssistCount }).reduce(0, +)
         self.smellMeter = content.smellMeter
         self.scenarioCode = content.scenarioCode
