@@ -1,16 +1,32 @@
 //
 //  NameplateKey.swift
-//  SplatNet3
 //
-//  Created by tkgstrator on 2022/09/22
-//  Copyright © 2022 Magi, Corporation. All rights reserved.
+//  Created by tkgstrator on 2023/01/30
+//  Copyright @2022 Magi, Corporation. All rights reserved.
 //
-
 
 import Foundation
 
 public enum NameplateKey: String, CaseIterable, Identifiable, Codable {
 	public var id: String { rawValue }
+	case Npl_Tutorial00 = "dba78c8ed1013d420aacb669d31a002691f2bb4ec0c1c853e34244c40dc68ea8"
+	case Npl_Trg_Season01_Lv01 = "90203a05b75644be8fdf5e665f94a11fc6b459ad1a7fd7a444c559731d0812c1"
+	case Npl_Trg_Season01_Lv02 = "74f479a7855bcc76b59926075d3974683abefb9579fdd1c1e60c6693935a90ac"
+	case Npl_Mng_Lv01 = "a999e6fe6796610e3db25c2aa2713426e8c3cd17555f4204a2f6b59409362ad5"
+	case Npl_Mng_Lv02 = "cf96547ad3b1fbe6197f0bb95b3d675d3980960d9c0de096a1abdb1135b74421"
+	case Npl_Mng_Lv03 = "3b94c3f1a29046d2701f8d615d731bdad2f51bd5de284ffa6091801164126633"
+	case Npl_Coop_Season01_Lv01 = "ef8a9390e1a4ee4da709c69cf572586b57b80100f521b16a9d8f2c1b764b0dd9"
+	case Npl_Coop_Season01_Lv02 = "e4880eca40cd6041dfc99db32b5a92fb0ae6c84a522ae5e5d899b9c671b64a47"
+	case Npl_Coop_Season01_Lv03 = "1b846d2a2d48a12b229c31f0c2fd39b84312d0c52277dcd27775ccf5166fcaea"
+	case Npl_Coop_Season01_Lv04 = "64a5a783ff6db549d285222922ee0cd3c70c34794ef14ebc7b7d820f13b64b4f"
+	case Npl_Coop_Season01_Lv05 = "ea655fb5842bbaae6d1f9d7bfa1b1f849496a929dbfd8086c1b13314609d8487"
+	case Npl_Coop_Season01_Lv06 = "167f0825969c2924ec519ae9db937b10a7887ec24057a2f77668e2c7f7d94447"
+	case Npl_Coop_Season01_Lv07 = "047b199eea6f89a2694293d74e74633f9aef806943dbe8d90b273064288e8b54"
+	case Npl_Coop_Season01_Lv08 = "036257cc36c631962352de0ad5ecbca4436326aefb550dea8a9cdb1d9f20180a"
+	case Npl_Coop_Season01_Lv09 = "1632c5bbf8837116e071f8bbf849aaed8dae1ac90619d50c881e7dbf278d3705"
+	case Npl_Coop_Season01_Lv10 = "c1c8e069f31d5d2da98880fd29179f718ac1135e204fe628c63b040c9e4f9434"
+	case Npl_Lot_Season01_Lv01 = "d87178ea1709a65e5dd47c21ba6fb9b51764c239bc250e5414c617d31f693d11"
+	case Npl_Lot_Season02_Lv01 = "a2c9afd0d033065eca435f8a7a5b30ef57332f877a9f2abf188ec0176bcc5251"
 	case Npl_Catalog_Season01_Lv01 = "3fec40e770ba4df4fb8d6a0598f0820e045411e3d5cab77c4a47aef0a0e3b8a9"
 	case Npl_Catalog_Season01_Lv02 = "4944de43d46fb4e0514c287791171a9a44753a69229d04d53d9c1f4c2c9e5f23"
 	case Npl_Catalog_Season01_Lv03 = "d7b61473019f6ac56967bbd306f9d703302f411ff030976660cda56e6f967ea0"
@@ -95,22 +111,4 @@ public enum NameplateKey: String, CaseIterable, Identifiable, Codable {
 	case Npl_Catalog_Season01_Lv82 = "0ae66b543364207d96bd8ad14392319eb11bab1ee5713cf829d7dd7f23445464"
 	case Npl_Catalog_Season02_Lv01 = "a5ea5e021cbf55171fa22dc7dcea4f9f3505bda27c220e9e3b75f2660cb4d008"
 	case Npl_Catalog_Season02_Lv02 = "c24871495b3eed22bb3cf89bb43ce93da65c3b150be5130ca3406bf6110e7e2d"
-	case Npl_Coop_Season01_Lv01 = "ef8a9390e1a4ee4da709c69cf572586b57b80100f521b16a9d8f2c1b764b0dd9"
-	case Npl_Coop_Season01_Lv02 = "e4880eca40cd6041dfc99db32b5a92fb0ae6c84a522ae5e5d899b9c671b64a47"
-	case Npl_Coop_Season01_Lv03 = "1b846d2a2d48a12b229c31f0c2fd39b84312d0c52277dcd27775ccf5166fcaea"
-	case Npl_Coop_Season01_Lv04 = "64a5a783ff6db549d285222922ee0cd3c70c34794ef14ebc7b7d820f13b64b4f"
-	case Npl_Coop_Season01_Lv05 = "ea655fb5842bbaae6d1f9d7bfa1b1f849496a929dbfd8086c1b13314609d8487"
-	case Npl_Coop_Season01_Lv06 = "167f0825969c2924ec519ae9db937b10a7887ec24057a2f77668e2c7f7d94447"
-	case Npl_Coop_Season01_Lv07 = "047b199eea6f89a2694293d74e74633f9aef806943dbe8d90b273064288e8b54"
-	case Npl_Coop_Season01_Lv08 = "036257cc36c631962352de0ad5ecbca4436326aefb550dea8a9cdb1d9f20180a"
-	case Npl_Coop_Season01_Lv09 = "1632c5bbf8837116e071f8bbf849aaed8dae1ac90619d50c881e7dbf278d3705"
-	case Npl_Coop_Season01_Lv10 = "c1c8e069f31d5d2da98880fd29179f718ac1135e204fe628c63b040c9e4f9434"
-	case Npl_Lot_Season01_Lv01 = "d87178ea1709a65e5dd47c21ba6fb9b51764c239bc250e5414c617d31f693d11"
-	case Npl_Lot_Season02_Lv01 = "a2c9afd0d033065eca435f8a7a5b30ef57332f877a9f2abf188ec0176bcc5251"
-	case Npl_Mng_Lv01 = "a999e6fe6796610e3db25c2aa2713426e8c3cd17555f4204a2f6b59409362ad5"
-	case Npl_Mng_Lv02 = "cf96547ad3b1fbe6197f0bb95b3d675d3980960d9c0de096a1abdb1135b74421"
-	case Npl_Mng_Lv03 = "3b94c3f1a29046d2701f8d615d731bdad2f51bd5de284ffa6091801164126633"
-	case Npl_Trg_Season01_Lv01 = "90203a05b75644be8fdf5e665f94a11fc6b459ad1a7fd7a444c559731d0812c1"
-	case Npl_Trg_Season01_Lv02 = "74f479a7855bcc76b59926075d3974683abefb9579fdd1c1e60c6693935a90ac"
-	case Npl_Tutorial00 = "dba78c8ed1013d420aacb669d31a002691f2bb4ec0c1c853e34244c40dc68ea8"
 }
