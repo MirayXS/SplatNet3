@@ -77,7 +77,7 @@ public enum Common {
 
         public var description: String {
             let playTime: String = Common.dateFormatter.string(from: playTime)
-            return "\(id.rawValue)-\(prefix)-\(uid):\(playTime)_\(uuid)"
+            return "\(playTime)_\(uuid)"
         }
 
         public init(from decoder: Decoder) throws {

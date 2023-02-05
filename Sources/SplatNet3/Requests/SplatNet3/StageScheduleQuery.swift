@@ -30,7 +30,7 @@ public final class StageScheduleQuery: GraphQL {
     public struct DataClass: Codable {
         public let xSchedules: Schedules
         public let festSchedules: Schedules
-        public let leagueSchedules: Schedules
+//        public let leagueSchedules: Schedules
         public let regularSchedules: Schedules
         public let bankaraSchedules: Schedules
         public let coopGroupingSchedule: CoopGroupingSchedule
