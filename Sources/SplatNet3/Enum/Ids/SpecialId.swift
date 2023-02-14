@@ -9,6 +9,7 @@ import Foundation
 
 public enum SpecialId: Int, CaseIterable, Identifiable, Codable {
 	public var id: Int { rawValue }
+    case SpRandomGreen = -1
 	case SpUltraShot = 1
 	case SpNiceBall_Coop = 20006
 	case SpShockSonar_Coop = 20007
