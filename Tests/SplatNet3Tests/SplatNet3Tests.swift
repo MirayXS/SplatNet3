@@ -9,6 +9,20 @@ final class SplatNet3Tests: XCTestCase {
         return Bundle.module.urls(forResourcesWithExtension: "json", subdirectory: "JSON/\(type.rawValue)") ?? []
     }
 
+    func testHistoryRecord() throws {
+        do {
+            let paths: [URL] = getListContents(.HistoryRecord)
+            for path in paths {
+                let data: Data = try Data(contentsOf: path)
+                let response = try decoder.decode(HistoryRecordQuery.Response.self, from: data)
+                dump(response)
+            }
+        } catch (let error) {
+            SwiftyLogger.error(error.localizedDescription)
+            throw error
+        }
+    }
+
     func testCoopHistory() throws {
         do {
             let paths: [URL] = getListContents(.CoopHistory)
@@ -83,4 +97,5 @@ enum JSONType: String, CaseIterable, Codable {
     case StageSchedule
     case Schedule
     case SplatNet3
+    case HistoryRecord
 }

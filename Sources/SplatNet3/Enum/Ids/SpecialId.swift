@@ -19,4 +19,16 @@ public enum SpecialId: Int, CaseIterable, Identifiable, Codable {
 	case SpSkewer_Coop = 20013
 	case SpTripleTornado_Coop = 20014
 	case SpSuperLanding_Coop = 20101
+
+    public static var allCases: [SpecialId] {
+        return [
+            .SpNiceBall_Coop,
+            .SpShockSonar_Coop,
+            .SpMicroLaser_Coop,
+            .SpJetpack_Coop,
+            .SpChariot_Coop,
+            .SpSkewer_Coop,
+            .SpTripleTornado_Coop
+        ]
+    }
 }

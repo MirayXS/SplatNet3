@@ -20,5 +20,18 @@ final class HistoryRecordQuery: GraphQL {
 	init() {}
 
 	public struct Response: Codable {
-	}
+        public let data: ResponseData
+    }
+
+    public struct ResponseData: Codable {
+        public let playHistory: PlayerHistory
+    }
+
+    public struct PlayerHistory: Codable {
+        let badges: [Badge]
+    }
+
+    public struct Badge: Codable {
+        @IntegerRawValue public var id: BadgeId
+    }
 }
