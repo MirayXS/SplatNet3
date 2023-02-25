@@ -8,8 +8,7 @@
 import Foundation
 
 public struct CoopResult: Codable {
-    public let id: String
-    public let uuid: String
+    public let id: Common.ResultId
     public let scale: [Int?]
     @NullCodable public var jobScore: Int?
     @NullCodable public var gradeId: GradeId?
@@ -86,8 +85,7 @@ public struct CoopResult: Codable {
     }
 
     public struct PlayerResult: Codable {
-        public let id: String
-        public let pid: String
+        public let id: Common.PlayerId
         public let isMyself: Bool
         public let byname: String
         public let name: String
@@ -112,8 +110,7 @@ public struct CoopResult: Codable {
             specialCounts: [[SpecialId]],
             isMyself: Bool
         ) {
-            self.id = content.player.id.description
-            self.pid = content.player.id.uid
+            self.id = content.player.id
             self.isMyself = isMyself
             self.byname = content.player.byname
             self.name = content.player.name
@@ -140,8 +137,7 @@ public struct CoopResult: Codable {
         }
 
         public init(
-            id: String,
-            pid: String,
+            id: Common.PlayerId,
             isMyself: Bool,
             byname: String,
             name: String,
@@ -161,7 +157,6 @@ public struct CoopResult: Codable {
             species: SpeciesType
         ) {
             self.id = id
-            self.pid = pid
             self.isMyself = isMyself
             self.byname = byname
             self.name = name
@@ -283,8 +278,7 @@ public struct CoopResult: Codable {
     }
 
     public init(history: CoopHistoryQuery.CoopSchedule, content: CoopHistoryDetailQuery.CoopHistoryDetail) {
-        self.id = content.id.primaryKey
-        self.uuid = content.id.uuid
+        self.id = content.id
         self.scale = [content.scale?.bronze, content.scale?.silver, content.scale?.gold]
         self.jobScore = content.jobScore
         self.kumaPoint = content.jobPoint
@@ -310,8 +304,7 @@ public struct CoopResult: Codable {
     }
 
     public init(
-        id: String,
-        uuid: String,
+        id: Common.ResultId,
         scale: [Int?],
         jobScore: Int? = nil,
         gradeId: GradeId? = nil,
@@ -335,7 +328,6 @@ public struct CoopResult: Codable {
         scenarioCode: String? = nil
     ) {
         self.id = id
-        self.uuid = uuid
         self.scale = scale
         self.jobScore = jobScore
         self.gradeId = gradeId

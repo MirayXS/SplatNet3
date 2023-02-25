@@ -55,7 +55,10 @@ struct SplatNetView: UIViewControllerRepresentable {
 
         init(contentId: ContentId) {
             /// リクエスト
-            var request: URLRequest = URLRequest(url: contentId.requestURL)
+            let locale: String = NSLocalizedString(LocalizedType.CoopHistory_Locale.rawValue, bundle: .module, comment: "")
+            var baseURL: URL = contentId.requestURL
+            baseURL.queryItems([URLQueryItem(name: "lang", value: locale)])
+            var request: URLRequest = URLRequest(url: baseURL)
             self.contentId = contentId
             let webView: WKWebView = WKWebView(frame: .zero, configuration: configuration)
             self.bridge = WebViewJavascriptBridge(webView: webView)

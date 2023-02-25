@@ -33,22 +33,23 @@ open class SP3Session: Session {
 
     /// 通常のリクエスト
     override open func request<T>(_ request: T, interceptor: RequestInterceptor? = nil) async throws -> T.ResponseType where T : RequestType {
+        let endpoint: SPEndpoint = SPEndpoint(request: request)
         do {
             DispatchQueue.main.async(execute: {
-                if request.path != "v2/results" {
+                if endpoint != .UNKNOWN {
                     self.requests.append(SPProgress(request))
                 }
             })
             let response: T.ResponseType = try await super.request(request)
             DispatchQueue.main.async(execute: {
-                if request.path != "v2/results" {
+                if endpoint != .UNKNOWN {
                     self.requests.success()
                 }
             })
             return response
         } catch(let error) {
             DispatchQueue.main.async(execute: {
-                if request.path != "v2/results" {
+                if endpoint != .UNKNOWN {
                     self.requests.failure()
                 }
             })

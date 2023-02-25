@@ -7,6 +7,13 @@
 
 import Foundation
 
+/// SplatNet3のBase64化されたIdに対応するプロトコル
+protocol SP3IdType: Codable, CustomStringConvertible, Equatable {
+    var type: IdType { get }
+    var nplnUserId: String { get }
+    var playTime: Date { get }
+    var uuid: UUID { get }
+}
 
 public enum Common {
     public static let dateFormatter: DateFormatter = {
@@ -17,25 +24,26 @@ public enum Common {
     }()
 
     // MARK: - PlayerId
-    public struct PlayerId: Codable, CustomStringConvertible, Equatable {
+    public struct PlayerId: SP3IdType {
         /// 常にCoopPlayer
-        public let id: IdType
-        /// 常に自分のID
-        public let playerId: String
-        /// プレイヤーのID
-        public let uid: String
+        public let type: IdType
+        /// NPLNユーザーID
+        public let nplnUserId: String
+        /// ホストのNPLNユーザーID
+        public let parentNplnUserId: String
         /// 遊んだ時間
         public let playTime: Date
-        /// リザルトごとの固有のID
-        public let uuid: String
+        /// リザルトごとのランダムUUID
+        public let uuid: UUID
 
+        // ユーザーIDを返す
         public var description: String {
-            let playTime: String = Common.dateFormatter.string(from: playTime)
-            return "\(id.rawValue)-u-\(playerId):\(playTime)_\(uuid):u-\(uid)"
+            nplnUserId
         }
 
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
+            // 復元された文字列を取得するところ
             let stringValue = try {
                 let stringValue: String = try container.decode(String.self)
                 guard let value: String = stringValue.base64DecodedString else {
@@ -43,41 +51,34 @@ public enum Common {
                 }
                 return value
             }()
-            guard let rawValue: String = stringValue.capture(pattern: #"^([A-z]*)-"#, group: 1),
-                  let id: IdType = IdType(rawValue: rawValue),
-                  let playTime: String = stringValue.capture(pattern: #":([A-z0-9].*?)_"#, group: 1),
-                  let playTime: Date = Common.dateFormatter.date(from: playTime),
-                  let playerId: String = stringValue.capture(pattern: #"u-([0-9a-z]*)"#, group: 1),
-                  let uid: String = stringValue.capture(pattern: #":u-([0-9a-z]*)"#, group: 1),
-                  let uuid: String = stringValue.capture(pattern: #"_([a-z0-9\-].*):"#, group: 1)
+
+            let rawValue: [String] = stringValue.capture(pattern: #"^([A-z]*)-u-([a-z0-9]*):([T0-9]*)_([a-z0-9\-]*):u-([a-z0-9]*)$"#, group: [0, 1, 2, 3, 4, 5])
+            guard let type: IdType = IdType(rawValue: rawValue[1]),
+                  let playTime: Date = Common.dateFormatter.date(from: rawValue[3]),
+                  let uuid: UUID = UUID(uuidString: rawValue[4])
             else {
                 throw DecodingError.dataCorrupted(.init(codingPath: container.codingPath, debugDescription: "Could not decoded."))
             }
 
-            self.id = id
+            self.type = type
             self.playTime = playTime
             self.uuid = uuid
-            self.playerId = playerId
-            self.uid = uid
+            self.nplnUserId = rawValue[2]
+            self.parentNplnUserId = rawValue[4]
         }
     }
 
     // MARK: - ResultId
-    public struct ResultId: Codable, CustomStringConvertible, Equatable {
-        public let id: IdType
-        public let prefix: String
-        public let uid: String
+    public struct ResultId: SP3IdType {
+        public let type: IdType
+        public let nplnUserId: String
         public let playTime: Date
-        public let uuid: String
+        public let uuid: UUID
 
-        public var primaryKey: String {
-            let playTime: String = Common.dateFormatter.string(from: playTime)
-            return "\(playTime)_\(uuid)"
-        }
-
+        /// Base64エンコードされた文字列
         public var description: String {
             let playTime: String = Common.dateFormatter.string(from: playTime)
-            return "\(id.rawValue)-\(prefix)-\(uid):\(playTime)_\(uuid)"
+            return "\(type.rawValue)-u-\(nplnUserId):\(playTime)_\(uuid.uuidString)".base64EncodedString
         }
 
         public init(from decoder: Decoder) throws {
@@ -85,20 +86,17 @@ public enum Common {
             guard let stringValue = try container.decode(String.self).base64DecodedString else {
                 throw DecodingError.dataCorrupted(.init(codingPath: container.codingPath, debugDescription: "Could not decoded."))
             }
-            guard let rawValue: String = stringValue.capture(pattern: #"^([A-z]*)-"#, group: 1),
-                  let id: IdType = IdType(rawValue: rawValue),
-                  let prefix: String = stringValue.capture(pattern: #"-([A-z]*)-"#, group: 1),
-                  let uid: String = stringValue.capture(pattern: #"-([A-z0-9]*):"#, group: 1),
-                  let playTime: String = stringValue.capture(pattern: #":([A-z0-9].*?)_"#, group: 1),
-                  let playTime: Date = Common.dateFormatter.date(from: playTime),
-                  let uuid: String = stringValue.capture(pattern: #"_([a-z0-9\-].*)"#, group: 1)
+
+            let rawValue: [String] = stringValue.capture(pattern: #"^([A-z]*)-u-([a-z0-9]*):([T0-9]*)_([a-z0-9\-]*)$"#, group: [0, 1, 2, 3, 4])
+            guard let type: IdType = IdType(rawValue: rawValue[1]),
+                  let playTime: Date = Common.dateFormatter.date(from: rawValue[3]),
+                  let uuid: UUID = UUID(uuidString: rawValue[4])
             else {
                 throw DecodingError.dataCorrupted(.init(codingPath: container.codingPath, debugDescription: "Could not decoded."))
             }
 
-            self.id = id
-            self.prefix = prefix
-            self.uid = uid
+            self.type = type
+            self.nplnUserId = rawValue[1]
             self.playTime = playTime
             self.uuid = uuid
         }

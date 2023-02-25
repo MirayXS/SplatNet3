@@ -60,11 +60,6 @@ public final class CoopHistoryDetailQuery: GraphQL {
         public let previousHistoryDetail: CoopHistory.HistoryDetailElement?
     }
 
-    // MARK: - Image
-    public struct Image<T: RawRepresentable>: Codable where T.RawValue == String {
-        @SHA256HashRawValue public var url: T
-    }
-
     // MARK: - EnemyResult
     public struct EnemyResult: Codable {
         public let defeatCount: Int
@@ -106,14 +101,14 @@ public final class CoopHistoryDetailQuery: GraphQL {
     // MARK: - Background
     public struct Background: Codable {
         public let textColor: Common.TextColor
-        public let image: Image<NameplateKey>
+        public let image: Common.URL<NameplateKey>
         @IntegerRawValue public var id: NameplateId
     }
 
     // MARK: - Badge
     public struct Badge: Codable {
         @IntegerRawValue public var id: BadgeId
-        public let image: Image<BadgeKey>
+        public let image: Common.URL<BadgeKey>
     }
 
     // MARK: - WaveResult

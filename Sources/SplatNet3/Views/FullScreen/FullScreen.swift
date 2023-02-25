@@ -56,8 +56,9 @@ struct FullScreen<Content: View>: UIViewControllerRepresentable {
         case true:
             uiViewController.present()
         case false:
-            break
-//            uiViewController.dismiss()
+            if !isModalInPresentation {
+                uiViewController.dismiss()
+            }
         }
     }
 

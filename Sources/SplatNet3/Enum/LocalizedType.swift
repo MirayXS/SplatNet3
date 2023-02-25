@@ -1,7 +1,7 @@
 //
 //  LocalizedType.swift
 //
-//  Created by tkgstrator on 2023/02/05
+//  Created by tkgstrator on 2023/02/23
 //  Copyright @2022 Magi, Corporation. All rights reserved.
 //
 
@@ -1501,4 +1501,16 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case CoopHistory_WipeResultsContext
 	/// レビューを書く
 	case CoopHistory_WriteReview
+	/// 総合きろく
+	case CoopHistory_OverallRecord
+	/// 金イクラ
+	case CoopHistory_GoldenEggs
+	/// イクラ
+	case CoopHistory_PowerEggs
+	/// 概要
+	case CoopHistory_Overview
+	/// ja-JP
+	case CoopHistory_Locale
+	/// 0
+	case CoopHistory_LanguageCode
 }

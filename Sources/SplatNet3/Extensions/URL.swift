@@ -34,4 +34,16 @@ extension URL {
         // swiftlint:disable:next force_unwrapping
         self = components.url!
     }
+
+    mutating func queryItems(_ items: [URLQueryItem])  {
+        guard var request: URLComponents = URLComponents(url: self, resolvingAgainstBaseURL: true) else {
+            return
+        }
+        request.queryItems = items
+        guard let url: URL = request.url else {
+            return
+        }
+        self = url
+    }
 }
+

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Charts
 
 public enum EnemyId: Int, CaseIterable, Identifiable, Codable {
     public var id: Int { rawValue }
@@ -25,4 +26,24 @@ public enum EnemyId: Int, CaseIterable, Identifiable, Codable {
     case Sakedozer          = 17
     case SakeBigMouth       = 20
     case SakelienGiant      = 23
+
+    public var description: String {
+        return NSLocalizedString("CoopEnemy_\(String(describing: self))", bundle: .module, comment: "")
+    }
+}
+
+@available(iOS 16.0, *)
+extension EnemyId: Plottable {
+    public var primitivePlottable: String {
+        String(self.rawValue)
+    }
+
+    public init?(primitivePlottable: String) {
+        guard let rawValue: Int = Int(primitivePlottable) else {
+            return nil
+        }
+        self.init(rawValue: rawValue)
+    }
+
+    public typealias PrimitivePlottable = String
 }

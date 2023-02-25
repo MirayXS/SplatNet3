@@ -18,4 +18,11 @@ public enum SkinInfoId: Int, CaseIterable, Identifiable, Codable {
 	case COP005 = 5
 	case COP006 = 6
 	case COP007 = 7
+    case COP008 = 8
+    case COP009 = 9
+    case COP010 = 10
+    case COP011 = 11
+    case COP012 = 12
+    case COP013 = 13
+    case COP014 = 14
 }
