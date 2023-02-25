@@ -8,10 +8,16 @@
 import Foundation
 
 /// SplatNet3のBase64化されたIdに対応するプロトコル
-protocol SP3IdType: Codable, CustomStringConvertible, Equatable {
+protocol SP3IdType: Codable, CustomStringConvertible, Equatable, Identifiable {
+    /// Base64エンコードした文字列
+    var id: String { get }
+    /// APIのエンドポイント
     var type: IdType { get }
+    /// NPLNユーザーID
     var nplnUserId: String { get }
+    /// 遊んだ時間
     var playTime: Date { get }
+    /// ランダムに生成されたUUID
     var uuid: UUID { get }
 }
 
@@ -25,6 +31,12 @@ public enum Common {
 
     // MARK: - PlayerId
     public struct PlayerId: SP3IdType {
+        /// Base64エンコードした文字列
+        public var id: String {
+            let playTime: String = Common.dateFormatter.string(from: playTime)
+            return "\(type.rawValue)-u-\(nplnUserId):\(playTime)_\(uuid.uuidString):\(parentNplnUserId)".base64EncodedString
+        }
+
         /// 常にCoopPlayer
         public let type: IdType
         /// NPLNユーザーID
@@ -70,6 +82,11 @@ public enum Common {
 
     // MARK: - ResultId
     public struct ResultId: SP3IdType {
+        /// Base64エンコードした文字列
+        public var id: String {
+            let playTime: String = Common.dateFormatter.string(from: playTime)
+            return "\(type.rawValue)-u-\(nplnUserId):\(playTime)_\(uuid.uuidString)".base64EncodedString
+        }
         public let type: IdType
         public let nplnUserId: String
         public let playTime: Date
