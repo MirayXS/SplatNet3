@@ -31,52 +31,58 @@ public enum Common {
 
     // MARK: - PlayerId
     public struct PlayerId: SP3IdType {
-        /// Base64エンコードした文字列
+        /// Base64デコードした文字列
         public var id: String {
             let playTime: String = Common.dateFormatter.string(from: playTime)
-            return "\(type.rawValue)-u-\(nplnUserId):\(playTime)_\(uuid.uuidString):\(parentNplnUserId)".base64EncodedString
+            return "\(type.rawValue)-u-\(parentNplnUserId):\(playTime)_\(uuid.uuidString.lowercased()):u-\(nplnUserId)"
         }
 
         /// 常にCoopPlayer
         public let type: IdType
-        /// NPLNユーザーID
+        /// NPLNユーザーID(マッチングしたユーザー)
         public let nplnUserId: String
-        /// ホストのNPLNユーザーID
+        /// NPLNユーザーID(自分)
         public let parentNplnUserId: String
         /// 遊んだ時間
         public let playTime: Date
         /// リザルトごとのランダムUUID
         public let uuid: UUID
 
-        // ユーザーIDを返す
+        /// Base64エンコードされた文字列
         public var description: String {
-            nplnUserId
+            id
+        }
+
+        /// 失敗しないと思われるが、失敗した場合はエラーで落とす
+        public init(description: String) {
+            let rawValue: [String] = description.capture(pattern: #"^([A-z]*)-u-([a-z0-9]*):([T0-9]*)_([a-z0-9\-]*):u-([a-z0-9]*)$"#, group: [0, 1, 2, 3, 4, 5])
+            print(rawValue, description)
+            guard let type: IdType = IdType(rawValue: rawValue[1]),
+                  let playTime: Date = Common.dateFormatter.date(from: rawValue[3]),
+                  let uuid: UUID = UUID(uuidString: rawValue[4])
+            else {
+                fatalError("Invalid PlayerId")
+            }
+
+            print(rawValue)
+            self.type = type
+            self.playTime = playTime
+            self.uuid = uuid
+            self.nplnUserId = rawValue[5]
+            self.parentNplnUserId = rawValue[2]
         }
 
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             // 復元された文字列を取得するところ
-            let stringValue = try {
+            let description = try {
                 let stringValue: String = try container.decode(String.self)
                 guard let value: String = stringValue.base64DecodedString else {
                     return stringValue
                 }
                 return value
             }()
-
-            let rawValue: [String] = stringValue.capture(pattern: #"^([A-z]*)-u-([a-z0-9]*):([T0-9]*)_([a-z0-9\-]*):u-([a-z0-9]*)$"#, group: [0, 1, 2, 3, 4, 5])
-            guard let type: IdType = IdType(rawValue: rawValue[1]),
-                  let playTime: Date = Common.dateFormatter.date(from: rawValue[3]),
-                  let uuid: UUID = UUID(uuidString: rawValue[4])
-            else {
-                throw DecodingError.dataCorrupted(.init(codingPath: container.codingPath, debugDescription: "Could not decoded."))
-            }
-
-            self.type = type
-            self.playTime = playTime
-            self.uuid = uuid
-            self.nplnUserId = rawValue[2]
-            self.parentNplnUserId = rawValue[4]
+            self.init(description: description)
         }
     }
 
@@ -85,7 +91,7 @@ public enum Common {
         /// Base64エンコードした文字列
         public var id: String {
             let playTime: String = Common.dateFormatter.string(from: playTime)
-            return "\(type.rawValue)-u-\(nplnUserId):\(playTime)_\(uuid.uuidString)".base64EncodedString
+            return "\(type.rawValue)-u-\(nplnUserId):\(playTime)_\(uuid.uuidString.lowercased())".base64EncodedString
         }
         public let type: IdType
         public let nplnUserId: String
@@ -94,8 +100,14 @@ public enum Common {
 
         /// Base64エンコードされた文字列
         public var description: String {
-            let playTime: String = Common.dateFormatter.string(from: playTime)
-            return "\(type.rawValue)-u-\(nplnUserId):\(playTime)_\(uuid.uuidString)".base64EncodedString
+            id
+        }
+
+        public init(nplnUserId: String, playTime: Date, uuid: UUID) {
+            self.type = .CoopHistoryDetail
+            self.nplnUserId = nplnUserId
+            self.playTime = playTime
+            self.uuid = uuid
         }
 
         public init(from decoder: Decoder) throws {
@@ -103,6 +115,7 @@ public enum Common {
             guard let stringValue = try container.decode(String.self).base64DecodedString else {
                 throw DecodingError.dataCorrupted(.init(codingPath: container.codingPath, debugDescription: "Could not decoded."))
             }
+            print(stringValue)
 
             let rawValue: [String] = stringValue.capture(pattern: #"^([A-z]*)-u-([a-z0-9]*):([T0-9]*)_([a-z0-9\-]*)$"#, group: [0, 1, 2, 3, 4])
             guard let type: IdType = IdType(rawValue: rawValue[1]),
@@ -112,8 +125,10 @@ public enum Common {
                 throw DecodingError.dataCorrupted(.init(codingPath: container.codingPath, debugDescription: "Could not decoded."))
             }
 
+            print(rawValue)
+
             self.type = type
-            self.nplnUserId = rawValue[1]
+            self.nplnUserId = rawValue[2]
             self.playTime = playTime
             self.uuid = uuid
         }

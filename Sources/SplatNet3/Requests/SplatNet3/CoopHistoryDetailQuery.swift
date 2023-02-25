@@ -19,7 +19,7 @@ public final class CoopHistoryDetailQuery: GraphQL {
 
     init(resultId: Common.ResultId) {
         self.variables = [
-            "coopHistoryDetailId": resultId.description.base64EncodedString
+            "coopHistoryDetailId": resultId.description
         ]
     }
 
