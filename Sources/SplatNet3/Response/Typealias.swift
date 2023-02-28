@@ -13,5 +13,5 @@ public typealias EnemyType = CoopHistory.Content<EnemyKey, EnemyId>
 public typealias WeaponType = Common.Image<WeaponKey>
 public typealias SkinType = CoopHistory.Content<SkinInfoKey, SkinInfoId>
 public typealias GradeType = CoopHistory.Element<GradeId>
-public typealias GearType = Common.Image<GearKey>
+public typealias GearType = Common.Image<GearInfoKey>
 public typealias CoopStageType = CoopHistory.Content<CoopStageKey, CoopStageId>

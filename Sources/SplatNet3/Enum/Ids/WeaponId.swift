@@ -7,8 +7,10 @@
 
 import Foundation
 
-public enum WeaponId: Int, CaseIterable, Identifiable, Codable {
+public enum WeaponId: Int, UnsafeRawRepresentable {
+    public static var defaultValue: Self = .Random_Green
 	public var id: Int { rawValue }
+
 	case Random_Gold = -2
 	case Random_Green = -1
 	case Shooter_Short = 0

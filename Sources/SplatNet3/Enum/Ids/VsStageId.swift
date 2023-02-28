@@ -7,7 +7,8 @@
 
 import Foundation
 
-public enum VsStageId: Int, CaseIterable, Identifiable, Codable {
+public enum VsStageId: Int, UnsafeRawRepresentable {
+    public static var defaultValue: Self = .Dummy
     public var id: Int { rawValue }
 
     case Stage00 = 0
@@ -27,5 +28,5 @@ public enum VsStageId: Int, CaseIterable, Identifiable, Codable {
     case Stage14 = 14
     case Stage15 = 15
     case Stage16 = 16
-    case Dummy = 999
+    case Dummy = -999
 }

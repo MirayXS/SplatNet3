@@ -8,7 +8,8 @@
 import Foundation
 import Charts
 
-public enum EnemyKey: String, CaseIterable, Identifiable, Codable {
+public enum EnemyKey: String, UnsafeRawRepresentable {
+    public static var defaultValue: Self = .SakelienBomber
     public var id: String { rawValue }
 
     case SakelienBomber     = "f59fe344bd941f90dc8d3458ffd29b6586c1cffd00864967e7766a5a931dc4f6"
@@ -26,7 +27,7 @@ public enum EnemyKey: String, CaseIterable, Identifiable, Codable {
     case Sakedozer          = "8cd6dd3e1bb480e2897afdb434315bc78876204a0995c1552084e1d3edfe0536"
     case SakeBigMouth       = "f0dd8c7eb5c2e96f347564cac71affe055f6c45a3339145ecc81287f800759d2"
     case SakelienGiant      = "75f39ca054c76c0c33cd71177780708e679d088c874a66101e9b76b001df8254"
-    case SakeRope           = "0ee5853c43ebbef00ee2faecbd6c74f8a2d5e5b62b2cfa96d3838894b71381cb"
+    case SakeRope           = "b742da3433609ceb66aeab20827fefac63c1c1ddbf25c97ae709922e5c04ad77"
 }
 
 

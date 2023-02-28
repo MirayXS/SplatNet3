@@ -8,7 +8,8 @@
 import Foundation
 import Charts
 
-public enum EventKey: String, Identifiable,CaseIterable, Codable {
+public enum EventKey: String, UnsafeRawRepresentable {
+    public static var defaultValue: Self = .Water_Levels
     public var id: String { rawValue }
 
     case Water_Levels       = "c3edad579f6ad3d2195a99c6ccbad74d74ddb6121d1476c6270436d90c8a475d"

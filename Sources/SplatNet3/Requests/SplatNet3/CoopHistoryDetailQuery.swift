@@ -101,14 +101,14 @@ public final class CoopHistoryDetailQuery: GraphQL {
     // MARK: - Background
     public struct Background: Codable {
         public let textColor: Common.TextColor
-        public let image: Common.URL<NameplateKey>
-        @IntegerRawValue public var id: NameplateId
+        public let image: Common.URL<NamePlateBgInfoKey>
+        @IntegerRawValue public var id: NamePlateBgInfoId
     }
 
     // MARK: - Badge
     public struct Badge: Codable {
-        @IntegerRawValue public var id: BadgeId
-        public let image: Common.URL<BadgeKey>
+        @UnsafeRawValue public var id: BadgeInfoId
+        public let image: Common.URL<BadgeInfoKey>
     }
 
     // MARK: - WaveResult

@@ -32,6 +32,6 @@ final class HistoryRecordQuery: GraphQL {
     }
 
     public struct Badge: Codable {
-        @IntegerRawValue public var id: BadgeId
+        @UnsafeRawValue public var id: BadgeInfoId
     }
 }

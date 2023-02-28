@@ -8,7 +8,8 @@
 import Foundation
 import Charts
 
-public enum EventId: Int, Identifiable, CaseIterable, Codable {
+public enum EventId: Int, UnsafeRawRepresentable {
+    public static var defaultValue: Self = .Water_Levels
     public var id: Int { rawValue }
 
     case Water_Levels   = 0

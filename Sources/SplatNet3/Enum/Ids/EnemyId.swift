@@ -8,7 +8,8 @@
 import Foundation
 import Charts
 
-public enum EnemyId: Int, CaseIterable, Identifiable, Codable {
+public enum EnemyId: Int, UnsafeRawRepresentable {
+    public static var defaultValue: Self = .SakelienBomber
     public var id: Int { rawValue }
 
     case SakelienBomber     = 4

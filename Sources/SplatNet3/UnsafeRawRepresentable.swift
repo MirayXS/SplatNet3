@@ -1,14 +1,18 @@
 //
-//  IntegerConvertible.swift
+//  UnsafeRawRepresentable.swift
 //  
 //
-//  Created by devonly on 2022/11/24.
+//  Created by devonly on 2023/02/28.
 //
 
 import Foundation
 
+public protocol UnsafeRawRepresentable: RawRepresentable, Codable, CaseIterable where RawValue: LosslessStringConvertible {
+    static var defaultValue: Self { get }
+}
+
 @propertyWrapper
-public struct IntegerRawValue<T: RawRepresentable>: Codable where T.RawValue == Int {
+public struct UnsafeRawValue<T: UnsafeRawRepresentable>: Codable {
     public var wrappedValue: T
 
     public init(wrappedValue: T) {
@@ -22,17 +26,17 @@ public struct IntegerRawValue<T: RawRepresentable>: Codable where T.RawValue == 
         guard let data: Data = Data(base64Encoded: stringValue),
               let stringValue: String = String(data: data, encoding: .utf8),
               let capture: String = stringValue.capture(pattern: "-([0-9-]*)$", group: 1),
-              let intValue: Int = Int(capture),
-              let value: T = T(rawValue: intValue)
+              let rawValue: T.RawValue = T.RawValue(capture),
+              let value: T = T(rawValue: rawValue)
         else {
-            throw DecodingError.valueNotFound(T.self, .init(codingPath: container.codingPath, debugDescription: "Given value \(stringValue) is not associated for \(T.self)"))
+            self.wrappedValue = T.defaultValue
+            return
         }
         self.wrappedValue = value
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
-        let hash: String = String(self.wrappedValue.rawValue)
-        try container.encode(hash)
+        try container.encode(self.wrappedValue)
     }
 }

@@ -7,8 +7,10 @@
 
 import Foundation
 
-public enum WeaponKey: String, CaseIterable, Identifiable, Codable {
+public enum WeaponKey: String, UnsafeRawRepresentable {
+    public static var defaultValue: Self = .Random_Green
 	public var id: String { rawValue }
+
 	case Random_Gold = "9d7272733ae2f2282938da17d69f13419a935eef42239132a02fcf37d8678f10"
 	case Random_Green = "473fffb2442075078d8bb7125744905abdeae651b6a5b7453ae295582e45f7d1"
 	case Shooter_Short = "6e58a0747ab899badcb6f351512c6034e0a49bd6453281f32c7f550a2132fd65"

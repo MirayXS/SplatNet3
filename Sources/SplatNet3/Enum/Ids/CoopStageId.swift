@@ -8,8 +8,10 @@
 import Foundation
 import Charts
 
-public enum CoopStageId: Int, CaseIterable, Identifiable, Codable {
+public enum CoopStageId: Int, UnsafeRawRepresentable {
+    public static var defaultValue: Self = .Unknown
     public var id: Int { rawValue }
+
     case Shakeall       = -2
     case Unknown        = -1
     case Tutorial       = 0
@@ -22,7 +24,7 @@ public enum CoopStageId: Int, CaseIterable, Identifiable, Codable {
     case Shakedent      = 7
     case Carousel       = 100
     case Upland         = 102
-    case Dummy          = 999
+    case Dummy          = -999
 
     public var description: String {
         return NSLocalizedString("CoopStage_\(String(describing: self))", bundle: .module, comment: "")

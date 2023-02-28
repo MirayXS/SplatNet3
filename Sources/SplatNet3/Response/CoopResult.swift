@@ -132,7 +132,7 @@ public struct CoopResult: Codable {
             self.weaponList = content.weapons.map({ $0.image.url.asWeaponId() })
             self.specialId = content.specialWeapon?.weaponId
             self.specialCounts = specialCounts.map({ $0.filter({ $0 == content.specialWeapon?.weaponId }).count })
-            self.bossKillCounts = isMyself ? results.bossKillCounts() : Array(repeating: 0, count: 15)
+            self.bossKillCounts = isMyself ? results.bossKillCounts() : Array(repeating: -1, count: 14)
             self.uniform = content.player.uniform.id
             self.bossKillCountsTotal = content.defeatEnemyCount
             self.species = content.player.species
@@ -255,11 +255,11 @@ public struct CoopResult: Codable {
     }
 
     public struct Nameplate: Codable {
-        public let badges: [BadgeId?]
+        public let badges: [BadgeInfoId?]
         public let background: Background
 
         public init(
-            badges: [BadgeId?],
+            badges: [BadgeInfoId?],
             background: CoopResult.Background
         ) {
             self.badges = badges
@@ -270,11 +270,11 @@ public struct CoopResult: Codable {
 
     public struct Background: Codable {
         public let textColor: Common.TextColor
-        public let id: NameplateId
+        public let id: NamePlateBgInfoId
 
         public init(
             textColor: Common.TextColor,
-            id: NameplateId
+            id: NamePlateBgInfoId
         ) {
             self.textColor = textColor
             self.id = id

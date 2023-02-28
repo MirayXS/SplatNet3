@@ -13,11 +13,11 @@ extension Image {
         self.init("Weapons/\(bundle.rawValue)", bundle: .module)
     }
 
-    public init(bundle: BadgeId) {
+    public init(bundle: BadgeInfoId) {
         self.init("Badges/\(bundle.rawValue)", bundle: .module)
     }
 
-    public init(bundle: NameplateId) {
+    public init(bundle: NamePlateBgInfoId) {
         self.init("Nameplate/\(bundle.rawValue)", bundle: .module)
     }
 }

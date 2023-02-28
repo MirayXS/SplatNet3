@@ -774,3 +774,4 @@ CoopHistory_Upload = "Cargar";
 CoopHistory_CreditDevelop = "Desarrollador";
 CoopHistory_CreditTest = "Comprobador";
 CoopHistory_CreditDesign = "Diseño UI/UX";
+CoopStage_Dummy = "???";

@@ -7,7 +7,8 @@
 
 import Foundation
 
-public enum WaterLevelId: Int, CaseIterable, Codable, Identifiable {
+public enum WaterLevelId: Int, UnsafeRawRepresentable {
+    public static var defaultValue: Self = .NORMAL_TIDE
     public var id: Int { rawValue }
 
     case LOW_TIDE       = 0

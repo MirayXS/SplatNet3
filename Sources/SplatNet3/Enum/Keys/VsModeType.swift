@@ -7,7 +7,8 @@
 
 import Foundation
 
-public enum VsModeKey: String, CaseIterable, Identifiable, Codable {
+public enum VsModeKey: String, UnsafeRawRepresentable {
+    public static var defaultValue: Self = .UNKNOWN
     public var id: String { rawValue }
 
     case UNKNOWN

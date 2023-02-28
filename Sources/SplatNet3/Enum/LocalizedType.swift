@@ -1,7 +1,7 @@
 //
 //  LocalizedType.swift
 //
-//  Created by tkgstrator on 2023/02/27
+//  Created by tkgstrator on 2023/02/28
 //  Copyright @2022 Magi, Corporation. All rights reserved.
 //
 
@@ -108,7 +108,7 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	/// チャージャー
 	case WeaponTypeName_Charger
 	/// マニューバー
-	case WeaponTypeName_Maneuver
+    case WeaponTypeName_Maneuver
 	/// ローラー
 	case WeaponTypeName_Roller
 	/// ワイパー
@@ -1559,4 +1559,6 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case CoopHistory_CreditTest
 	/// UI/UXデザイン
 	case CoopHistory_CreditDesign
+	/// ???
+	case CoopHistory_Dummy
 }

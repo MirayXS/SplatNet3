@@ -774,3 +774,4 @@ CoopHistory_Upload = "Загрузить";
 CoopHistory_CreditDevelop = "Разработчик";
 CoopHistory_CreditTest = "Тестер";
 CoopHistory_CreditDesign = "UI/UX дизайн";
+CoopStage_Dummy = "???";

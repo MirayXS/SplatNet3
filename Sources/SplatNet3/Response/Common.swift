@@ -55,7 +55,7 @@ public enum Common {
 
         /// 失敗しないと思われるが、失敗した場合はエラーで落とす
         public init(description: String) throws {
-            let rawValue: [String] = description.capture(pattern: #"^([A-z]*)-u-([a-z0-9]*):([T0-9]*)_([a-z0-9\-]*):u-([a-z0-9]*)$"#, group: [0, 1, 2, 3, 4, 5])
+            let rawValue: [String] = description.capture(pattern: #"^([A-z]*)-u-([a-z0-9]*):([T0-9]*)_([a-z0-9-]*):u-([a-z0-9]*)$"#, group: [0, 1, 2, 3, 4, 5])
             guard let playTime: Date = Common.dateFormatter.date(from: rawValue[3]),
                   let uuid: UUID = UUID(uuidString: rawValue[4])
             else {

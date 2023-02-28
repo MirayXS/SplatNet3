@@ -9,8 +9,10 @@
 
 import Foundation
 
-public enum SkinInfoId: Int, CaseIterable, Identifiable, Codable {
+public enum SkinInfoId: Int, UnsafeRawRepresentable {
+    public static var defaultValue: Self = .COP001
 	public var id: Int { rawValue }
+    
 	case COP001 = 1
 	case COP002 = 2
 	case COP003 = 3

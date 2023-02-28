@@ -774,3 +774,4 @@ CoopHistory_Upload = "アップロード";
 CoopHistory_CreditDevelop = "開発";
 CoopHistory_CreditTest = "テスト";
 CoopHistory_CreditDesign = "UI/UXデザイン";
+CoopStage_Dummy = "???";

@@ -9,8 +9,10 @@
 
 import Foundation
 
-public enum SkinInfoKey: String, CaseIterable, Identifiable, Codable {
+public enum SkinInfoKey: String, UnsafeRawRepresentable {
+    public static var defaultValue: Self = .COP001
 	public var id: String { rawValue }
+
 	case COP001 = "89df74f2b5fbc49f76fb31f730fed012bb77f903746e81df108958010c95ef53"
 	case COP002 = "87f1b945e1dc58370d4843365714a296ab7d012d2ee6b31eedd3d7fdd840c9a9"
 	case COP003 = "7c0c19d3267f4ff1db3f579f48058c750357fa289b796f6772003500d20225f3"

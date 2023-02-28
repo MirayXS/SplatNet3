@@ -8,7 +8,8 @@
 import Foundation
 import Charts
 
-public enum CoopStageKey: String, CaseIterable, Identifiable, Codable {
+public enum CoopStageKey: String, UnsafeRawRepresentable {
+    public static var defaultValue: Self = .Unknown
     public var id: String { rawValue }
 
     case Unknown        = "ffa84f05a6437395a0a128cad1a99e8dd0f303ce4fd687fa648617a0075d7ad9"

@@ -8,7 +8,8 @@
 import Foundation
 import Charts
 
-public enum GradeId: Int, CaseIterable, Identifiable, Codable {
+public enum GradeId: Int, UnsafeRawRepresentable {
+    public static var defaultValue: Self = .Apprentice
     public var id: Int { rawValue }
 
     case Apprentice         = 0

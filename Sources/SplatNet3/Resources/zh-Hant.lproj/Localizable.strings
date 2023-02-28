@@ -774,3 +774,4 @@ CoopHistory_Upload = "上传";
 CoopHistory_CreditDevelop = "开发商";
 CoopHistory_CreditTest = "测试员";
 CoopHistory_CreditDesign = "UI/UX设计";
+CoopStage_Dummy = "???";

@@ -7,8 +7,10 @@
 
 import Foundation
 
-public enum SpecialId: Int, CaseIterable, Identifiable, Codable {
+public enum SpecialId: Int, UnsafeRawRepresentable {
+    public static var defaultValue: Self = .SpRandomGreen
 	public var id: Int { rawValue }
+    
     case SpRandomGreen = -1
 	case SpUltraShot = 1
 	case SpNiceBall_Coop = 20006
