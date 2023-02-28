@@ -10,22 +10,37 @@ import Foundation
 import KeychainAccess
 
 extension Keychain {
-    static private let bundle: String = "X-Web-View-Ver"
+    static private let xWebVersion: String = "X-Web-View-Ver"
+    static private let xProductVersion: String = "X-ProductVersion"
 
     /// X-Web-View-Ver
     var version: String {
         get {
-            (try? get(Keychain.bundle)) ?? "2.0.0-bd36a652"
+            (try? get(Keychain.xWebVersion)) ?? "2.0.0-bd36a652"
         }
         set {
             if let data: Data = newValue.data(using: .utf8) {
-                try? set(data, key: Keychain.bundle)
+                try? set(data, key: Keychain.xWebVersion)
             } else {
-                try? set("2.0.0-bd36a652".data(using: .utf8)!, key: Keychain.bundle)
+                try? set("2.0.0-bd36a652".data(using: .utf8)!, key: Keychain.xWebVersion)
             }
         }
     }
-    
+
+    /// X-ProductVersion
+    var xVersion: String {
+        get {
+            (try? get(Keychain.xProductVersion)) ?? "2.4.0"
+        }
+        set {
+            if let data: Data = newValue.data(using: .utf8) {
+                try? set(data, key: Keychain.xProductVersion)
+            } else {
+                try? set("2.4.0".data(using: .utf8)!, key: Keychain.xProductVersion)
+            }
+        }
+    }
+
     /// アカウント書き込み
     @discardableResult
     func set(_ account: UserInfo?) -> UserInfo? {

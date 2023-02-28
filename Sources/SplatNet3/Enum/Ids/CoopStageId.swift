@@ -21,6 +21,8 @@ public enum CoopStageId: Int, CaseIterable, Identifiable, Codable {
     case Shakeship      = 6
     case Shakedent      = 7
     case Carousel       = 100
+    case Upland         = 102
+    case Dummy          = 999
 
     public var description: String {
         return NSLocalizedString("CoopStage_\(String(describing: self))", bundle: .module, comment: "")

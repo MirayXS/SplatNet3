@@ -34,11 +34,11 @@ public enum Common {
         /// Base64デコードした文字列
         public var id: String {
             let playTime: String = Common.dateFormatter.string(from: playTime)
-            return "\(type.rawValue)-u-\(parentNplnUserId):\(playTime)_\(uuid.uuidString.lowercased()):u-\(nplnUserId)"
+            return "\(playTime):\(nplnUserId)"
         }
 
         /// 常にCoopPlayer
-        public let type: IdType
+        public let type: IdType = .CoopPlayer
         /// NPLNユーザーID(マッチングしたユーザー)
         public let nplnUserId: String
         /// NPLNユーザーID(自分)
@@ -54,18 +54,14 @@ public enum Common {
         }
 
         /// 失敗しないと思われるが、失敗した場合はエラーで落とす
-        public init(description: String) {
+        public init(description: String) throws {
             let rawValue: [String] = description.capture(pattern: #"^([A-z]*)-u-([a-z0-9]*):([T0-9]*)_([a-z0-9\-]*):u-([a-z0-9]*)$"#, group: [0, 1, 2, 3, 4, 5])
-            print(rawValue, description)
-            guard let type: IdType = IdType(rawValue: rawValue[1]),
-                  let playTime: Date = Common.dateFormatter.date(from: rawValue[3]),
+            guard let playTime: Date = Common.dateFormatter.date(from: rawValue[3]),
                   let uuid: UUID = UUID(uuidString: rawValue[4])
             else {
-                fatalError("Invalid PlayerId")
+                throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Given playerId could not decode."))
             }
 
-            print(rawValue)
-            self.type = type
             self.playTime = playTime
             self.uuid = uuid
             self.nplnUserId = rawValue[5]
@@ -82,7 +78,7 @@ public enum Common {
                 }
                 return value
             }()
-            self.init(description: description)
+            try self.init(description: description)
         }
     }
 
@@ -91,7 +87,7 @@ public enum Common {
         /// Base64エンコードした文字列
         public var id: String {
             let playTime: String = Common.dateFormatter.string(from: playTime)
-            return "\(type.rawValue)-u-\(nplnUserId):\(playTime)_\(uuid.uuidString.lowercased())".base64EncodedString
+            return "\(type.rawValue)-u-\(nplnUserId):\(playTime)_\(uuid.uuidString.lowercased())"
         }
         public let type: IdType
         public let nplnUserId: String
@@ -100,7 +96,7 @@ public enum Common {
 
         /// Base64エンコードされた文字列
         public var description: String {
-            id
+            id.base64EncodedString
         }
 
         public init(nplnUserId: String, playTime: Date, uuid: UUID) {
@@ -110,27 +106,27 @@ public enum Common {
             self.uuid = uuid
         }
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            guard let stringValue = try container.decode(String.self).base64DecodedString else {
-                throw DecodingError.dataCorrupted(.init(codingPath: container.codingPath, debugDescription: "Could not decoded."))
-            }
-            print(stringValue)
-
-            let rawValue: [String] = stringValue.capture(pattern: #"^([A-z]*)-u-([a-z0-9]*):([T0-9]*)_([a-z0-9\-]*)$"#, group: [0, 1, 2, 3, 4])
+        public init(description: String) throws {
+            let rawValue: [String] = description.capture(pattern: #"^([A-z]*)-u-([a-z0-9]*):([T0-9]*)_([a-z0-9\-]*)$"#, group: [0, 1, 2, 3, 4])
             guard let type: IdType = IdType(rawValue: rawValue[1]),
                   let playTime: Date = Common.dateFormatter.date(from: rawValue[3]),
                   let uuid: UUID = UUID(uuidString: rawValue[4])
             else {
-                throw DecodingError.dataCorrupted(.init(codingPath: container.codingPath, debugDescription: "Could not decoded."))
+                fatalError("Invalid ResultId")
             }
-
-            print(rawValue)
 
             self.type = type
             self.nplnUserId = rawValue[2]
             self.playTime = playTime
             self.uuid = uuid
+        }
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            guard let stringValue = try container.decode(String.self).base64DecodedString else {
+                throw DecodingError.dataCorrupted(.init(codingPath: container.codingPath, debugDescription: "Could not decoded."))
+            }
+            try self.init(description: stringValue)
         }
     }
 

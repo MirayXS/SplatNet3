@@ -27,4 +27,5 @@ public enum VsStageId: Int, CaseIterable, Identifiable, Codable {
     case Stage14 = 14
     case Stage15 = 15
     case Stage16 = 16
+    case Dummy = 999
 }

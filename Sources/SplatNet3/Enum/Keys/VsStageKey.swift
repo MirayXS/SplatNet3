@@ -42,4 +42,5 @@ public enum VsStageKey: String, CaseIterable, Identifiable, Codable {
     case Stage15 = "a8ba96c3dbd015b7bc6ea4fa067245c4e9aee62b6696cb41e02d35139dd21fe7"
     /// スメーシーワールド
     case Stage16 = "61ea801fa4ed32360dcaf83986222ded46a72dbf56194acc6d0cf4659a92ba85"
+    case Dummy   = "59a42245071d692c58b9825886f89f95e092ae0aa83a46617fdb4cbcb2f5f2b8"
 }

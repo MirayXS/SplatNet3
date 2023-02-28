@@ -22,7 +22,4 @@ public enum SkinInfoKey: String, CaseIterable, Identifiable, Codable {
     case COP009 = "06ecf4c72d76108a734cd545150fb7af9bfde7e38244c205392224217a66b730"
     case COP010 = "42c1cbf34f1b4a6d0db238fcdba614a32b068ae351810c533df7e6a33c8c64d8"
     case COP011 = "095d4bd4875be88d592980c9322e067fbf8ed22611359d810f5bcb87027c890a"
-    case COP012 = "d83fc9bda9175960d6197795f1dcde2c2c49a5bdfa3b6950b2ec8d66e565c589"
-    case COP013 = "7fb1f7300d7a4c6728165742f904080aef9eb1220ed9b44ef5b30ceb490838d9"
-    case COP014 = "5247e72dac369959939d85502f8ac1ff67d6f23656df1e0036b08e730d25feef"
 }

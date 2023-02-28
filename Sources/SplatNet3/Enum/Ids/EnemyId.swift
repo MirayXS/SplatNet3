@@ -26,9 +26,29 @@ public enum EnemyId: Int, CaseIterable, Identifiable, Codable {
     case Sakedozer          = 17
     case SakeBigMouth       = 20
     case SakelienGiant      = 23
+    case SakeRope           = 24
 
     public var description: String {
         return NSLocalizedString("CoopEnemy_\(String(describing: self))", bundle: .module, comment: "")
+    }
+
+    public static var allCases: [EnemyId] {
+        [
+            .SakelienBomber,
+            .SakelienCupTwins,
+            .SakelienShield,
+            .SakelienSnake,
+            .SakelienTower,
+            .Sakediver,
+            .Sakerocket,
+            .SakePillar,
+            .SakeDolphin,
+            .SakeArtillery,
+            .SakeSaucer,
+            .SakelienGolden,
+            .Sakedozer,
+            .SakeBigMouth
+        ]
     }
 }
 

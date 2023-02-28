@@ -28,11 +28,11 @@ public final class StageScheduleQuery: GraphQL {
 
     // MARK: - DataClass
     public struct DataClass: Codable {
-        public let xSchedules: Schedules
-        public let festSchedules: Schedules
+//        public let xSchedules: Schedules
+//        public let festSchedules: Schedules
 //        public let leagueSchedules: Schedules
-        public let regularSchedules: Schedules
-        public let bankaraSchedules: Schedules
+//        public let regularSchedules: Schedules
+//        public let bankaraSchedules: Schedules
         public let coopGroupingSchedule: CoopGroupingSchedule
 //        public let currentFest: JSONNull?
         public let currentPlayer: CurrentPlayer
@@ -48,6 +48,7 @@ public final class StageScheduleQuery: GraphQL {
     public struct CoopGroupingSchedule: Codable {
         public let regularSchedules: Common.Node<CoopSchedule>
         public let bigRunSchedules: Common.Node<CoopSchedule>
+        public let teamContestSchedules: Common.Node<CoopSchedule>
     }
 
     // MARK: - BankaraSchedulesNode

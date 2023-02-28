@@ -30,6 +30,11 @@ open class Session: ObservableObject {
         keychain.version
     }
 
+    /// X-ProductVersion
+    public var xVersion: String {
+        keychain.xVersion
+    }
+
     /// デコーダー
     public let decoder: SPDecoder = SPDecoder()
 
@@ -191,8 +196,9 @@ extension Session: RequestInterceptor {
 
     /// X-ProductVersion取得
     func getXVersion() async throws -> XVersion.Response {
-        let response: String = try await request(XVersion())
-        return XVersion.Response(context: response)
+        let response: XVersion.Response = XVersion.Response(context: try await request(XVersion()))
+        self.keychain.xVersion = response.version
+        return response
     }
 
     /// WebVersion取得
@@ -202,8 +208,9 @@ extension Session: RequestInterceptor {
     }
 
     func getWebRevision(hash: String) async throws -> WebRevision.Response {
-        let response: String = try await request(WebRevision(hash: hash))
-        return WebRevision.Response(context: response)
+        let response: WebRevision.Response = WebRevision.Response(context: try await request(WebRevision(hash: hash)))
+        self.keychain.version = response.description
+        return response
     }
 
     /// GameServiceToken取得

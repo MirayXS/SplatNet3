@@ -21,6 +21,8 @@ public enum CoopStageKey: String, CaseIterable, Identifiable, Codable {
     case Shakeship      = "1a29476c1ab5fdbc813e2df99cd290ce56dfe29755b97f671a7250e5f77f4961"
     case Shakedent      = "f1e4df4cff1dc5e0acc66a9654fecf949224f7e4f6bd36305d4600ac3fa3db7b"
     case Carousel       = "2276a46e42a11637776ebc15cf2d46a589f1dba34a76d5c940c418ed7371d071"
+    case Upland         = "3598b7f54248b84c47cde6b99aa45ff296a41d3d5f38eaccfe2327b2874fff0b"
+    case Dummy          = "59a42245071d692c58b9825886f89f95e092ae0aa83a46617fdb4cbcb2f5f2b8"
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()

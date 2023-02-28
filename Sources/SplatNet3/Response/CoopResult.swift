@@ -85,7 +85,8 @@ public struct CoopResult: Codable {
     }
 
     public struct PlayerResult: Codable {
-        public let id: Common.PlayerId
+        public let id: String
+        public let nplnUserId: String
         public let isMyself: Bool
         public let byname: String
         public let name: String
@@ -110,7 +111,8 @@ public struct CoopResult: Codable {
             specialCounts: [[SpecialId]],
             isMyself: Bool
         ) {
-            self.id = content.player.id
+            self.id = content.player.id.description
+            self.nplnUserId = content.player.id.nplnUserId
             self.isMyself = isMyself
             self.byname = content.player.byname
             self.name = content.player.name
@@ -137,7 +139,8 @@ public struct CoopResult: Codable {
         }
 
         public init(
-            id: Common.PlayerId,
+            id: String,
+            nplnUserId: String,
             isMyself: Bool,
             byname: String,
             name: String,
@@ -157,6 +160,7 @@ public struct CoopResult: Codable {
             species: SpeciesType
         ) {
             self.id = id
+            self.nplnUserId = nplnUserId
             self.isMyself = isMyself
             self.byname = byname
             self.name = name
