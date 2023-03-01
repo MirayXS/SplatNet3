@@ -35,7 +35,8 @@ public enum CoopStageId: Int, UnsafeRawRepresentable {
         .Shakespiral,
         .Shakeship,
         .Shakedent,
-        .Carousel
+        .Carousel,
+        .Upland
     ]
 }
 
