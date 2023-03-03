@@ -22,8 +22,7 @@ class GameServiceToken: RequestType {
 
     init(imink: Imink.Response, accessToken: AccessToken.Response, version: XVersion.Response) {
         self.headers = [
-//            "X-ProductVersion": "\(version.version)",
-            "X-ProductVersion": "2.4.1",
+            "X-ProductVersion": "\(version.version)",
             "X-Platform": "Android",
         ]
         self.parameters = [

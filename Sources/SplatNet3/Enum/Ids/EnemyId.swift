@@ -51,6 +51,13 @@ public enum EnemyId: Int, UnsafeRawRepresentable {
             .SakeBigMouth
         ]
     }
+
+    public static var bossCases: [EnemyId] {
+        [
+            .SakelienGiant,
+            .SakeRope
+        ]
+    }
 }
 
 @available(iOS 16.0, *)
