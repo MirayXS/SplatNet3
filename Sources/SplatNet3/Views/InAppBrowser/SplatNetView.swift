@@ -10,6 +10,8 @@ import WebKit
 import SDBridgeSwift
 import SwiftUI
 import UIKit
+import Alamofire
+import LinkPresentation
 
 struct SplatNetView: UIViewControllerRepresentable {
     let contentId: ContentId
@@ -99,7 +101,40 @@ struct SplatNetView: UIViewControllerRepresentable {
             fatalError("init(coder:) has not been implemented")
         }
 
+        /// リクエスト前に呼ばれる
+        func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+            guard let url: URL = navigationAction.request.url
+            else {
+                decisionHandler(.cancel)
+                return
+            }
+
+            if url.pathComponents.contains("store") {
+                decisionHandler(.cancel)
+                return
+            }
+            decisionHandler(.allow)
+        }
+
+        /// 読み込み準備開始
+        func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        }
+
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        }
+
+        func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError: Error) {
+        }
+
+        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError: Error) {
+        }
+
+        func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation: WKNavigation!) {
+        }
+
+        /// JavaScriptを実行する
         private func evaluateJavaScript(_ content: Any?) {
+            print(content)
             guard let script: NSScriptMessage = NSScriptMessage(rawValue: content) else {
                 return
             }
@@ -112,12 +147,43 @@ struct SplatNetView: UIViewControllerRepresentable {
             case .completeLoading:
                 break
             case .invokeNativeShare(let content):
-                break
+                let session: Alamofire.Session = Alamofire.Session()
+                Task(priority: .utility, operation: {
+                    guard let data: Data = try? await session.download(content.imageUrl).serializingData().value,
+                          let image: UIImage = UIImage(data: data)
+                    else {
+                        return
+                    }
+                    let hashTag: String = (["Salmonia3"] + content.hashtags).map({ "#\($0)" }).joined(separator: " ")
+                    let controller: UIActivityViewController = UIActivityViewController(activityItems: [CustomShareItem(content: content), image, hashTag], applicationActivities: nil)
+                    self.popover(controller, animated: true)
+                })
             case .invokeNativeShareUrl(let content):
-                break
+                let hashTag: String = ["Salmonia3", LocalizedType.MemoryPlayer_Title.localized].map({ "#\($0)" }).joined(separator: " ")
+                let controller: UIActivityViewController = UIActivityViewController(activityItems: [CustomShareItem(content: content), content.url, hashTag], applicationActivities: nil)
+                    self.popover(controller, animated: true)
             case .copyToClipboard(let content):
-                break
+                UIPasteboard.general.string = content
             case .downloadImages(let content):
+                Task(priority: .utility, operation: {
+                    let _ = await content.asyncMap({ imageURL in
+                        let session: Alamofire.Session = Alamofire.Session()
+                        guard let data: Data = try? await session.download(imageURL).serializingData().value,
+                              let image: UIImage = UIImage(data: data)
+                        else {
+                            return
+                        }
+                        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+                    })
+                })
+                let alert: UIAlertController = UIAlertController(
+                    title: LocalizedType.Common_Download.localized,
+                    message: LocalizedType.CoopHistory_SaveToPhotoLibrary.localized,
+                    preferredStyle: .alert)
+                let action: UIAlertAction = UIAlertAction(title: LocalizedType.Common_Close.localized, style: .default)
+                alert.addAction(action)
+                present(alert, animated: true)
+            default:
                 break
             }
         }

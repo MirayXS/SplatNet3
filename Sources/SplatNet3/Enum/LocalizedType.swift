@@ -1,7 +1,7 @@
 //
 //  LocalizedType.swift
 //
-//  Created by tkgstrator on 2023/03/01
+//  Created by tkgstrator on 2023/03/05
 //  Copyright @2022 Magi, Corporation. All rights reserved.
 //
 
@@ -235,8 +235,18 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case Catalog_BonusTitle
 	/// コンプリート！
 	case Catalog_Complete
+	///  / { 1 }
+	case Catalog_Current
+	/// Lv. 
+	case Catalog_CurrentExtraLevel
+	/// るいけい  p
+	case Catalog_CurrentPoint
+	/// 本日初勝利でもれなく<em></em>ポイントゲット！
+	case Catalog_DailyBonus
 	/// ドリンクチケット
 	case Catalog_DrinkTicket
+	/// もうすぐ <em></em> が終了します。カタログポイント<em>1.2倍</em>サービス中！
+	case Catalog_EndOfSeason
 	/// フェス開催中！ポイント<em>1.2倍</em>！
 	case Catalog_FesBonus
 	/// フードチケット
@@ -245,12 +255,22 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case Catalog_Got
 	/// <em>ランクを4まで上げてザッカ屋でカタログを受け取ろう！</em>
 	case Catalog_Guide
+	/// x
+	case Catalog_ItemAmount
 	/// カタログレベル
 	case Catalog_Level
+	///  まで
+	case Catalog_Limit
 	/// ミステリーボックス
 	case Catalog_MysteryBox
 	/// つぎ
 	case Catalog_NextBonus
+	/// ページ 
+	case Catalog_Page
+	///  / { 1 } ページ
+	case Catalog_Pager
+	///  開催中！
+	case Catalog_Period
 	/// カタログポイント
 	case Catalog_Point
 	/// ザッカ屋
@@ -303,16 +323,24 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case Challenge_GuideRewardSleeve
 	/// 塗りまくって貯めたポイントでロブの旅を応援しよう！<br />旅の思い出も手に入るかも？！
 	case Challenge_HowToPlay
+	/// ジャーニー 
+	case Challenge_Journey
 	/// 支援者求ム！
 	case Challenge_LookingForSupporters
 	/// オレンジ
 	case Challenge_Orange
+	/// p
+	case Challenge_Point
 	/// 支援に必要な塗りポイント
 	case Challenge_PointForSupport
+	/// （あと p 不足しています）
+	case Challenge_PointNotEnough
 	/// パープル
 	case Challenge_Purple
 	/// レッド
 	case Challenge_Red
+	/// コンプリートまで あと <span></span>
+	case Challenge_RemainsOfChallenge
 	/// ロブ
 	case Challenge_Rob
 	/// ロブのアゲアゲ旅
@@ -345,6 +373,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case Challenge_White
 	/// イエロー
 	case Challenge_Yellow
+	/// p 持っています
+	case Challenge_YourPoint
 	/// キャンセル
 	case Common_Cancel
 	/// ガチアサリ
@@ -465,6 +495,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case CoopHistory_NotAvailableDescription
 	/// 倒せなかった...
 	case CoopHistory_NotDefeated
+	/// p
+	case CoopHistory_P
 	/// バイト回数
 	case CoopHistory_PlayCount
 	/// 前のバイト
@@ -511,6 +543,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case CoopHistory_Title
 	/// るいけいポイント
 	case CoopHistory_TotalPoint
+	/// WAVE 
+	case CoopHistory_Wave
 	/// 干潮
 	case CoopHistory_WaveLevel0
 	/// 普通
@@ -519,6 +553,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case CoopHistory_WaveLevel2
 	/// バイト
 	case CoopRecord_AppName
+	/// 参加回数： 
+	case CoopRecord_Attended
 	/// ビッグラン
 	case CoopRecord_Bigrun
 	/// 銅
@@ -577,6 +613,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case FesRecord_ContributionTricolor
 	/// 守備
 	case FesRecord_Defense
+	/// { 1 }パワー
+	case FesRecord_FestPower
 	/// フェス100ケツ
 	case FesRecord_FestRanking
 	/// ホラガイ獲得個数
@@ -601,6 +639,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case FesRecord_PreVoteGuide
 	/// みんなどこにする？<br />アンケート実施中
 	case FesRecord_PreVoteTitle
+	/// <small>位</small>
+	case FesRecord_Rank
 	/// オープン
 	case FesRecord_Regular
 	/// フレンドの参加チームを見る
@@ -627,12 +667,22 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case FesRecord_WaitingForResult
 	/// WIN!
 	case FesRecord_Win
+	/// <span></span>の勝利！
+	case FesRecord_WinTeam
 	/// あなたのきろく
 	case FesRecord_YourRecord
 	/// <em>ビッグラン</em>警報発令！シャケの接近に注意！
 	case Footer_BigrunAnnouncement
 	/// <em>ビッグラン</em>発生中！シャケから街を守れ！
 	case Footer_BigrunNowOpening
+	/// もうすぐ <em></em> が終了します。
+	case Footer_EndOfSeason
+	/// もうすぐ <em></em> が終了します。
+	case Footer_EndOfSeason_
+	/// <em></em> フェス開催！アンケートに回答してフレンドと一緒に参加しよう！
+	case Footer_FestAnnouncement
+	/// <em></em> フェス開催中！広場で投票してフェスTをゲットしよう！
+	case Footer_FestNowOpening
 	/// フレンドリスト
 	case FriendList_AppName
 	/// バイト中
@@ -667,6 +717,10 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case GesoTown_Feature
 	/// ピックアップ
 	case GesoTown_Featured
+	/// <strong></strong> につきやすいギアパワー
+	case GesoTown_FrequentGearPower
+	/// <em></em> まで
+	case GesoTown_Limit
 	/// おカネ
 	case GesoTown_Money
 	/// 次のギア
@@ -687,6 +741,10 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case GesoTown_Previous
 	/// まもなく終了
 	case GesoTown_RemainAlmostFinished
+	/// あと時間
+	case GesoTown_RemainHour
+	/// あと分
+	case GesoTown_RemainMinute
 	/// すでに注文済みのギアがあります
 	case GesoTown_Remind
 	/// 注文済みのギアはキャンセルされます
@@ -749,6 +807,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case HeroRecord_SearchRatio
 	/// スナップ写真を見る
 	case HeroRecord_SeePhotograph
+	/// サイト 
+	case HeroRecord_Site
 	/// みらいユートピアランド
 	case HeroRecord_Site1
 	/// あんしんライフファクトリー
@@ -765,10 +825,14 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case HeroRecord_Title
 	/// 特製壁紙
 	case HeroRecord_Wallpaper
+	/// すべてのバッジ（）
+	case History_AllBadges
 	/// ヒストリー
 	case History_AppName
 	/// バッジ
 	case History_Badge
+	/// <small>回</small>
+	case History_Count
 	/// 推定順位
 	case History_EstimatedRanking
 	/// もっともよく使ったブキ
@@ -789,6 +853,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case History_PastXmatchAnnotation
 	/// ランク
 	case History_Rank
+	/// <small>位</small>
+	case History_Ranking
 	/// シーズン
 	case History_Season
 	/// すべてのバッジを見る
@@ -799,6 +865,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case History_ShowMore
 	/// Xランキングを見る
 	case History_ShowXranking
+	///  からプレイ（{ 1 } 更新）
+	case History_Since
 	/// サマリー
 	case History_Summary
 	/// ヒストリー
@@ -807,6 +875,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case History_TotalTurfPoint
 	/// 総勝利数
 	case History_TotalWin
+	/// p
+	case History_TurfPoint
 	/// ウデマエ
 	case History_Udemae
 	/// ブキヒストリー
@@ -889,6 +959,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case MyOutfits_CurrentWeapon
 	/// 保存に失敗しました
 	case MyOutfits_ErrorSave
+	/// ケイケン値 <em></em>
+	case MyOutfits_Exp
 	/// 絞り込む
 	case MyOutfits_Filter
 	/// ギア
@@ -921,20 +993,32 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case MyOutfits_NoWeapons
 	/// ノーマル
 	case MyOutfits_Normal
+	/// マイコーデ 
+	case MyOutfits_Number
 	/// OFF
 	case MyOutfits_Off
 	/// ON
 	case MyOutfits_On
 	/// カメラオプションを表示する
 	case MyOutfits_OpenCameraOption
+	///  左右操作
+	case MyOutfits_RControl
+	///  操作感度
+	case MyOutfits_RHorizontal
 	/// ジャイロ操作OFFの時は無効になります
 	case MyOutfits_RHorizontalUnavailable
+	///  上下操作
+	case MyOutfits_RVertical
 	/// ジャイロ操作ONの時は無効になります
 	case MyOutfits_RVerticalUnavailable
+	/// レアド 
+	case MyOutfits_Rarity
 	/// リバース
 	case MyOutfits_Reverse
 	/// 保存
 	case MyOutfits_Save
+	/// を選ぶ
+	case MyOutfits_Select
 	/// フクを選ぶ
 	case MyOutfits_SelectCloth
 	/// アタマを選ぶ
@@ -959,6 +1043,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case MyOutfits_SubmitWeapon
 	/// マイコーデ
 	case MyOutfits_Title
+	/// 今まで塗った面積 <em>p</em>
+	case MyOutfits_TurfPoint
 	/// TVモード/テーブルモード
 	case MyOutfits_TvTabletopMode
 	/// ブキ
@@ -973,6 +1059,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case PhotoAlbum_Title
 	/// QRコードリーダー
 	case QRCodeReader_AppName
+	/// 日時: 
+	case QRCodeReader_CheckinDate
 	/// 許可
 	case QRCodeReader_ConfirmationAllow
 	/// 許可しない
@@ -1025,6 +1113,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case Record_Sub
 	/// きろく
 	case Record_Title
+	/// p
+	case Record_TotalTurfPoint
 	/// 塗りポイント
 	case Record_TurfPoint
 	/// 遊んでないステージ
@@ -1039,6 +1129,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case Record_WeaponRecordAppName
 	/// 勝利数
 	case Record_WinCount
+	/// %
+	case Record_WinRatio
 	/// 権利表記
 	case Settings_Acknowledgements
 	/// 設定
@@ -1065,12 +1157,16 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case StageSchedule_Festival
 	/// もうすぐ開催
 	case StageSchedule_FestivalAnnounced
+	///  スタート！
+	case StageSchedule_FestivalAt
 	/// 攻撃
 	case StageSchedule_FestivalAttack
 	/// 守備
 	case StageSchedule_FestivalDefense
 	/// 開催中！
 	case StageSchedule_FestivalHolding
+	///  - { 1 }
+	case StageSchedule_FestivalPeriod
 	/// そのつぎ
 	case StageSchedule_Future
 	/// リーグマッチ
@@ -1091,6 +1187,10 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case StageSchedule_OpenLimited
 	/// プライベートマッチ
 	case StageSchedule_Private
+	/// ビッグランがやってくる！！バイト大募集 
+	case StageSchedule_Recruit
+	/// バイトチームコンテスト！チームを組んで参加しよう！  
+	case StageSchedule_RecruitTeamContest
 	/// レギュラーマッチ
 	case StageSchedule_Regular
 	/// フェスのきろくを見る
@@ -1119,6 +1219,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case VSHistory_AnnotationPenalty
 	/// 攻撃
 	case VSHistory_Attack
+	/// 分あたりのアベレージ
+	case VSHistory_Average
 	/// きん
 	case VSHistory_AwardGold
 	/// ぎん
@@ -1131,6 +1233,10 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case VSHistory_BankaraOpen
 	/// 清算
 	case VSHistory_Cleaning
+	/// こうけん度 
+	case VSHistory_Contribute
+	/// カウント
+	case VSHistory_Count
 	/// たおされたかいすう
 	case VSHistory_DeathCount
 	/// 守備
@@ -1145,10 +1251,16 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case VSHistory_FesChallenge
 	/// フェスマッチ（オープン）
 	case VSHistory_FesOpen
+	/// チーム
+	case VSHistory_FesTeam
 	/// オマツリのあかし
 	case VSHistory_FesWinProof
+	/// { 1 }パワー
+	case VSHistory_FestPower
 	/// フェスマッチ
 	case VSHistory_Festival
+	/// オマツリガイ x
+	case VSHistory_FestivalShell
 	/// バトルのきろくに戻る
 	case VSHistory_GoToStats
 	/// ゲットした表彰
@@ -1179,6 +1291,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case VSHistory_NotAvailable
 	/// 閲覧できるバトルのきろくは、モードごとに最新の50戦までです。
 	case VSHistory_NotAvailableDescription
+	/// （おそろいボーナス x）
+	case VSHistory_OutfitBonus
 	/// 前のバトル
 	case VSHistory_PreviousBattle
 	/// プライベートマッチ
@@ -1193,8 +1307,12 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case VSHistory_Title
 	/// トライかいすう
 	case VSHistory_TryCount
+	/// p
+	case VSHistory_TurfPoint
 	/// ウデマエポイント
 	case VSHistory_UdemaePoint
+	/// p
+	case VSHistory_UdemaePointScore
 	/// 挑戦中止
 	case VSHistory_UdemaeReset
 	/// ウデマエアップ！
@@ -1203,10 +1321,14 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case VSHistory_Win
 	/// 勝敗数について
 	case VSHistory_WinMeterGuide
+	/// 連勝
+	case VSHistory_Wins
 	/// おうかん
 	case VSHistory_Xcrown
 	/// Xマッチ
 	case VSHistory_Xmatch
+	/// Xパワー 
+	case VSHistory_Xpower
 	/// イカリング３はスプラトゥーン3と連動するサービスです。<br />ここで紹介したもの以外にもさまざまな機能があります。
 	case Welcome_About
 	/// バトルの戦績やスケジュールをチェックして<br />ライバルに差をつけろ！
@@ -1241,6 +1363,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case XRanking_AppName
 	/// グループ・アロメ
 	case XRanking_Atlantic
+	/// 推定位
+	case XRanking_EstimatedRank
 	/// 計測中
 	case XRanking_Measurement
 	/// 開催中！！
@@ -1251,6 +1375,10 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case XRanking_PastRankings
 	/// ※ 過去のランキングはシーズン終了後、集計をしてから公開されます。集計が終わるまで数日かかる場合があります。
 	case XRanking_PastRankingsAnnotation
+	///  - { 1 }
+	case XRanking_Period
+	/// <small>位</small>
+	case XRanking_Rank
 	/// グループ
 	case XRanking_Region
 	/// ランキングを見る
@@ -1271,6 +1399,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case XRanking_WeaponTopSingular
 	/// おうかん
 	case XRanking_Xcrown
+	/// <small>Xパワー</small> 
+	case XRanking_Xpower
 	/// オレンジの空がオイリーだよね～。
 	case Challenge_Challenge210Description
 	/// 二つ名
@@ -1339,6 +1469,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case Challenge_Journey2Title
 	/// 期間限定
 	case CoopHistory_Limited
+	/// 人の { 1 } パワー 推定 { 2 }
+	case VSHistory_EstimatedRoomPower
 	/// イカリング３のアルバムの画像を表示します。
 	case Widgets_AlbumDescription
 	/// スプラトゥーン3でイカした写真を<br />撮影するとココに表示されるぞ！
@@ -1573,4 +1705,6 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case CoopHistory_CreditDesign
 	/// ???
 	case CoopHistory_Dummy
+	/// チームポイントカード
+	case CoopHistory_TeamPointCard
 }
