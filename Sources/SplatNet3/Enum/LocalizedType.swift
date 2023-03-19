@@ -1,7 +1,7 @@
 //
 //  LocalizedType.swift
 //
-//  Created by tkgstrator on 2023/03/05
+//  Created by tkgstrator on 2023/03/19
 //  Copyright @2022 Magi, Corporation. All rights reserved.
 //
 
@@ -151,6 +151,56 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case CoopEvent_Mudmouth
 	/// -
 	case CoopEvent_Water_Levels
+	/// テッキュウ
+	case CoopHistory_SakeArtillery
+	/// 発射台
+	case CoopHistory_SakeArtilleryCannon
+	/// オカシラシャケ
+	case CoopHistory_SakeBigBoss
+	/// オカシラゲージ
+	case CoopHistory_SakeBigBossGauge
+	/// ダイバー
+	case CoopHistory_SakeDolphin
+	/// タマヒロイ
+	case CoopHistory_SakeFlyBagman
+	/// ハシラ
+	case CoopHistory_SakePillar
+	/// タツ
+	case CoopHistory_SakeRope
+	/// ナベブタ
+	case CoopHistory_SakeSaucer
+	/// ドロシャケ
+	case CoopHistory_SakeTamaire
+	/// モグラ
+	case CoopHistory_Sakediver
+	/// グリル
+	case CoopHistory_Sakedozer
+	/// バクダン
+	case CoopHistory_SakelienBomber
+	/// カタパッド
+	case CoopHistory_SakelienCupTwins
+	/// ヨコヅナ
+	case CoopHistory_SakelienGiant
+	/// キンシャケ
+	case CoopHistory_SakelienGolden
+	/// ドスコイ
+	case CoopHistory_SakelienLarge
+	/// テッパン
+	case CoopHistory_SakelienShield
+	/// コジャケ
+	case CoopHistory_SakelienSmall
+	/// ヘビ
+	case CoopHistory_SakelienSnake
+	/// シャケ
+	case CoopHistory_SakelienStandard
+	/// タワー
+	case CoopHistory_SakelienTower
+	/// ハコビヤ
+	case CoopHistory_Sakepuncher
+	/// シャケコプター
+	case CoopHistory_SakepuncherBulletSimpl
+	/// コウモリ
+	case CoopHistory_Sakerocket
 	/// スメーシーワールド
 	case CoopStage_Carousel
 	/// ムニ・エール海洋発電所
@@ -1175,7 +1225,7 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case StageSchedule_Next
 	/// ビッグラン接近中！
 	case StageSchedule_NoticeBigrun
-	/// 期間限定バイト開催予告！
+	/// バイトチームコンテスト開催予告！
 	case StageSchedule_NoticeLimited
 	/// フェスマッチ開催中！
 	case StageSchedule_NowClosed
@@ -1183,7 +1233,7 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case StageSchedule_Open
 	/// ビッグラン発生中！
 	case StageSchedule_OpenBigrun
-	/// 期間限定バイト開催中！
+	/// バイトチームコンテスト開催中！
 	case StageSchedule_OpenLimited
 	/// プライベートマッチ
 	case StageSchedule_Private
@@ -1599,12 +1649,12 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case CoopHistory_Invalid
 	/// 言語
 	case CoopHistory_Languages
-	/// 開発者にログを送信します
-	case CoopHistory_LogContext
-	/// ログ
-	case CoopHistory_Log
+	/// 開発者にログを送信します。エラー発生時にログファイルを送信していただくことで、開発者が原因特定と修正するのが楽になります。ログファイルには個人を特定する一切の情報は含まれていません。
+	case CoopHistory_ShareLogToDeveloper
 	/// ログ送信
-	case CoopHistory_LogShare
+	case CoopHistory_ShareLog
+	/// ログファイル
+	case CoopHistory_LogSize
 	/// マイページ
 	case CoopHistory_MyPage
 	/// なかま
@@ -1653,6 +1703,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case CoopHistory_SignIn
 	/// ログアウト
 	case CoopHistory_SignOut
+	/// ログアウト成功しました
+	case CoopHistory_SignOutSuccessfully
 	/// ニンテンドーアカウントとの連携を解除します
 	case CoopHistory_SignOutContext
 	/// ソースコード
@@ -1707,4 +1759,30 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case CoopHistory_Dummy
 	/// チームポイントカード
 	case CoopHistory_TeamPointCard
+	/// 推定値を表示
+	case CoopHistory_UseEstimatedValue
+	/// 報酬
+	case CoopHistory_CheckInReward
+	/// 過去に配布されていたQRコードの報酬を取得します。
+	case CoopHistory_GetCheckInReward
+	/// チーム
+	case CoopHistory_TeamResult
+	/// あなた
+	case CoopHistory_PlayerResult
+	/// なかま
+	case CoopHistory_CrewResult
+	/// Waves
+	case CoopHistory_WaveResult
+	/// 最高
+	case CoopHistory_HighestValue
+	/// 平均
+	case CoopHistory_AverageValue
+	/// この機能を利用するにはiOS16以上にアップデートする必要があります。
+	case CoopHistory_RequirediOS16
+	/// リザルト復元に成功しました。
+	case CoopHistory_RestoreSuccess
+	/// リザルト復元に失敗しました。未サポートの形式またはファイルが改ざんされているため署名が一致しません。
+	case CoopHistory_RestoreFailure
+	/// デベロッパの回答
+	case CoopHistory_DeveloperAnswer
 }

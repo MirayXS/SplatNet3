@@ -8,18 +8,10 @@
 import Foundation
 import SwiftyBeaver
 
-//public let SwiftyLogger: SwiftyBeaver.Type = {
-//    let logger: SwiftyBeaver.Type = SwiftyBeaver.self
-//    let format: String = "$DHH:mm:ss.SSS$d $N.$F:$l - $M"
-//    logger.addDestination(FileDestination(format: format))
-//    logger.addDestination(ConsoleDestination(format: format))
-//    return logger
-//}()
-
 public class SwiftyLogger {
 
     static let logger: SwiftyBeaver.Type = SwiftyBeaver.self
-    static let format: String = "$DHH:mm:ss.SSS$d $N.$F:$l - $M"
+    static let format: String = "$Dyyyy-MM-dd HH:mm:ss.SSS$d$T $L: $M"
 
     public static func configure() {
         SwiftyLogger.logger.addDestination(FileDestination(format: SwiftyLogger.format))

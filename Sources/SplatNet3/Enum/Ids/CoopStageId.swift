@@ -38,6 +38,11 @@ public enum CoopStageId: Int, UnsafeRawRepresentable {
         .Carousel,
         .Upland
     ]
+
+    /// 通常のステージ
+    public static let regular: [CoopStageId] = allCases.filter({ $0.rawValue > 0 && $0.rawValue < 100 })
+    /// ビッグラン用のステージ
+    public static let bigRun: [CoopStageId] = allCases.filter({ $0.rawValue >= 100 })
 }
 
 @available(iOS 16.0, *)

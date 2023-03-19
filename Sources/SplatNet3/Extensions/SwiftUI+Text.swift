@@ -14,7 +14,7 @@ public extension Text {
     }
 
     init(_ value: EnemyId) {
-        let index: Int = (EnemyId.allCases + EnemyId.bossCases).firstIndex(of: value) ?? 0
+        let index: Int = EnemyId.allCases.firstIndex(of: value) ?? 0
         let enemyKey: EnemyKey = EnemyKey.allCases[index]
         self.init(NSLocalizedString("CoopEnemy_\(String(describing: enemyKey))", bundle: .module, comment: ""))
     }
@@ -78,7 +78,7 @@ public extension Image {
     }
 
     init(_ value: EnemyKey) {
-        let enemyId: EnemyId = (EnemyId.allCases + EnemyId.bossCases)[EnemyKey.allCases.firstIndex(of: value) ?? 0]
+        let enemyId: EnemyId = EnemyId.allCases[EnemyKey.allCases.firstIndex(of: value) ?? 0]
 
         self.init("Enemies/\(enemyId.rawValue)", bundle: .module)
     }

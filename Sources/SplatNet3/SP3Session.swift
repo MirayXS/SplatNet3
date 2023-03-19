@@ -168,7 +168,7 @@ extension SP3Session: Authenticator {
         Task {
             let session: SP3Session = SP3Session()
             do {
-                let account: UserInfo = try await session.refresh(contentId: .SP3)
+                let account: UserInfo = try await session.refreshIfNeeded(contentId: .SP3)
                 completion(.success(account))
             } catch (let error) {
                 completion(.failure(error))
@@ -225,6 +225,34 @@ extension SP3Session: Authenticator {
             })
             throw error
         }
+    }
+
+    /// 利用したことがあるQRコードを取得する
+    private func getCheckInHistory() async throws -> [CheckinWithQRCodeMutation.CheckInEventId] {
+        try await request(CheckinQuery()).data.checkinHistories.map({ $0.id })
+    }
+
+    /// 利用していないQRコードをリクエストする
+    @discardableResult
+    public func getCheckInWithQRCode() async throws -> [CheckinWithQRCodeMutation.CreateCheckinHistory] {
+        let eventIdHistories: Set<CheckinWithQRCodeMutation.CheckInEventId> = Set(try await getCheckInHistory())
+        let eventIds: Set<CheckinWithQRCodeMutation.CheckInEventId> = Set(CheckinWithQRCodeMutation.CheckInEventId.allCases).subtracting(Set(eventIdHistories))
+        /// 並列ダウンロード
+        let response: [CheckinWithQRCodeMutation.CreateCheckinHistory] = try await withThrowingTaskGroup(of: CheckinWithQRCodeMutation.CreateCheckinHistory.self, body: { task in
+            eventIds.forEach({ eventId in
+                task.addTask(operation: { [self] in
+                    return try await getCheckInWithQRCodeMutation(eventId: eventId)
+                })
+            })
+            return try await task.reduce(into: [CheckinWithQRCodeMutation.CreateCheckinHistory]()) { results, result in
+                results.append(result)
+            }
+        })
+        return response
+    }
+
+    private func getCheckInWithQRCodeMutation(eventId: CheckinWithQRCodeMutation.CheckInEventId) async throws -> CheckinWithQRCodeMutation.CreateCheckinHistory {
+        return try await request(CheckinWithQRCodeMutation(eventId: eventId)).data.createCheckinHistory
     }
 
     private func getCoopStageScheduleQuery() async throws -> [StageScheduleQuery.CoopSchedule] {

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol UnsafeRawRepresentable: RawRepresentable, Codable, CaseIterable where RawValue: LosslessStringConvertible {
+public protocol UnsafeRawRepresentable: Identifiable, RawRepresentable, Codable, CaseIterable where RawValue: LosslessStringConvertible {
     static var defaultValue: Self { get }
 }
 

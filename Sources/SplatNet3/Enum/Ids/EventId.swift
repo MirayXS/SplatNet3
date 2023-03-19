@@ -25,7 +25,24 @@ public enum EventId: Int, UnsafeRawRepresentable {
     public var description: String {
         return NSLocalizedString("CoopEvent_\(String(describing: self))", bundle: .module, comment: "")
     }
+
+    public static func allEvents(isBigRun: Bool = false) -> [EventId] {
+        switch isBigRun {
+        case true:
+            return [
+                .Water_Levels,
+                .Rush,
+                .Griller,
+                .The_Mothership,
+                .Fog,
+            ]
+        case false:
+            return allCases
+        }
+    }
 }
+
+extension EventId: Identifiable {}
 
 @available(iOS 16.0, *)
 extension EventId: Plottable {

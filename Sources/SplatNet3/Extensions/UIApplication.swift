@@ -15,6 +15,10 @@ extension UIApplication {
         UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first?.windows.first
     }
 
+    public var foregroundScene: UIWindowScene? {
+        UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first(where: { $0.activationState == .foregroundActive })
+    }
+
     /// 現在表示されているViewの親View
     public var rootViewController: UIViewController? {
         UIApplication.shared.connectedScenes
@@ -49,10 +53,33 @@ extension UIApplication {
         controller.modalTransitionStyle = .crossDissolve
         controller.modalPresentationStyle = .overFullScreen
         controller.overrideUserInterfaceStyle = .dark
-        controller.view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.3)
+        controller.view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
         controller.view.addSubview(progress)
         UIApplication.shared.presentedViewController?.present(controller, animated: true, completion: completion)
         UIApplication.shared.presentedViewController?.dismiss(animated: true)
+    }
+
+    public func startAnimatingWithAsync(completion: @escaping @Sendable () async throws -> Void) async throws -> Void {
+        let controller: UIViewController = UIViewController(nibName: nil, bundle: nil)
+
+        let progress: UIActivityIndicatorView = UIActivityIndicatorView(style: .medium)
+        progress.overrideUserInterfaceStyle = .dark
+        progress.hidesWhenStopped = true
+        progress.startAnimating()
+        progress.center = controller.view.center
+        controller.modalTransitionStyle = .crossDissolve
+        controller.modalPresentationStyle = .overFullScreen
+        controller.overrideUserInterfaceStyle = .dark
+        controller.view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
+        controller.view.addSubview(progress)
+        UIApplication.shared.presentedViewController?.present(controller, animated: true)
+        do {
+            try await completion()
+            UIApplication.shared.presentedViewController?.dismiss(animated: true)
+        } catch(let error) {
+            UIApplication.shared.presentedViewController?.dismiss(animated: true)
+            throw error
+        }
     }
 
     public func authorize(sessionToken: String, contentId: ContentId) {

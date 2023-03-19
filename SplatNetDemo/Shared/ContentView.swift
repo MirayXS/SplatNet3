@@ -39,7 +39,7 @@ struct ContentView: View {
                     Text("RequestView")
                 })
                 HStack(content: {
-                    Text("リザルト件数")
+                    Text(bundle: .CoopHistory_ResultsCount)
                     Spacer()
                     Text("\(results.count)")
                 })

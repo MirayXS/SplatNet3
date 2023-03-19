@@ -33,31 +33,27 @@ public enum EnemyId: Int, UnsafeRawRepresentable {
         return NSLocalizedString("CoopEnemy_\(String(describing: self))", bundle: .module, comment: "")
     }
 
-    public static var allCases: [EnemyId] {
-        [
-            .SakelienBomber,
-            .SakelienCupTwins,
-            .SakelienShield,
-            .SakelienSnake,
-            .SakelienTower,
-            .Sakediver,
-            .Sakerocket,
-            .SakePillar,
-            .SakeDolphin,
-            .SakeArtillery,
-            .SakeSaucer,
-            .SakelienGolden,
-            .Sakedozer,
-            .SakeBigMouth
-        ]
-    }
+    public static let regular: [EnemyId] = [
+        .SakelienBomber,
+        .SakelienCupTwins,
+        .SakelienShield,
+        .SakelienSnake,
+        .SakelienTower,
+        .Sakediver,
+        .Sakerocket,
+        .SakePillar,
+        .SakeDolphin,
+        .SakeArtillery,
+        .SakeSaucer,
+        .SakelienGolden,
+        .Sakedozer,
+        .SakeBigMouth
+    ]
 
-    public static var bossCases: [EnemyId] {
-        [
-            .SakelienGiant,
-            .SakeRope
-        ]
-    }
+    public static let boss: [EnemyId] = [
+        .SakelienGiant,
+        .SakeRope
+    ]
 }
 
 @available(iOS 16.0, *)

@@ -77,23 +77,28 @@ struct SplatNetView: UIViewControllerRepresentable {
             webView.uiDelegate = self
             webView.navigationDelegate = self
 
-            /// どちらの場合でもX-GameWebTokenを利用してアクセスする
-            if let account = session.account {
-                switch contentId {
-                case .SP2:
-                    /// ヘッダーを更新
-                    request.headers.add(name: "X-GameWebToken", value: account.gameWebToken)
-                case .SP3:
-                    /// クッキーを設定
-                    let cookie = HTTPCookie(properties: [
-                        HTTPCookiePropertyKey.name: "_gtoken",
-                        HTTPCookiePropertyKey.value: account.gameWebToken,
-                        HTTPCookiePropertyKey.domain: contentId.requestURL.host!,
-                        HTTPCookiePropertyKey.path: "/"])!
-                    webView.configuration.websiteDataStore.httpCookieStore.setCookie(cookie)
+            Task(priority: .utility, operation: {
+                /// どちらの場合でもX-GameWebTokenを利用してアクセスする
+                if let account = session.account {
+                    try await session.refreshIfNeeded(contentId: contentId)
+                    switch contentId {
+                    case .SP2:
+                        /// ヘッダーを更新
+                        request.headers.add(name: "X-GameWebToken", value: account.gameWebToken)
+                    case .SP3:
+                        /// クッキーを設定
+                        let cookie = HTTPCookie(properties: [
+                            HTTPCookiePropertyKey.name: "_gtoken",
+                            HTTPCookiePropertyKey.value: account.gameWebToken,
+                            HTTPCookiePropertyKey.domain: contentId.requestURL.host!,
+                            HTTPCookiePropertyKey.path: "/"])!
+                        await webView.configuration.websiteDataStore.httpCookieStore.setCookie(cookie)
+                    }
+                    webView.load(request)
+                } else {
+                    dismiss(animated: true)
                 }
-            }
-            webView.load(request)
+            })
             self.view = webView
         }
 
@@ -109,10 +114,12 @@ struct SplatNetView: UIViewControllerRepresentable {
                 return
             }
 
+            /// Nintendo Storeへのリンクは開かない
             if url.pathComponents.contains("store") {
                 decisionHandler(.cancel)
                 return
             }
+
             decisionHandler(.allow)
         }
 
@@ -175,14 +182,14 @@ struct SplatNetView: UIViewControllerRepresentable {
                         }
                         UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
                     })
+                    let alert: UIAlertController = UIAlertController(
+                        title: LocalizedType.Common_Download.localized,
+                        message: LocalizedType.CoopHistory_SaveToPhotoLibrary.localized,
+                        preferredStyle: .alert)
+                    let action: UIAlertAction = UIAlertAction(title: LocalizedType.Common_Close.localized, style: .default)
+                    alert.addAction(action)
+                    present(alert, animated: true)
                 })
-                let alert: UIAlertController = UIAlertController(
-                    title: LocalizedType.Common_Download.localized,
-                    message: LocalizedType.CoopHistory_SaveToPhotoLibrary.localized,
-                    preferredStyle: .alert)
-                let action: UIAlertAction = UIAlertAction(title: LocalizedType.Common_Close.localized, style: .default)
-                alert.addAction(action)
-                present(alert, animated: true)
             default:
                 break
             }
@@ -190,37 +197,6 @@ struct SplatNetView: UIViewControllerRepresentable {
 
         /// ビューが切り替わったときにトークンを再生成するかどうかをチェックする
         override public func viewDidLayoutSubviews() {
-//            guard let webView: WKWebView = self.view as? WKWebView,
-//                  let account: UserInfo = account,
-//                  let token: JSONWebToken = try? JSONWebToken(gameWebToken: account.gameWebToken)
-//            else {
-//                return
-//            }
-//            self.observer = webView.observe(\.url, options: .new, changeHandler: { [self] _, _ in
-//                let currentTime: Date = Date()
-//
-//                /// BulletTokenが有効期限切れ
-//                if account.expiration <= currentTime {
-//                    Task {
-//                        try await self.session.getBulletToken(sessionToken: account.sessionToken)
-//                        configuration.websiteDataStore.httpCookieStore.setCookie(cookie) {
-//                            webView.reload()
-//                        }
-//                        return
-//                    }
-//                }
-//
-//                /// GameWebTokenが有効期限切れ
-//                if Date(timeIntervalSince1970: TimeInterval(token.payload.exp)) <= currentTime {
-//                    Task {
-//                        try await self.session.getBulletToken(sessionToken: account.sessionToken)
-//                        configuration.websiteDataStore.httpCookieStore.setCookie(cookie) {
-//                            webView.reload()
-//                        }
-//                        return
-//                    }
-//                }
-//            })
         }
     }
 }

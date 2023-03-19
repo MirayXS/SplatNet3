@@ -39,17 +39,17 @@ public enum AuthType: Int, CaseIterable, Identifiable {
 }
 
 extension View {
+    @ViewBuilder
     public func authorize(isPresented: Binding<Bool>, contentId: ContentId, session: SP3Session, using: AuthType = .webkit) -> some View {
         switch using {
         case .safari:
-            return self.sheet(isPresented: isPresented, content: {
+            self.sheet(isPresented: isPresented, content: {
                 OAuthView(contentId: contentId)
             })
-            .asAnyView()
         case .webkit:
             let state: String = String.randomString
             let verifier: String = String.randomString
-            return self.webAuthenticationSession(isPresented: isPresented, content: {
+            self.webAuthenticationSession(isPresented: isPresented, content: {
                 WebAuthenticationSession(url: URL(state: state, verifier: verifier), callbackURLScheme: "npf71b963c1b7b6d119", onCompletion: { result in
                     switch result {
                     case .success(let url):
@@ -73,7 +73,6 @@ extension View {
                     }
                 })
             })
-            .asAnyView()
         }
     }
 }

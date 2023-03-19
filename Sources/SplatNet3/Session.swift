@@ -94,7 +94,8 @@ open class Session: ObservableObject {
     }
 
     /// SP2/3: トークンが切れたときにリフレッシュする
-    public func refresh(contentId: ContentId) async throws -> UserInfo {
+    @discardableResult
+    public func refreshIfNeeded(contentId: ContentId) async throws -> UserInfo {
         guard let account = keychain.get() else {
             throw DecodingError.valueNotFound(UserInfo.self, .init(codingPath: [], debugDescription: "Account Not Found"))
         }
@@ -135,6 +136,7 @@ open class Session: ObservableObject {
     /// 保存されているアカウント全削除
     public func removeAll() {
         self.account = nil
+        try? self.keychain.removeAll()
     }
 }
 
