@@ -359,19 +359,19 @@ public struct CoopResult: Codable {
 
 extension Collection where Element == CoopHistoryDetailQuery.EnemyResult {
     func bossKillCounts() -> [Int] {
-        EnemyId.allCases.compactMap({ element in
+        EnemyId.regular.compactMap({ element in
             self.first(where: { $0.enemy.id == element })?.defeatCount ?? .zero
         })
     }
 
     func teamBossKillCounts() -> [Int] {
-        EnemyId.allCases.compactMap({ element in
+        EnemyId.regular.compactMap({ element in
             self.first(where: { $0.enemy.id == element })?.teamDefeatCount ?? .zero
         })
     }
 
     func bossCounts() -> [Int] {
-        EnemyId.allCases.compactMap({ element in
+        EnemyId.regular.compactMap({ element in
             self.first(where: { $0.enemy.id == element })?.popCount ?? .zero
         })
     }

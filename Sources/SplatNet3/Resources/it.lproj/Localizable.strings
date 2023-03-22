@@ -879,6 +879,7 @@ CoopHistory_CheckInReward = "Premi";
 CoopHistory_GetCheckInReward = "Ottenete tutti i premi per i codici QR.";
 CoopHistory_TeamResult = "Squadra";
 CoopHistory_PlayerResult = "Tu";
+CoopHistory_CrewAvgResult = "Avg dell'equipaggio";
 CoopHistory_CrewResult = "Equipaggio";
 CoopHistory_WaveResult = "Onde";
 CoopHistory_HighestValue = "Massimo";

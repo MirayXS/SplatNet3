@@ -879,6 +879,7 @@ CoopHistory_CheckInReward = "Recompensas";
 CoopHistory_GetCheckInReward = "Consigue todas las recompensas por códigos QR.";
 CoopHistory_TeamResult = "Equipo";
 CoopHistory_PlayerResult = "Usted";
+CoopHistory_CrewAvgResult = "Avg de la tripulación";
 CoopHistory_CrewResult = "Tripulación";
 CoopHistory_WaveResult = "Olas";
 CoopHistory_HighestValue = "Max";

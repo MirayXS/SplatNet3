@@ -36,13 +36,13 @@ open class SP3Session: Session {
         let endpoint: SPEndpoint = SPEndpoint(request: request)
         do {
             DispatchQueue.main.async(execute: {
-                if endpoint != .UNKNOWN {
+                if endpoint != .UNKNOWN && endpoint != .STATS {
                     self.requests.append(SPProgress(request))
                 }
             })
             let response: T.ResponseType = try await super.request(request)
             DispatchQueue.main.async(execute: {
-                if endpoint != .UNKNOWN {
+                if endpoint != .UNKNOWN && endpoint != .STATS {
                     self.requests.success()
                 }
             })

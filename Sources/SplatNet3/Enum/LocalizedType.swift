@@ -1,7 +1,7 @@
 //
 //  LocalizedType.swift
 //
-//  Created by tkgstrator on 2023/03/19
+//  Created by tkgstrator on 2023/03/22
 //  Copyright @2022 Magi, Corporation. All rights reserved.
 //
 
@@ -1769,6 +1769,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case CoopHistory_TeamResult
 	/// あなた
 	case CoopHistory_PlayerResult
+	/// なかまの平均
+	case CoopHistory_CrewAvgResult
 	/// なかま
 	case CoopHistory_CrewResult
 	/// Waves

@@ -880,6 +880,7 @@ CoopHistory_CheckInReward = "Beloningen";
 CoopHistory_GetCheckInReward = "Krijg alle beloningen voor QR-codes.";
 CoopHistory_TeamResult = "Team";
 CoopHistory_PlayerResult = "Jij";
+CoopHistory_CrewAvgResult = "Avg van de bemanning";
 CoopHistory_CrewResult = "Bemanning";
 CoopHistory_WaveResult = "Golven";
 CoopHistory_HighestValue = "Max";

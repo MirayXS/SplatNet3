@@ -879,6 +879,7 @@ CoopHistory_CheckInReward = "報酬";
 CoopHistory_GetCheckInReward = "過去に配布されていたQRコードの報酬を取得します。";
 CoopHistory_TeamResult = "チーム";
 CoopHistory_PlayerResult = "あなた";
+CoopHistory_CrewAvgResult = "なかまの平均";
 CoopHistory_CrewResult = "なかま";
 CoopHistory_WaveResult = "Waves";
 CoopHistory_HighestValue = "最高";

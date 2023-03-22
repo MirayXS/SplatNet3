@@ -12,8 +12,8 @@ import SwiftyJSON
 public class CoopStatsResultsQuery: RequestType {
     public typealias ResponseType = [Response]
     #if DEBUG
-//    public var baseURL: URL = URL(unsafeString: "https://api.splatnet3.com/")
-    public var baseURL: URL = URL(unsafeString: "http://localhost:8080/")
+    public var baseURL: URL = URL(unsafeString: "https://api.splatnet3.com/")
+//    public var baseURL: URL = URL(unsafeString: "http://localhost:8080/")
     #else
     public var baseURL: URL = URL(unsafeString: "https://api.splatnet3.com/")
     #endif
@@ -44,6 +44,16 @@ public class CoopStatsResultsQuery: RequestType {
         public let uuid: String
         public let salmonId: Int
         public let id: String
+
+        public var playTime: Int {
+            let formatter: ISO8601DateFormatter = ISO8601DateFormatter()
+            guard let playTime: String = id.capture(pattern: #"([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z)"#, group: 1),
+                  let playTime: Date = formatter.date(from: playTime)
+            else {
+                return 0
+            }
+            return Int(playTime.timeIntervalSince1970)
+        }
     }
 }
 

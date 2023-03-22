@@ -880,6 +880,7 @@ CoopHistory_CheckInReward = "Récompenses";
 CoopHistory_GetCheckInReward = "Obtenez toutes les récompenses pour les codes QR.";
 CoopHistory_TeamResult = "L'équipe";
 CoopHistory_PlayerResult = "Vous";
+CoopHistory_CrewAvgResult = "Avg de l'équipage";
 CoopHistory_CrewResult = "L'équipage";
 CoopHistory_WaveResult = "Vagues";
 CoopHistory_HighestValue = "Max";
