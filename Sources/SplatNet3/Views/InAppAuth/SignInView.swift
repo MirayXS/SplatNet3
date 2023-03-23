@@ -16,26 +16,24 @@ struct SignInView: View {
     let verifier: String
     let contentId: ContentId
 
+    @ViewBuilder
     func makeBody(request: SPProgress) -> some View {
         switch request.progress {
         case .PROGRESS:
-            return ProgressView()
+            ProgressView()
                 .frame(width: 24, height: 24, alignment: .center)
-                .asAnyView()
         case .SUCCESS:
-            return Image(systemName: "checkmark.circle")
+            Image(systemName: "checkmark.circle")
                 .resizable()
                 .scaledToFit()
                 .foregroundColor(.green)
                 .frame(width: 24, height: 24, alignment: .center)
-                .asAnyView()
         case .FAILURE:
-            return Image(systemName: "xmark.circle")
+            Image(systemName: "xmark.circle")
                 .resizable()
                 .scaledToFit()
                 .foregroundColor(.red)
                 .frame(width: 24, height: 24, alignment: .center)
-                .asAnyView()
         }
     }
 
@@ -97,26 +95,24 @@ struct _SignInView: View {
         self.contentId = contentId
     }
 
+    @ViewBuilder
     func makeBody(request: SPProgress) -> some View {
         switch request.progress {
         case .PROGRESS:
-            return ProgressView()
+            ProgressView()
                 .frame(width: 24, height: 24, alignment: .center)
-                .asAnyView()
         case .SUCCESS:
-            return Image(systemName: "checkmark.circle")
+            Image(systemName: "checkmark.circle")
                 .resizable()
                 .scaledToFit()
                 .foregroundColor(.green)
                 .frame(width: 24, height: 24, alignment: .center)
-                .asAnyView()
         case .FAILURE:
-            return Image(systemName: "xmark.circle")
+            Image(systemName: "xmark.circle")
                 .resizable()
                 .scaledToFit()
                 .foregroundColor(.red)
                 .frame(width: 24, height: 24, alignment: .center)
-                .asAnyView()
         }
     }
 
