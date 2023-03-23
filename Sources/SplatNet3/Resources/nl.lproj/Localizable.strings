@@ -886,6 +886,7 @@ CoopHistory_WaveResult = "Golven";
 CoopHistory_HighestValue = "Max";
 CoopHistory_AverageValue = "Gemiddeld";
 CoopHistory_RequirediOS16 = "Je moet updaten naar iOS16 of hoger om deze functie te gebruiken.";
+CoopHistory_RequiredSignIn = "Als je deze app gebruikt, moet je je aanmelden met je Nintendo-account. Meld je aan via Mijn pagina.";
 CoopHistory_RestoreSuccess = "Succesvolle resultaten herstellen";
 CoopHistory_RestoreFailure = "Herstelresultaten mislukt. Niet ondersteund formaat of handtekening komt niet overeen omdat er met het bestand is geknoeid.";
 CoopHistory_DeveloperAnswer = "Antwoord van de ontwikkelaar";

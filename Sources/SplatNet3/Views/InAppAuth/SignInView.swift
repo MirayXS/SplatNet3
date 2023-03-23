@@ -40,48 +40,48 @@ struct SignInView: View {
     }
 
     var body: some View {
-        VStack(content: {
-            ForEach(session.requests, content: { request in
-                HStack(content: {
-                    RoundedRectangle(cornerRadius: 4)
-                        .frame(width: 60, height: 24, alignment: .center)
-                        .foregroundColor(request.color)
-                        .overlay(content: {
-                            Text(request.type.rawValue)
-                                .foregroundColor(.white)
-                                .bold()
-                                .font(.body)
-                        })
-                    Text(request.path.rawValue)
-                        .font(.body)
-                        .frame(width: 220, height: nil, alignment: .leading)
-                        .lineLimit(1)
-                        .foregroundColor(.white)
-                    makeBody(request: request)
+        GroupBox(content: {
+            VStack(content: {
+                ForEach(session.requests, content: { request in
+                    HStack(content: {
+                        RoundedRectangle(cornerRadius: 4)
+                            .frame(width: 60, height: 24, alignment: .center)
+                            .foregroundColor(request.color)
+                            .overlay(content: {
+                                Text(request.type.rawValue)
+                                    .foregroundColor(.white)
+                                    .bold()
+                                    .font(.body)
+                            })
+                        Text(request.path.rawValue)
+                            .font(.body)
+                            .frame(width: 220, height: nil, alignment: .leading)
+                            .lineLimit(1)
+                            .foregroundColor(.white)
+                        makeBody(request: request)
+                    })
                 })
             })
+            .frame(width: 320)
         })
-        .frame(width: 320)
-        .padding(EdgeInsets(top: 20, leading: 12, bottom: 20, trailing: 12))
-        .background(SPColor.SplatNet3.SPBackground.cornerRadius(12))
         .animation(.default, value: session.requests.count)
         .onDisappear(perform: {
             session.requests.removeAll()
         })
         .onAppear(perform: {
-            Task {
+            Task(priority: .utility, operation: {
                 do {
                     try await session.getCookie(code: code, verifier: verifier, contentId: contentId)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
                         UIApplication.shared.rootViewController?.dismiss(animated: true)
                     })
                 } catch(let error) {
                     SwiftyLogger.error(error)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
                         UIApplication.shared.rootViewController?.dismiss(animated: true)
                     })
                 }
-            }
+            })
         })
     }
 }
@@ -121,45 +121,45 @@ struct _SignInView: View {
     }
 
     var body: some View {
-        VStack(content: {
-            ForEach(session.requests, content: { request in
-                HStack(content: {
-                    RoundedRectangle(cornerRadius: 4)
-                        .frame(width: 60, height: 24, alignment: .center)
-                        .foregroundColor(request.color)
-                        .overlay(content: {
-                            Text(request.type.rawValue)
-                                .foregroundColor(.white)
-                                .bold()
-                                .font(.body)
-                        })
-                    Text(request.path.rawValue)
-                        .font(.body)
-                        .frame(width: 220, height: nil, alignment: .leading)
-                        .lineLimit(1)
-                        .foregroundColor(.white)
-                    makeBody(request: request)
+        GroupBox(content: {
+            VStack(content: {
+                ForEach(session.requests, content: { request in
+                    HStack(content: {
+                        RoundedRectangle(cornerRadius: 4)
+                            .frame(width: 60, height: 24, alignment: .center)
+                            .foregroundColor(request.color)
+                            .overlay(content: {
+                                Text(request.type.rawValue)
+                                    .foregroundColor(.white)
+                                    .bold()
+                                    .font(.body)
+                            })
+                        Text(request.path.rawValue)
+                            .font(.body)
+                            .frame(width: 220, height: nil, alignment: .leading)
+                            .lineLimit(1)
+                            .foregroundColor(.white)
+                        makeBody(request: request)
+                    })
                 })
             })
+            .frame(width: 320)
         })
-        .frame(width: 320)
-        .padding(EdgeInsets(top: 20, leading: 12, bottom: 20, trailing: 12))
-        .background(SPColor.SplatNet3.SPBackground.cornerRadius(12))
         .animation(.default, value: session.requests.count)
         .onAppear(perform: {
-            Task {
+            Task(priority: .utility, operation: {
                 do {
                     try await session.refresh(sessionToken: sessionToken, contentId: contentId)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
                         UIApplication.shared.rootViewController?.dismiss(animated: true)
                     })
                 } catch(let error) {
                     SwiftyLogger.error(error)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
                         UIApplication.shared.rootViewController?.dismiss(animated: true)
                     })
                 }
-            }
+            })
         })
     }
 }

@@ -885,6 +885,7 @@ CoopHistory_WaveResult = "Waves";
 CoopHistory_HighestValue = "Max";
 CoopHistory_AverageValue = "Avg";
 CoopHistory_RequirediOS16 = "You must update to iOS16 or higher to use this feature";
+CoopHistory_RequiredSignIn = "Using this feature, you need be sign in with your Nintendo account. Please sign in from on My page.";
 CoopHistory_RestoreSuccess = "Restore results successfully";
 CoopHistory_RestoreFailure = "Restore results failure. Unsupported format or signature does not match due to file has been tampered with.";
 CoopHistory_DeveloperAnswer = "Developer's response";

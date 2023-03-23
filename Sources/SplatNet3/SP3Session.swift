@@ -1,5 +1,5 @@
 //
-//  SPSessionr.swift
+//  SPSession.swift
 //  SplatNet3
 //
 //  Created by tkgstrator on 2021/07/13.

@@ -885,6 +885,7 @@ CoopHistory_WaveResult = "Wellen";
 CoopHistory_HighestValue = "Max";
 CoopHistory_AverageValue = "Avg";
 CoopHistory_RequirediOS16 = "Sie müssen auf iOS16 oder höher aktualisieren, um diese Funktion nutzen zu können";
+CoopHistory_RequiredSignIn = "Um diese App zu verwenden, müssen Sie sich mit Ihrem Nintendo-Konto anmelden. Bitte melden Sie sich auf der Seite Meine Seite an.";
 CoopHistory_RestoreSuccess = "Ergebnisse erfolgreich wiederherstellen";
 CoopHistory_RestoreFailure = "Wiederherstellungsergebnisse sind fehlgeschlagen. Nicht unterstütztes Format oder die Signatur stimmt nicht überein, weil die Datei manipuliert wurde.";
 CoopHistory_DeveloperAnswer = "Antwort des Entwicklers";

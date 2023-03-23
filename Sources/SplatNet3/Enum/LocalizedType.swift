@@ -1,7 +1,7 @@
 //
 //  LocalizedType.swift
 //
-//  Created by tkgstrator on 2023/03/22
+//  Created by tkgstrator on 2023/03/23
 //  Copyright @2022 Magi, Corporation. All rights reserved.
 //
 
@@ -1781,6 +1781,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case CoopHistory_AverageValue
 	/// この機能を利用するにはiOS16以上にアップデートする必要があります。
 	case CoopHistory_RequirediOS16
+	/// このアプリを利用するにはニンテンドーアカウントでログインする必要があります。マイページのログインボタンからログインを実行してください。
+	case CoopHistory_RequiredSignIn
 	/// リザルト復元に成功しました。
 	case CoopHistory_RestoreSuccess
 	/// リザルト復元に失敗しました。未サポートの形式またはファイルが改ざんされているため署名が一致しません。

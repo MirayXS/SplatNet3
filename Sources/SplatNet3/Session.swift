@@ -38,6 +38,16 @@ open class Session: ObservableObject {
     /// デコーダー
     public let decoder: SPDecoder = SPDecoder()
 
+    /// Salmon Stats
+    public var useSalmonStats: Bool {
+        get {
+            keychain.useSalmonStats
+        }
+        set {
+            keychain.useSalmonStats = newValue
+        }
+    }
+
     /// アカウント情報
     @Published public var account: UserInfo?
 

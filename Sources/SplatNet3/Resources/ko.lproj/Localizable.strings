@@ -885,6 +885,7 @@ CoopHistory_WaveResult = "파도";
 CoopHistory_HighestValue = "최대";
 CoopHistory_AverageValue = "평균";
 CoopHistory_RequirediOS16 = "이 기능을 사용하려면 iOS16 이상으로 업데이트해야합니다.";
+CoopHistory_RequiredSignIn = "Using this app, you need be sign in with your Nintendo account. Please sign in from on My page.";
 CoopHistory_RestoreSuccess = "결과를 성공적으로 복원했습니다.";
 CoopHistory_RestoreFailure = "결과 복원 실패. 지원하지 않는 형식 또는 파일이 조작되어 서명이 일치하지 않습니다.";
 CoopHistory_DeveloperAnswer = "소개";

@@ -14,56 +14,53 @@ struct CoopResultDownloadView: View {
     @State private var value: Float = .zero
     @State private var total: Float = 1
 
+    @ViewBuilder
     func makeBody(request: SPProgress) -> some View {
         switch request.progress {
         case .PROGRESS:
-            return ProgressView()
+            ProgressView()
                 .frame(width: 24, height: 24, alignment: .center)
                 .opacity(1.0)
-                .asAnyView()
         case .SUCCESS:
-            return Image(systemName: "checkmark.circle")
+            Image(systemName: "checkmark.circle")
                 .resizable()
                 .scaledToFit()
                 .foregroundColor(.green)
                 .frame(width: 24, height: 24, alignment: .center)
-                .asAnyView()
         case .FAILURE:
-            return Image(systemName: "xmark.circle")
+            Image(systemName: "xmark.circle")
                 .resizable()
                 .scaledToFit()
                 .foregroundColor(.red)
                 .frame(width: 24, height: 24, alignment: .center)
-                .asAnyView()
         }
     }
 
     var body: some View {
-        VStack(content: {
-            ForEach(session.requests, content: { request in
-                HStack(content: {
-                    RoundedRectangle(cornerRadius: 4)
-                        .frame(width: 60, height: 24, alignment: .center)
-                        .foregroundColor(request.color)
-                        .overlay(content: {
-                            Text(request.type.rawValue)
-                                .foregroundColor(.white)
-                                .bold()
-                                .font(.body)
-                        })
-                    Text(request.path.rawValue)
-                        .font(.body)
-                        .frame(width: 220, height: nil, alignment: .leading)
-                        .lineLimit(1)
-                        .foregroundColor(.white)
-                    makeBody(request: request)
+        GroupBox(content: {
+            VStack(content: {
+                ForEach(session.requests, content: { request in
+                    HStack(content: {
+                        RoundedRectangle(cornerRadius: 4)
+                            .frame(width: 60, height: 24, alignment: .center)
+                            .foregroundColor(request.color)
+                            .overlay(content: {
+                                Text(request.type.rawValue)
+                                    .foregroundColor(.white)
+                                    .bold()
+                                    .font(.body)
+                            })
+                        Text(request.path.rawValue)
+                            .font(.body)
+                            .frame(width: 220, height: nil, alignment: .leading)
+                            .lineLimit(1)
+                        makeBody(request: request)
+                    })
                 })
+                ProgressView("", value: value, total: total)
             })
-            ProgressView("", value: value, total: total)
+            .frame(width: 320)
         })
-        .frame(width: 320)
-        .padding(EdgeInsets(top: 20, leading: 12, bottom: 20, trailing: 12))
-        .background(SPColor.SplatNet3.SPBackground.cornerRadius(12))
         .animation(.default, value: session.requests.count)
         .onDisappear(perform: {
             self.session.requests.removeAll()
@@ -73,27 +70,31 @@ struct CoopResultDownloadView: View {
                 self.total = 1
                 self.value = 0
             }
-            Task {
+            Task(priority: .utility, operation: {
                 do {
                     try await session.getCoopStageScheduleQuery()
-                    try await session.getAllCoopHistoryDetailQuery(completion: { value, total in
+                    let results: [CoopResult] = try await session.getAllCoopHistoryDetailQuery(completion: { value, total in
                         withAnimation(.default) {
                             self.value = value
                             self.total = total
                         }
                     })
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                    if !results.isEmpty && session.useSalmonStats {
+                        try await session.uploadAllCoopResultDetailQuery(results: results, completion: { value, total in
+                        })
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
                         isPresented.toggle()
                         dismiss()
                     })
                 } catch(let error) {
                     SwiftyLogger.error(error)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
                         isPresented.toggle()
                         dismiss()
                     })
                 }
-            }
+            })
         })
     }
 }
@@ -110,56 +111,54 @@ public struct CoopResultUploadView: View {
         self.results = results
     }
 
+    @ViewBuilder
     func makeBody(request: SPProgress) -> some View {
         switch request.progress {
         case .PROGRESS:
-            return ProgressView()
+            ProgressView()
                 .frame(width: 24, height: 24, alignment: .center)
                 .opacity(1.0)
-                .asAnyView()
         case .SUCCESS:
-            return Image(systemName: "checkmark.circle")
+            Image(systemName: "checkmark.circle")
                 .resizable()
                 .scaledToFit()
                 .foregroundColor(.green)
                 .frame(width: 24, height: 24, alignment: .center)
-                .asAnyView()
         case .FAILURE:
-            return Image(systemName: "xmark.circle")
+            Image(systemName: "xmark.circle")
                 .resizable()
                 .scaledToFit()
                 .foregroundColor(.red)
                 .frame(width: 24, height: 24, alignment: .center)
-                .asAnyView()
         }
     }
 
     public var body: some View {
-        VStack(content: {
-            ForEach(session.requests, content: { request in
-                HStack(content: {
-                    RoundedRectangle(cornerRadius: 4)
-                        .frame(width: 60, height: 24, alignment: .center)
-                        .foregroundColor(request.color)
-                        .overlay(content: {
-                            Text(request.type.rawValue)
-                                .foregroundColor(.white)
-                                .bold()
-                                .font(.body)
-                        })
-                    Text(request.path.rawValue)
-                        .font(.body)
-                        .frame(width: 220, height: nil, alignment: .leading)
-                        .lineLimit(1)
-                        .foregroundColor(.white)
-                    makeBody(request: request)
+        GroupBox(content: {
+            VStack(content: {
+                ForEach(session.requests, content: { request in
+                    HStack(content: {
+                        RoundedRectangle(cornerRadius: 4)
+                            .frame(width: 60, height: 24, alignment: .center)
+                            .foregroundColor(request.color)
+                            .overlay(content: {
+                                Text(request.type.rawValue)
+                                    .foregroundColor(.white)
+                                    .bold()
+                                    .font(.body)
+                            })
+                        Text(request.path.rawValue)
+                            .font(.body)
+                            .frame(width: 220, height: nil, alignment: .leading)
+                            .lineLimit(1)
+                            .foregroundColor(.white)
+                        makeBody(request: request)
+                    })
                 })
+                ProgressView("", value: value, total: total)
             })
-            ProgressView("", value: value, total: total)
+            .frame(width: 320)
         })
-        .frame(width: 320)
-        .padding(EdgeInsets(top: 20, leading: 12, bottom: 20, trailing: 12))
-        .background(SPColor.SplatNet3.SPBackground.cornerRadius(12))
         .animation(.default, value: session.requests.count)
         .onDisappear(perform: {
             self.session.requests.removeAll()
@@ -178,7 +177,7 @@ public struct CoopResultUploadView: View {
                     })
                 } catch(let error) {
                     SwiftyLogger.error(error)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
                         dismiss()
                     })
                 }

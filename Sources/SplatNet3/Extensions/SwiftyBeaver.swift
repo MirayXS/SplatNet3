@@ -11,7 +11,7 @@ import SwiftyBeaver
 public class SwiftyLogger {
 
     static let logger: SwiftyBeaver.Type = SwiftyBeaver.self
-    static let format: String = "$Dyyyy-MM-dd HH:mm:ss.SSS$d$T $L: $M"
+    static let format: String = "$DHH:mm:ss$d $L: $M"
 
     public static func configure() {
         SwiftyLogger.logger.addDestination(FileDestination(format: SwiftyLogger.format))
@@ -24,6 +24,13 @@ public class SwiftyLogger {
         }
         return baseURL.appendingPathComponent("swiftybeaver").appendingPathExtension("log")
     }()
+
+    static public func json(_ message: Any, context: Any? = nil) {
+        let logger: SwiftyBeaver.Type = SwiftyBeaver.self
+        logger.addDestination(FileDestination(format: "$J"))
+        logger.addDestination(ConsoleDestination(format: "$J"))
+        logger.info(message)
+    }
 
     static public func info(_ message: Any, context: Any? = nil) {
         self.logger.info(message, context: context)

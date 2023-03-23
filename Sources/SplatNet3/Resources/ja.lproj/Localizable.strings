@@ -885,6 +885,7 @@ CoopHistory_WaveResult = "Waves";
 CoopHistory_HighestValue = "最高";
 CoopHistory_AverageValue = "平均";
 CoopHistory_RequirediOS16 = "この機能を利用するにはiOS16以上にアップデートする必要があります。";
+CoopHistory_RequiredSignIn = "このアプリを利用するにはニンテンドーアカウントでログインする必要があります。マイページのログインボタンからログインを実行してください。";
 CoopHistory_RestoreSuccess = "リザルト復元に成功しました。";
 CoopHistory_RestoreFailure = "リザルト復元に失敗しました。未サポートの形式またはファイルが改ざんされているため署名が一致しません。";
 CoopHistory_DeveloperAnswer = "デベロッパの回答";

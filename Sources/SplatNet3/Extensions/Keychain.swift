@@ -12,6 +12,7 @@ import KeychainAccess
 extension Keychain {
     static private let xWebVersion: String = "X-Web-View-Ver"
     static private let xProductVersion: String = "X-ProductVersion"
+    static private let useSalmonStats: String = "SalmonStats"
 
     /// X-Web-View-Ver
     var version: String {
@@ -38,6 +39,27 @@ extension Keychain {
             } else {
                 try? set("2.4.0".data(using: .utf8)!, key: Keychain.xProductVersion)
             }
+        }
+    }
+
+    /// SalmonStats
+    var useSalmonStats: Bool {
+        get {
+            let decoder: JSONDecoder = JSONDecoder()
+            guard let data: Data = try? getData(Keychain.useSalmonStats),
+                  let rawValue: Bool = try? decoder.decode(Bool.self, from: data)
+            else {
+                return true
+            }
+            return rawValue
+        }
+        set {
+            let encoder: JSONEncoder = JSONEncoder()
+            guard let data: Data = try? encoder.encode(newValue)
+            else {
+                return
+            }
+            try? set(data, key: Keychain.useSalmonStats)
         }
     }
 

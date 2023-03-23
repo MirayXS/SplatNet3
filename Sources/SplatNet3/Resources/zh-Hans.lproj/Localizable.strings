@@ -885,6 +885,7 @@ CoopHistory_WaveResult = "波浪";
 CoopHistory_HighestValue = "最大";
 CoopHistory_AverageValue = "平均";
 CoopHistory_RequirediOS16 = "你必须更新到iOS16或更高版本才能使用这一功能";
+CoopHistory_RequiredSignIn = "nan";
 CoopHistory_RestoreSuccess = "成功恢复结果";
 CoopHistory_RestoreFailure = "恢复结果失败。由于文件被篡改，不支持的格式或签名不匹配。";
 CoopHistory_DeveloperAnswer = "开发者的回应";
