@@ -890,3 +890,5 @@ CoopHistory_RequiredSignIn = "Als je deze app gebruikt, moet je je aanmelden met
 CoopHistory_RestoreSuccess = "Succesvolle resultaten herstellen";
 CoopHistory_RestoreFailure = "Herstelresultaten mislukt. Niet ondersteund formaat of handtekening komt niet overeen omdat er met het bestand is geknoeid.";
 CoopHistory_DeveloperAnswer = "Antwoord van de ontwikkelaar";
+CoopHistory_MinimumVersion = "Omdat de gegevens zijn opgeslagen in een niet-ondersteunde versie, konden ze niet worden hersteld.";
+CoopHistory_InvalidSignature = "Omdat de handtekening van de gegevens niet overeenkwam, kon hij niet herstellen.";

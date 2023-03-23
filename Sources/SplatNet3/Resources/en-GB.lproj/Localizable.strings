@@ -889,3 +889,5 @@ CoopHistory_RequiredSignIn = "Using this app, you need be sign in with your Nint
 CoopHistory_RestoreSuccess = "Restore results successfully";
 CoopHistory_RestoreFailure = "Restore results failure. Unsupported format or signature does not match due to file has been tampered with.";
 CoopHistory_DeveloperAnswer = "Developer's response";
+CoopHistory_MinimumVersion = "Due to the data backuped by unsupported version, could not restore.";
+CoopHistory_InvalidSignature = "Due to the unmatch the signature of data, could not restore.";

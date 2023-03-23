@@ -889,3 +889,5 @@ CoopHistory_RequiredSignIn = "Using this app, you need be sign in with your Nint
 CoopHistory_RestoreSuccess = "결과를 성공적으로 복원했습니다.";
 CoopHistory_RestoreFailure = "결과 복원 실패. 지원하지 않는 형식 또는 파일이 조작되어 서명이 일치하지 않습니다.";
 CoopHistory_DeveloperAnswer = "소개";
+CoopHistory_MinimumVersion = "Due to the data backuped by unsupported version, could not restore.";
+CoopHistory_InvalidSignature = "Due to the unmatch the signature of data, could not restore.";

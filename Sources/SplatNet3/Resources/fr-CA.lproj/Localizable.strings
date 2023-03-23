@@ -889,3 +889,5 @@ CoopHistory_RequiredSignIn = "Pour utiliser cette application, vous devez vous c
 CoopHistory_RestoreSuccess = "Restaurer les résultats avec succès";
 CoopHistory_RestoreFailure = "Échec de la restauration. Le format n'est pas pris en charge ou la signature ne correspond pas parce que le fichier a été modifié.";
 CoopHistory_DeveloperAnswer = "Réponse du développeur";
+CoopHistory_MinimumVersion = "Les données ayant été sauvegardées dans une version non prise en charge, il n'a pas été possible de les restaurer.";
+CoopHistory_InvalidSignature = "En raison de la non-concordance de la signature des données, il n'a pas été possible de les restaurer.";

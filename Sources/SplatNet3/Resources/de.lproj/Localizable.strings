@@ -889,3 +889,5 @@ CoopHistory_RequiredSignIn = "Um diese App zu verwenden, müssen Sie sich mit Ih
 CoopHistory_RestoreSuccess = "Ergebnisse erfolgreich wiederherstellen";
 CoopHistory_RestoreFailure = "Wiederherstellungsergebnisse sind fehlgeschlagen. Nicht unterstütztes Format oder die Signatur stimmt nicht überein, weil die Datei manipuliert wurde.";
 CoopHistory_DeveloperAnswer = "Antwort des Entwicklers";
+CoopHistory_MinimumVersion = "Da die Daten von einer nicht unterstützten Version gesichert wurden, konnten sie nicht wiederhergestellt werden.";
+CoopHistory_InvalidSignature = "Da die Signatur der Daten nicht übereinstimmt, konnte sie nicht wiederhergestellt werden.";

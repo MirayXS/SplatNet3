@@ -18,6 +18,8 @@ public enum SPError: Error, CaseIterable {
     case invalidResultId
     /// 受け付けられない拡張子
     case invalidExtension
+    /// 受け付けられないバージョン
+    case invalidVersion
 }
 
 extension SPError: LocalizedError {
@@ -26,13 +28,15 @@ extension SPError: LocalizedError {
         case .invalidURL:
             return NSLocalizedString("Given URL is invalid.", comment: "")
         case .invalidSignature:
-            return NSLocalizedString("Digital signature did not match.", comment: "")
+            return LocalizedType.CoopHistory_InvalidSignature.localized
         case .invalidFormat:
             return NSLocalizedString("Unacceptable format.", comment: "")
         case .invalidResultId:
             return NSLocalizedString("Decoder could not decode to specific type.", comment: "")
         case .invalidExtension:
             return NSLocalizedString("Unacceptable extension.", comment: "")
+        case .invalidVersion:
+            return LocalizedType.CoopHistory_MinimumVersion.localized
         }
     }
 }

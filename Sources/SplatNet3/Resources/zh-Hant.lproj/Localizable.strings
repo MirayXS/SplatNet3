@@ -889,3 +889,5 @@ CoopHistory_RequiredSignIn = "nan";
 CoopHistory_RestoreSuccess = "成功還原結果";
 CoopHistory_RestoreFailure = "還原結果失敗。不支援的格式或檔案簽章不符合，因為檔案已被篡改。";
 CoopHistory_DeveloperAnswer = "開發者的回應";
+CoopHistory_MinimumVersion = "nan";
+CoopHistory_InvalidSignature = "nan";

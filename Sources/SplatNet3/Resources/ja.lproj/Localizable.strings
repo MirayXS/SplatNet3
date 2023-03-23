@@ -889,3 +889,5 @@ CoopHistory_RequiredSignIn = "このアプリを利用するにはニンテン�
 CoopHistory_RestoreSuccess = "リザルト復元に成功しました。";
 CoopHistory_RestoreFailure = "リザルト復元に失敗しました。未サポートの形式またはファイルが改ざんされているため署名が一致しません。";
 CoopHistory_DeveloperAnswer = "デベロッパの回答";
+CoopHistory_MinimumVersion = "サポートされていないバージョンでバックアップされたリザルトのため復元できませんでした。";
+CoopHistory_InvalidSignature = "バックアップの署名が一致しなかったため復元できませんでした。リザルトが改ざんされている可能性があります。";
