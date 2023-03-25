@@ -7,9 +7,28 @@
 
 import SwiftUI
 
+//struct FullScreen<Content: View>: UIViewControllerRepresentable {
+//    @Binding var isPresented: Bool
+//    let content: () -> Content
+//    let transitionStyle: UIModalTransitionStyle
+//    let presentationStyle: UIModalPresentationStyle
+//    let isModalInPresentation: Bool
+//    let backgroundColor: UIColor
+//
+//    func makeCoordinator() -> Coordinator {
+//    }
+//
+//    func makeUIViewController(context: Context) -> some UIViewController {
+//
+//    }
+//
+//    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
+//    }
+//}
+
 struct FullScreen<Content: View>: UIViewControllerRepresentable {
     @Binding var isPresented: Bool
-    let content: Content
+    let content: () -> Content
     let transitionStyle: UIModalTransitionStyle
     let presentationStyle: UIModalPresentationStyle
     let isModalInPresentation: Bool
@@ -20,7 +39,7 @@ struct FullScreen<Content: View>: UIViewControllerRepresentable {
          transitionStyle: UIModalTransitionStyle? = nil,
          isModalInPresentation: Bool = true,
          backgroundColor: Color = Color(UIColor(red: 0, green: 0, blue: 0, alpha: 0.3)),
-         content: Content
+         @ViewBuilder content: @escaping () -> Content
     ) {
         self.content = content
         self.transitionStyle = transitionStyle ?? .coverVertical
@@ -56,9 +75,13 @@ struct FullScreen<Content: View>: UIViewControllerRepresentable {
         case true:
             uiViewController.present()
         case false:
-            if !isModalInPresentation {
+            print(isPresented)
+            print(uiViewController.isMovingToParent)
+            print(uiViewController.isBeingDismissed)
+            print(uiViewController.isBeingPresented)
+//            if !isModalInPresentation {
                 uiViewController.dismiss()
-            }
+//            }
         }
     }
 
@@ -90,7 +113,8 @@ struct FullScreen<Content: View>: UIViewControllerRepresentable {
     // This custom view controller
     final class ViewController<Content: View>: UIViewController, UIGestureRecognizerDelegate {
         let coordinator: FullScreen<Content>.Coordinator
-        let hosting: UIHostingController<Content>
+//        let hosting: UIHostingController<Content>
+        let content: () -> Content
         let transitionStyle: UIModalTransitionStyle
         let presentationStyle: UIModalPresentationStyle
         let backgroundColor: UIColor
@@ -100,10 +124,11 @@ struct FullScreen<Content: View>: UIViewControllerRepresentable {
              presentationStyle: UIModalPresentationStyle,
              isModalInPresentation: Bool,
              backgroundColor: UIColor,
-             content: Content
+             @ViewBuilder content: @escaping () -> Content
         ) {
             self.coordinator = coordinator
-            self.hosting = UIHostingController(rootView: content)
+            self.content = content
+//            self.hosting = UIHostingController(rootView: content)
             self.transitionStyle = transitionStyle
             self.presentationStyle = presentationStyle
             self.backgroundColor = backgroundColor
@@ -132,6 +157,7 @@ struct FullScreen<Content: View>: UIViewControllerRepresentable {
 
         // 表示
         func present() {
+            let hosting: UIHostingController = UIHostingController(rootView: content())
             // Hostingの設定
             hosting.isModalInPresentation = isModalInPresentation
             hosting.modalPresentationStyle = presentationStyle

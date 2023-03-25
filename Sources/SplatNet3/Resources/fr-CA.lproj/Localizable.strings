@@ -875,6 +875,7 @@ CoopHistory_CreditDesign = "Design UI/UX";
 CoopStage_Dummy = "???";
 CoopHistory_TeamPointCard = "Carte de points d'équipe";
 CoopHistory_UseEstimatedValue = "Utiliser des valeurs estimées";
+CoopHistory_UseEmpheralSession = "Utiliser la session d'emphase";
 CoopHistory_CheckInReward = "Récompenses";
 CoopHistory_GetCheckInReward = "Obtenez toutes les récompenses pour les codes QR.";
 CoopHistory_TeamResult = "L'équipe";

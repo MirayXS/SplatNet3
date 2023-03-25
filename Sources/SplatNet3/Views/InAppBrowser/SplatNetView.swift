@@ -63,6 +63,8 @@ struct SplatNetView: UIViewControllerRepresentable {
             var request: URLRequest = URLRequest(url: baseURL)
             self.contentId = contentId
             let webView: WKWebView = WKWebView(frame: .zero, configuration: configuration)
+            let indicator: UIActivityIndicatorView = UIActivityIndicatorView()
+            indicator.hidesWhenStopped = true
             self.bridge = WebViewJavascriptBridge(webView: webView)
 
             super.init(nibName: nil, bundle: nil)
@@ -76,27 +78,34 @@ struct SplatNetView: UIViewControllerRepresentable {
             webView.backgroundColor = UIColor(SPColor.SplatNet3.SPBackground)
             webView.uiDelegate = self
             webView.navigationDelegate = self
+            webView.addSubview(indicator)
 
             Task(priority: .utility, operation: {
                 /// どちらの場合でもX-GameWebTokenを利用してアクセスする
                 if let account = session.account {
-                    try await session.refreshIfNeeded(contentId: contentId)
-                    switch contentId {
-                    case .SP2:
-                        /// ヘッダーを更新
-                        request.headers.add(name: "X-GameWebToken", value: account.gameWebToken)
-                    case .SP3:
-                        /// クッキーを設定
-                        let cookie = HTTPCookie(properties: [
-                            HTTPCookiePropertyKey.name: "_gtoken",
-                            HTTPCookiePropertyKey.value: account.gameWebToken,
-                            HTTPCookiePropertyKey.domain: contentId.requestURL.host!,
-                            HTTPCookiePropertyKey.path: "/"])!
-                        await webView.configuration.websiteDataStore.httpCookieStore.setCookie(cookie)
+                    indicator.startAnimating()
+                    do {
+                        try await session.refreshIfNeeded(contentId: contentId)
+                        switch contentId {
+                        case .SP2:
+                            /// ヘッダーを更新
+                            request.headers.add(name: "X-GameWebToken", value: account.gameWebToken)
+                        case .SP3:
+                            /// クッキーを設定
+                            let cookie = HTTPCookie(properties: [
+                                HTTPCookiePropertyKey.name: "_gtoken",
+                                HTTPCookiePropertyKey.value: account.gameWebToken,
+                                HTTPCookiePropertyKey.domain: contentId.requestURL.host!,
+                                HTTPCookiePropertyKey.path: "/"])!
+                            await webView.configuration.websiteDataStore.httpCookieStore.setCookie(cookie)
+                        }
+                        indicator.stopAnimating()
+                        webView.load(request)
+                    } catch(let error) {
+                        webView.load(request)
                     }
-                    webView.load(request)
                 } else {
-                    dismiss(animated: true)
+                    webView.load(request)
                 }
             })
             self.view = webView

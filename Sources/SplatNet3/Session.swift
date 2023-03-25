@@ -48,6 +48,16 @@ open class Session: ObservableObject {
         }
     }
 
+    /// Safari Session
+    public var useEphmeralSession: Bool {
+        get {
+            keychain.useEphemeralSession
+        }
+        set {
+            keychain.useEphemeralSession = newValue
+        }
+    }
+
     /// アカウント情報
     @Published public var account: UserInfo?
 

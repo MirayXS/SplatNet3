@@ -875,6 +875,7 @@ CoopHistory_CreditDesign = "UI/UX дизайн";
 CoopStage_Dummy = "???";
 CoopHistory_TeamPointCard = "Карточка командных очков";
 CoopHistory_UseEstimatedValue = "Использовать оценочные значения";
+CoopHistory_UseEmpheralSession = "Используйте эмфиральную сессию";
 CoopHistory_CheckInReward = "Вознаграждения";
 CoopHistory_GetCheckInReward = "Получите все вознаграждения за QR-коды.";
 CoopHistory_TeamResult = "Команда";

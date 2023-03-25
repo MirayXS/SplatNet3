@@ -12,6 +12,7 @@ import SwiftUI
 struct SignInView: View {
     @EnvironmentObject var session: SP3Session
     @Environment(\.dismiss) var dismiss
+    
     let code: String
     let verifier: String
     let contentId: ContentId
@@ -159,12 +160,4 @@ struct _SignInView: View {
         })
     }
 }
-
-
-//struct SignInView_Previews: PreviewProvider {
-//    static let session: SPSession = SPSession()
-//    static var previews: some View {
-//        SignInView(code: "", verifier: "", contentId: .SP3)
-//    }
-//}
 

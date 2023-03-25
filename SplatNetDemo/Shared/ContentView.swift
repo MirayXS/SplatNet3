@@ -129,9 +129,9 @@ struct FilePickerButton: View {
         })
         .fullScreenCover(isPresented: $isPresented, content: {
             FilePickerView(fileType: .json, onSelected: { url in
-                Task {
+                Task(priority: .utility, {
                     try await RealmService.shared.imports(contentsOf: url)
-                }
+                })
             })
         })
     }

@@ -10,9 +10,44 @@ import SwiftUI
 struct CoopResultDownloadView: View {
     @EnvironmentObject var session: SP3Session
     @Environment(\.dismiss) var dismiss
-    @Binding var isPresented: Bool
     @State private var value: Float = .zero
     @State private var total: Float = 1
+    @State private var task: Task<(), Error>?
+
+    func download() {
+        self.task = Task {
+            do {
+                try await session.getCoopStageScheduleQuery()
+                let results: [CoopResult] = try await session.getAllCoopHistoryDetailQuery(completion: { value, total in
+                    withAnimation(.default) {
+                        self.value = value
+                        self.total = total
+                    }
+                })
+                if results.isEmpty {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
+                        dismiss()
+                    })
+                }
+                if session.useSalmonStats {
+                    try await session.uploadAllCoopResultDetailQuery(results: results, completion: { value, total in
+                    })
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
+                    dismiss()
+                })
+            } catch(let error) {
+                SwiftyLogger.error(error)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
+                    dismiss()
+                })
+            }
+        }
+    }
+
+    func cancel() {
+        self.task?.cancel()
+    }
 
     @ViewBuilder
     func makeBody(request: SPProgress) -> some View {
@@ -64,37 +99,10 @@ struct CoopResultDownloadView: View {
         .animation(.default, value: session.requests.count)
         .onDisappear(perform: {
             self.session.requests.removeAll()
+            self.task?.cancel()
         })
         .onAppear(perform: {
-            withAnimation(.none) {
-                self.total = 1
-                self.value = 0
-            }
-            Task(priority: .utility, operation: {
-                do {
-                    try await session.getCoopStageScheduleQuery()
-                    let results: [CoopResult] = try await session.getAllCoopHistoryDetailQuery(completion: { value, total in
-                        withAnimation(.default) {
-                            self.value = value
-                            self.total = total
-                        }
-                    })
-                    if !results.isEmpty && session.useSalmonStats {
-                        try await session.uploadAllCoopResultDetailQuery(results: results, completion: { value, total in
-                        })
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
-                        isPresented.toggle()
-                        dismiss()
-                    })
-                } catch(let error) {
-                    SwiftyLogger.error(error)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
-                        isPresented.toggle()
-                        dismiss()
-                    })
-                }
-            })
+            download()
         })
     }
 }
@@ -187,10 +195,18 @@ public struct CoopResultUploadView: View {
 }
 
 extension View {
-    public func fullScreen(isPresented: Binding<Bool>, session: SP3Session) -> some View {
-        self.fullScreen(isPresented: isPresented, content: {
-            return CoopResultDownloadView(isPresented: isPresented)
-                .environmentObject(session)
-        })
+    @ViewBuilder
+    public func fullScreen(
+        isPresented: Binding<Bool>,
+        backgroundColor: UIColor = .systemBackground,
+        session: SP3Session
+    ) -> some View {
+        self.fullScreen(
+            isPresented: isPresented,
+            backgroundColor: backgroundColor,
+            content: {
+                CoopResultDownloadView()
+                    .environmentObject(session)
+            })
     }
 }

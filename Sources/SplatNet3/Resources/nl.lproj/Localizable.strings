@@ -876,6 +876,7 @@ CoopHistory_CreditDesign = "UI/UX ontwerp";
 CoopStage_Dummy = "???";
 CoopHistory_TeamPointCard = "Teampuntenkaart";
 CoopHistory_UseEstimatedValue = "Gebruik geschatte waarden";
+CoopHistory_UseEmpheralSession = "Gebruik empirische sessie";
 CoopHistory_CheckInReward = "Beloningen";
 CoopHistory_GetCheckInReward = "Krijg alle beloningen voor QR-codes.";
 CoopHistory_TeamResult = "Team";

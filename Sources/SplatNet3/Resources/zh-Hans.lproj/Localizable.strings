@@ -875,6 +875,7 @@ CoopHistory_CreditDesign = "UI/UX设计";
 CoopStage_Dummy = "???";
 CoopHistory_TeamPointCard = "团队积分卡";
 CoopHistory_UseEstimatedValue = "使用估计值";
+CoopHistory_UseEmpheralSession = "nan";
 CoopHistory_CheckInReward = "奖励";
 CoopHistory_GetCheckInReward = "获得二维码的所有奖励。";
 CoopHistory_TeamResult = "团队";

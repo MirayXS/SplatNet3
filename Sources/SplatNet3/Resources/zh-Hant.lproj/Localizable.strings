@@ -875,6 +875,7 @@ CoopHistory_CreditDesign = "UI/UX設計";
 CoopStage_Dummy = "???";
 CoopHistory_TeamPointCard = "團隊點數卡";
 CoopHistory_UseEstimatedValue = "使用預估值";
+CoopHistory_UseEmpheralSession = "nan";
 CoopHistory_CheckInReward = "獎勵";
 CoopHistory_GetCheckInReward = "掃描QR碼獲取所有獎勵。";
 CoopHistory_TeamResult = "團隊";

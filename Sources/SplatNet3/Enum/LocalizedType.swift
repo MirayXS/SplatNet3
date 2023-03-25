@@ -1,7 +1,7 @@
 //
 //  LocalizedType.swift
 //
-//  Created by tkgstrator on 2023/03/24
+//  Created by tkgstrator on 2023/03/26
 //  Copyright @2022 Magi, Corporation. All rights reserved.
 //
 
@@ -1761,6 +1761,8 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case CoopHistory_TeamPointCard
 	/// 推定値を表示
 	case CoopHistory_UseEstimatedValue
+	/// Safariの認証を利用する
+	case CoopHistory_UseEmpheralSession
 	/// 報酬
 	case CoopHistory_CheckInReward
 	/// 過去に配布されていたQRコードの報酬を取得します。
@@ -1781,7 +1783,7 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case CoopHistory_AverageValue
 	/// この機能を利用するにはiOS16以上にアップデートする必要があります。
 	case CoopHistory_RequirediOS16
-	/// このアプリを利用するにはニンテンドーアカウントでログインする必要があります。マイページのログインボタンからログインを実行してください。
+	/// このアプリを利用するにはニンテンドーアカウントでログインする必要があります。
 	case CoopHistory_RequiredSignIn
 	/// リザルト復元に成功しました。
 	case CoopHistory_RestoreSuccess

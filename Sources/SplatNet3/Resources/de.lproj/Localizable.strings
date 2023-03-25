@@ -875,6 +875,7 @@ CoopHistory_CreditDesign = "UI/UX Gestaltung";
 CoopStage_Dummy = "???";
 CoopHistory_TeamPointCard = "Team-Punktekarte";
 CoopHistory_UseEstimatedValue = "Geschätzte Werte verwenden";
+CoopHistory_UseEmpheralSession = "Empherische Sitzung verwenden";
 CoopHistory_CheckInReward = "Belohnungen";
 CoopHistory_GetCheckInReward = "Holen Sie sich alle Belohnungen für QR-Codes.";
 CoopHistory_TeamResult = "Team";

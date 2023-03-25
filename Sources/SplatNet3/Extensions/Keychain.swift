@@ -13,6 +13,7 @@ extension Keychain {
     static private let xWebVersion: String = "X-Web-View-Ver"
     static private let xProductVersion: String = "X-ProductVersion"
     static private let useSalmonStats: String = "SalmonStats"
+    static private let useEphemeralSession: String = "prefersEphemeralWebBrowserSession"
 
     /// X-Web-View-Ver
     var version: String {
@@ -60,6 +61,27 @@ extension Keychain {
                 return
             }
             try? set(data, key: Keychain.useSalmonStats)
+        }
+    }
+
+    /// SalmonStats
+    var useEphemeralSession: Bool {
+        get {
+            let decoder: JSONDecoder = JSONDecoder()
+            guard let data: Data = try? getData(Keychain.useEphemeralSession),
+                  let rawValue: Bool = try? decoder.decode(Bool.self, from: data)
+            else {
+                return false
+            }
+            return rawValue
+        }
+        set {
+            let encoder: JSONEncoder = JSONEncoder()
+            guard let data: Data = try? encoder.encode(newValue)
+            else {
+                return
+            }
+            try? set(data, key: Keychain.useEphemeralSession)
         }
     }
 

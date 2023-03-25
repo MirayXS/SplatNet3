@@ -10,35 +10,75 @@ import UIKit
 import SwiftUI
 
 extension UIApplication {
-    /// iOS13以上でのDeprecated対策
+//    /// UIKitのコンポーネントをSwiftUIに変換して表示する
+//    public func present<Content: View>(
+//        isPresented: Binding<Bool>,
+//        isModalInPresentation: Bool = false,
+//        modalTransitionStyle: UIModalTransitionStyle = .coverVertical,
+//        modalPresentationStyle: UIModalPresentationStyle = .overFullScreen,
+//        @ViewBuilder content: @escaping () -> Content
+//    ) -> Void {
+//        guard let window: UIWindow = lastWindow
+//        else {
+//            return
+//        }
+//
+//        if isPresented.wrappedValue {
+//            window.isHidden = true
+//            let hosting: UIHostingController = UIHostingController(rootView: content())
+//            hosting.modalPresentationStyle = .overFullScreen
+//            hosting.isModalInPresentation = isModalInPresentation
+//            hosting.modalPresentationStyle = modalPresentationStyle
+//            hosting.modalTransitionStyle = modalTransitionStyle
+//            hosting.view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
+//            UIApplication.shared.presentedViewController?.present(hosting, animated: true, completion: nil)
+//        }
+//    }
+
+    /// UIWindow
     public var window: UIWindow? {
         UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first?.windows.first
     }
 
+    /// UIWindow
+    public var firstWindow: UIWindow? {
+        UIApplication.shared.foregroundScene?.windows.first
+    }
+
+    /// UIWindow
+    public var lastWindow: UIWindow? {
+        UIApplication.shared.foregroundScene?.windows.last
+    }
+
+    /// UIWindowScene
     public var foregroundScene: UIWindowScene? {
         UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first(where: { $0.activationState == .foregroundActive })
     }
 
     /// 現在表示されているViewの親View
     public var rootViewController: UIViewController? {
-        UIApplication.shared.connectedScenes
-            .filter({ $0.activationState == .foregroundActive })
-            .compactMap({ $0 as? UIWindowScene })
-            .first?
-            .windows
-            .first?
-            .rootViewController
+        firstWindow?.rootViewController
     }
 
     /// 現在表示されている最も上位のView
     public var presentedViewController: UIViewController? {
-        if let current = rootViewController?.presentedViewController {
-            if let presentedViewController = current.presentedViewController {
-                return presentedViewController
-            }
-            return current
+        guard let window: UIWindow = firstWindow
+        else {
+            return nil
         }
-        return rootViewController
+        // 秘密のおまじない
+        window.makeKeyAndVisible()
+
+        guard let rootViewController = window.rootViewController
+        else {
+            return nil
+        }
+
+        var topViewController: UIViewController? = rootViewController
+        while let newTopViewController: UIViewController = topViewController?.presentedViewController {
+            topViewController = newTopViewController
+        }
+        return topViewController
     }
 
     /// ロード画面を表示して処理を実行する
