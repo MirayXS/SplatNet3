@@ -892,3 +892,4 @@ CoopHistory_RestoreFailure = "Restore results failure. Unsupported format or sig
 CoopHistory_DeveloperAnswer = "Developer's response";
 CoopHistory_MinimumVersion = "Due to the data backuped by unsupported version, could not restore.";
 CoopHistory_InvalidSignature = "Due to the unmatch the signature of data, could not restore.";
+CoopHistory_License = "nan";

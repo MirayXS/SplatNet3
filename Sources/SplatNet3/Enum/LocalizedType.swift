@@ -1795,4 +1795,6 @@ public enum LocalizedType: String, CaseIterable, Identifiable, Codable {
 	case CoopHistory_MinimumVersion
 	/// バックアップの署名が一致しなかったため復元できませんでした。リザルトが改ざんされている可能性があります。
 	case CoopHistory_InvalidSignature
+	/// ライセンス
+	case CoopHistory_License
 }

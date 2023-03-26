@@ -892,3 +892,4 @@ CoopHistory_RestoreFailure = "還原結果失敗。不支援的格式或檔案�
 CoopHistory_DeveloperAnswer = "開發者的回應";
 CoopHistory_MinimumVersion = "nan";
 CoopHistory_InvalidSignature = "nan";
+CoopHistory_License = "nan";

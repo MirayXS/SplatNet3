@@ -892,3 +892,4 @@ CoopHistory_RestoreFailure = "결과 복원 실패. 지원하지 않는 형식 �
 CoopHistory_DeveloperAnswer = "소개";
 CoopHistory_MinimumVersion = "Due to the data backuped by unsupported version, could not restore.";
 CoopHistory_InvalidSignature = "Due to the unmatch the signature of data, could not restore.";
+CoopHistory_License = "nan";

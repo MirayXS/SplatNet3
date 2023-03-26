@@ -7,7 +7,6 @@
 
 import Foundation
 import Alamofire
-import SwiftyJSON
 
 public class CoopStatsResultsQuery: RequestType {
     public typealias ResponseType = [Response]

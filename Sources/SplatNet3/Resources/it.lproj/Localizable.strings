@@ -892,3 +892,4 @@ CoopHistory_RestoreFailure = "Risultato del ripristino non riuscito. Il formato 
 CoopHistory_DeveloperAnswer = "Risposta dello sviluppatore";
 CoopHistory_MinimumVersion = "A causa del backup dei dati effettuato con una versione non supportata, non è stato possibile eseguire il ripristino.";
 CoopHistory_InvalidSignature = "A causa della mancata corrispondenza della firma dei dati, non è stato possibile eseguire il ripristino.";
+CoopHistory_License = "nan";
