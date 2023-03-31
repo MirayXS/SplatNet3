@@ -26,6 +26,8 @@ enum NSScriptMessage {
     case downloadImages([URL])
     ///  最近追加されたよくわからないやつ
     case endHookConsole
+    case sourceCamera
+    case sourcePhotoLibrary
 
     init?(rawValue: Any?) {
         let decoder: SPDecoder = SPDecoder()
@@ -81,6 +83,12 @@ enum NSScriptMessage {
         case .endHookConsole:
             self = .endHookConsole
             return
+        case .sourceCamera:
+            self = .sourceCamera
+            return
+        case .sourcePhotoLibrary:
+            self = .sourcePhotoLibrary
+            return
         }
     }
 }
@@ -118,6 +126,8 @@ enum NSScriptMessageName: String, CaseIterable {
     case copyToClipboard
     case downloadImages
     case endHookConsole = "end hook Console."
+    case sourceCamera = #"{"source":"camera"}"#
+    case sourcePhotoLibrary = #"{"source":"photo_library"}"#
 
     static func from(rawValue: String) -> Self? {
         if let script: Self = Self(rawValue: rawValue) {

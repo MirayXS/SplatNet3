@@ -148,7 +148,9 @@ struct _SignInView: View {
                 do {
                     try await session.refresh(sessionToken: sessionToken, contentId: contentId)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
-                        UIApplication.shared.rootViewController?.dismiss(animated: true)
+                        UIApplication.shared.rootViewController?.dismiss(animated: true, completion: {
+                            session.objectWillChange.send()
+                        })
                     })
                 } catch(let error) {
                     SwiftyLogger.error(error)

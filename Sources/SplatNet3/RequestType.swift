@@ -29,7 +29,12 @@ public protocol RequestType: URLRequestConvertible {
 public extension RequestType {
     /// パラメータのエンコード方式
     var encoding: ParameterEncoding {
-        JSONEncoding.default
+        switch method {
+        case .post, .put, .patch:
+            return JSONEncoding.default
+        default:
+            return URLEncoding.queryString
+        }
     }
 
     /// URLリクエストに変換する

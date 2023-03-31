@@ -892,4 +892,5 @@ CoopHistory_RestoreFailure = "Fallo en los resultados de la restauración. Forma
 CoopHistory_DeveloperAnswer = "Respuesta del promotor";
 CoopHistory_MinimumVersion = "Debido a que la copia de seguridad de los datos se realizó con una versión no compatible, no se pudo restaurar.";
 CoopHistory_InvalidSignature = "Debido a la no coincidencia de la firma de los datos, no se pudo restaurar.";
-CoopHistory_License = "nan";
+CoopHistory_SystemTheme = "Depende de la configuración del dispositivo";
+CoopHistory_License = "Licencia";

@@ -892,4 +892,5 @@ CoopHistory_RestoreFailure = "Wiederherstellungsergebnisse sind fehlgeschlagen. 
 CoopHistory_DeveloperAnswer = "Antwort des Entwicklers";
 CoopHistory_MinimumVersion = "Da die Daten von einer nicht unterstützten Version gesichert wurden, konnten sie nicht wiederhergestellt werden.";
 CoopHistory_InvalidSignature = "Da die Signatur der Daten nicht übereinstimmt, konnte sie nicht wiederhergestellt werden.";
+CoopHistory_SystemTheme = "Abhängig von den Geräteeinstellungen";
 CoopHistory_License = "License";

@@ -100,8 +100,10 @@ open class SP3Session: Session {
         /// 取得すべきリザルトのID
         let resultIds: [Common.ResultId] = {
             if let playTime = playTime {
+                SwiftyLogger.info("Download Results from \(playTime)")
                 return nodes.flatMap({ $0.historyDetails.nodes.map({ $0.id }) }).filter({ $0.playTime > playTime })
             }
+            SwiftyLogger.info("Download Results from at first")
             return nodes.flatMap({ $0.historyDetails.nodes.map({ $0.id }) })
         }()
         /// 取得するIDがないなら何もせずに返す
@@ -178,7 +180,11 @@ extension SP3Session: Authenticator {
 
     public func apply(_ credential: UserInfo, to urlRequest: inout URLRequest) {
         if let bulletToken: String = credential.bulletToken {
+            #if DEBUG
             urlRequest.headers.add(.authorization(bearerToken: bulletToken))
+            #else
+            urlRequest.headers.add(.authorization(bearerToken: bulletToken))
+            #endif
             urlRequest.headers.add(name: "X-Web-View-Ver", value: version)
         }
     }
@@ -249,6 +255,10 @@ extension SP3Session: Authenticator {
             }
         })
         return response
+    }
+
+    func getCheckInWithQRCodeMutation(eventId: String) async throws -> CheckinWithQRCodeMutation.CreateCheckinHistory {
+        return try await request(CheckinWithQRCodeMutation(eventId: eventId)).data.createCheckinHistory
     }
 
     private func getCheckInWithQRCodeMutation(eventId: CheckinWithQRCodeMutation.CheckInEventId) async throws -> CheckinWithQRCodeMutation.CreateCheckinHistory {

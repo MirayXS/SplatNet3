@@ -65,6 +65,7 @@ struct SplatNetView: UIViewControllerRepresentable {
             let webView: WKWebView = WKWebView(frame: .zero, configuration: configuration)
             let indicator: UIActivityIndicatorView = UIActivityIndicatorView()
             indicator.hidesWhenStopped = true
+            indicator.translatesAutoresizingMaskIntoConstraints = false
             self.bridge = WebViewJavascriptBridge(webView: webView)
 
             super.init(nibName: nil, bundle: nil)
@@ -78,18 +79,21 @@ struct SplatNetView: UIViewControllerRepresentable {
             webView.backgroundColor = UIColor(SPColor.SplatNet3.SPBackground)
             webView.uiDelegate = self
             webView.navigationDelegate = self
+            indicator.center = view.center
             webView.addSubview(indicator)
 
             Task(priority: .utility, operation: {
                 /// どちらの場合でもX-GameWebTokenを利用してアクセスする
-                if let account = session.account {
+                if let gameWebToken = session.account?.gameWebToken {
                     indicator.startAnimating()
                     do {
-                        try await session.refreshIfNeeded(contentId: contentId)
+                        let account: UserInfo = try await session.refreshIfNeeded(contentId: contentId)
                         switch contentId {
                         case .SP2:
                             /// ヘッダーを更新
                             request.headers.add(name: "X-GameWebToken", value: account.gameWebToken)
+                            indicator.stopAnimating()
+                            webView.load(request)
                         case .SP3:
                             /// クッキーを設定
                             let cookie = HTTPCookie(properties: [
@@ -98,9 +102,9 @@ struct SplatNetView: UIViewControllerRepresentable {
                                 HTTPCookiePropertyKey.domain: contentId.requestURL.host!,
                                 HTTPCookiePropertyKey.path: "/"])!
                             await webView.configuration.websiteDataStore.httpCookieStore.setCookie(cookie)
+                            indicator.stopAnimating()
+                            webView.load(request)
                         }
-                        indicator.stopAnimating()
-                        webView.load(request)
                     } catch(let error) {
                         webView.load(request)
                     }
@@ -150,7 +154,6 @@ struct SplatNetView: UIViewControllerRepresentable {
 
         /// JavaScriptを実行する
         private func evaluateJavaScript(_ content: Any?) {
-            print(content)
             guard let script: NSScriptMessage = NSScriptMessage(rawValue: content) else {
                 return
             }
@@ -199,6 +202,10 @@ struct SplatNetView: UIViewControllerRepresentable {
                     alert.addAction(action)
                     present(alert, animated: true)
                 })
+            case .sourceCamera:
+                let reader: UIHostingController = UIHostingController(rootView: QRReaderView().edgesIgnoringSafeArea(.all))
+                reader.modalPresentationStyle = .formSheet
+                UIApplication.shared.presentedViewController?.present(reader, animated: true)
             default:
                 break
             }
