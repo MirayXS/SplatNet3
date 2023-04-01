@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftyBeaver
+import UIKit
 
 public class SwiftyLogger {
 
@@ -14,8 +15,15 @@ public class SwiftyLogger {
     static let format: String = "$DHH:mm:ss$d $L: $M"
 
     public static func configure() {
-        SwiftyLogger.logger.addDestination(FileDestination(format: SwiftyLogger.format))
-        SwiftyLogger.logger.addDestination(ConsoleDestination(format: SwiftyLogger.format))
+        logger.addDestination(FileDestination(format: SwiftyLogger.format))
+        logger.addDestination(ConsoleDestination(format: SwiftyLogger.format))
+
+        /// 起動時にログ出力
+        logger.info("iOS Version: \(UIDevice.current.iOSVersion)")
+        logger.info("App Version: \(UIDevice.current.version) \(UIDevice.current.buildVersion)")
+        if let uuid: UUID = UIDevice.current.identifierForVendor {
+            logger.info("Device UUID: \(uuid.uuidString)")
+        }
     }
 
     static public let baseURL: URL = {
@@ -24,16 +32,6 @@ public class SwiftyLogger {
         }
         return baseURL.appendingPathComponent("swiftybeaver").appendingPathExtension("log")
     }()
-
-    static public func json<T: Codable>(_ message: T) {
-        let encoder: SPEncoder = SPEncoder()
-        guard let data: Data = try? encoder.encode(message),
-              let stringValue: String = String(data: data, encoding: .utf8)
-        else {
-            return
-        }
-        logger.info(stringValue)
-    }
 
     static public func info(_ message: Any, context: Any? = nil) {
         self.logger.info(message, context: context)
@@ -77,15 +75,6 @@ public class SwiftyLogger {
         } catch(let error) {
             self.error(error)
         }
-    }
-}
-
-public extension SwiftyLogger {
-    class func addDestination(appId: String, appSecret: String, encryptionKey: String) {
-        let format: String = "$DHH:mm:ss.SSS$d $N.$F:$l - $M"
-        let platform: SBPlatformDestination = SBPlatformDestination(appID: appId, appSecret: appSecret, encryptionKey: encryptionKey)
-        platform.format = format
-        SwiftyLogger.logger.addDestination(platform)
     }
 }
 

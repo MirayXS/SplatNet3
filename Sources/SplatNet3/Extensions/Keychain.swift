@@ -122,7 +122,6 @@ extension Keychain {
         do {
             return try decoder.decode(UserInfo.self, from: data)
         } catch (let error) {
-            SwiftyLogger.error(error.localizedDescription)
             return nil
         }
     }

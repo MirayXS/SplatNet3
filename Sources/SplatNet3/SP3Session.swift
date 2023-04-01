@@ -84,7 +84,6 @@ open class SP3Session: Session {
     open func getCoopStageScheduleQuery() async throws -> [CoopSchedule] {
         let response: StageScheduleQuery.CoopGroupingSchedule = try await request(StageScheduleQuery()).data.coopGroupingSchedule
         let nodes: [StageScheduleQuery.CoopSchedule] = response.bigRunSchedules.nodes + response.regularSchedules.nodes
-        SwiftyLogger.json(nodes)
         return nodes.map({ CoopSchedule(schedule: $0) })
     }
 
@@ -101,10 +100,8 @@ open class SP3Session: Session {
         /// 取得すべきリザルトのID
         let resultIds: [Common.ResultId] = {
             if let playTime = playTime {
-                SwiftyLogger.info("Download Results from \(playTime)")
                 return nodes.flatMap({ $0.historyDetails.nodes.map({ $0.id }) }).filter({ $0.playTime > playTime })
             }
-            SwiftyLogger.info("Download Results from at first")
             return nodes.flatMap({ $0.historyDetails.nodes.map({ $0.id }) })
         }()
         /// 取得するIDがないなら何もせずに返す

@@ -47,7 +47,6 @@ public actor RealmService: ObservableObject {
             try data.write(to: path, options: .atomic)
             return path
         } catch(let error) {
-            SwiftyLogger.error(error)
             throw error
         }
     }

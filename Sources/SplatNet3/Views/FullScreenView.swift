@@ -37,7 +37,6 @@ struct CoopResultDownloadView: View {
                     dismiss()
                 })
             } catch(let error) {
-                SwiftyLogger.error(error)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
                     dismiss()
                 })
@@ -184,7 +183,6 @@ public struct CoopResultUploadView: View {
                         dismiss()
                     })
                 } catch(let error) {
-                    SwiftyLogger.error(error)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
                         dismiss()
                     })
@@ -192,21 +190,4 @@ public struct CoopResultUploadView: View {
             })
         })
     }
-}
-
-extension View {
-//    @ViewBuilder
-//    public func fullScreen(
-//        isPresented: Binding<Bool>,
-//        backgroundColor: UIColor = .systemBackground,
-//        session: SP3Session
-//    ) -> some View {
-//        self.fullScreen(
-//            isPresented: isPresented,
-//            backgroundColor: backgroundColor,
-//            content: {
-//                CoopResultDownloadView()
-//                    .environmentObject(session)
-//            })
-//    }
 }

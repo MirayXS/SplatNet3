@@ -162,11 +162,12 @@ open class Session: ObservableObject {
 
 /// 秘匿したい関数を定義したExtension
 extension Session: RequestInterceptor {
+    /// エラー発生時に自動でログを出力するリクエスト
     private func withSwiftyLogger<T>(execute: () async throws -> T) async throws -> T {
         do {
             return try await execute()
         } catch(let error) {
-            SwiftyLogger.error(error.localizedDescription)
+            SwiftyLogger.error(error)
             throw error
         }
     }
@@ -192,10 +193,8 @@ extension Session: RequestInterceptor {
             return try await request(Imink(accessToken: accessToken, server: .Imink))
         } catch(let error) {
             do {
-                SwiftyLogger.error(error.localizedDescription)
                 return try await request(Imink(accessToken: accessToken, server: .Flapg), interceptor: self)
             } catch(let error) {
-                SwiftyLogger.error(error.localizedDescription)
                 return try await request(Imink(accessToken: accessToken, server: .Nxapi))
             }
         }
@@ -207,10 +206,8 @@ extension Session: RequestInterceptor {
             return try await request(Imink(accessToken: accessToken, server: .Imink))
         } catch(let error) {
             do {
-                SwiftyLogger.error(error.localizedDescription)
                 return try await request(Imink(accessToken: accessToken, server: .Flapg), interceptor: self)
             } catch(let error) {
-                SwiftyLogger.error(error.localizedDescription)
                 return try await request(Imink(accessToken: accessToken, server: .Nxapi))
             }
         }

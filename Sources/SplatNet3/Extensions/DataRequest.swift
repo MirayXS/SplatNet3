@@ -16,27 +16,13 @@ extension DataRequest {
         let decoder: JSONDecoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         return cURLDescription(calling: { requestURL in
+            #if DEBUG
             SwiftyLogger.debug(requestURL)
+            #endif
         })
         .validate({ request, response, data in
             DataRequest.ValidationResult(catching: {
-                /// アクセスしたURLをログに保存
-                if let targetURL: URL = request?.url
-                {
-                    SwiftyLogger.info("URL: \(targetURL)")
-                }
-                /// GraphQL以外はレスポンスデータをログに残す
                 if let data = data {
-                    if let targetURL: URL = request?.url,
-                       targetURL.lastPathComponent != "graphql",
-                       let response = try? JSONSerialization.jsonObject(with: data)
-                    {
-                        #if DEBUG
-                        /// 取得したデータをログに保存
-                        SwiftyLogger.verbose(response)
-                        #endif
-                    }
-
                     if let failure = try? decoder.decode(Failure.NSO.self, from: data) {
                         throw failure
                     }
@@ -45,7 +31,6 @@ extension DataRequest {
                     }
                 }
                 if (response.statusCode < 200) || (response.statusCode >= 400) {
-                    SwiftyLogger.error("Unacceptable status code: \(response.statusCode)")
                     throw Failure.API(statusCode: response.statusCode)
                 }
             })
