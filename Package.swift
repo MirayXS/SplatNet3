@@ -23,6 +23,7 @@ let package = Package(
         .package(url: "https://github.com/SwiftyBeaver/SwiftyBeaver.git", from: "1.9.6"),
         .package(url: "https://github.com/SDBridge/SDBridgeSwift.git", from: "1.1.0"),
         .package(url: "https://github.com/stleamist/BetterSafariView.git", from: "2.4.0"),
+        .package(url: "https://github.com/siteline/SwiftUI-Introspect.git", from: "0.2.3"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -35,6 +36,7 @@ let package = Package(
                 "SwiftyBeaver",
                 "SDBridgeSwift",
                 "BetterSafariView",
+                .product(name: "Introspect", package: "SwiftUI-Introspect")
             ],
             resources: [.process("Resources")]),
         .testTarget(

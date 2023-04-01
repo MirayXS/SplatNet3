@@ -25,11 +25,14 @@ public class SwiftyLogger {
         return baseURL.appendingPathComponent("swiftybeaver").appendingPathExtension("log")
     }()
 
-    static public func json(_ message: Any, context: Any? = nil) {
-        let logger: SwiftyBeaver.Type = SwiftyBeaver.self
-        logger.addDestination(FileDestination(format: "$J"))
-        logger.addDestination(ConsoleDestination(format: "$J"))
-        logger.info(message)
+    static public func json<T: Codable>(_ message: T) {
+        let encoder: SPEncoder = SPEncoder()
+        guard let data: Data = try? encoder.encode(message),
+              let stringValue: String = String(data: data, encoding: .utf8)
+        else {
+            return
+        }
+        logger.info(stringValue)
     }
 
     static public func info(_ message: Any, context: Any? = nil) {

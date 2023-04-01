@@ -15,7 +15,7 @@ final class SplatNet3Tests: XCTestCase {
             for path in paths {
                 let data: Data = try Data(contentsOf: path)
                 let response = try decoder.decode(HistoryRecordQuery.Response.self, from: data)
-                dump(response)
+//                dump(response)
             }
         } catch (let error) {
             SwiftyLogger.error(error.localizedDescription)
@@ -29,7 +29,7 @@ final class SplatNet3Tests: XCTestCase {
             for path in paths {
                 let data: Data = try Data(contentsOf: path)
                 let response = try decoder.decode(CoopHistoryQuery.Response.self, from: data)
-                dump(response)
+//                dump(response)
             }
         } catch (let error) {
             SwiftyLogger.error(error.localizedDescription)

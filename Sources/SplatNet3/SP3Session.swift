@@ -84,6 +84,7 @@ open class SP3Session: Session {
     open func getCoopStageScheduleQuery() async throws -> [CoopSchedule] {
         let response: StageScheduleQuery.CoopGroupingSchedule = try await request(StageScheduleQuery()).data.coopGroupingSchedule
         let nodes: [StageScheduleQuery.CoopSchedule] = response.bigRunSchedules.nodes + response.regularSchedules.nodes
+        SwiftyLogger.json(nodes)
         return nodes.map({ CoopSchedule(schedule: $0) })
     }
 

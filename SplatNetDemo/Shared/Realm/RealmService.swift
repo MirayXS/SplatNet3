@@ -34,8 +34,7 @@ public actor RealmService: ObservableObject {
         }()
         let schedules: RealmSwift.Results<RealmCoopSchedule> = realm.objects(RealmCoopSchedule.self)
         let fileName: String = {
-            let formatter: DateFormatter = DateFormatter()
-            formatter.dateFormat = "yyyymmddHHMMss"
+            let formatter: SPDateFormatter = SPDateFormatter()
             return formatter.string(from: Date())
         }()
         do {
