@@ -52,13 +52,16 @@ extension DataRequest {
 
                 if let data = data {
                     if let failure = try? decoder.decode(Failure.NSO.self, from: data) {
+                        SwiftyLogger.error(failure.errorMessage.rawValue)
                         throw failure
                     }
                     if let failure = try? decoder.decode(Failure.APP.self, from: data) {
+                        SwiftyLogger.error(failure.errorMessage.rawValue)
                         throw failure
                     }
                 }
                 if (response.statusCode < 200) || (response.statusCode >= 400) {
+                    SwiftyLogger.error("Status Code: \(response.statusCode)")
                     throw Failure.API(statusCode: response.statusCode)
                 }
             })
