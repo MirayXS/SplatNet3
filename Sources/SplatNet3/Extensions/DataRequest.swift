@@ -16,41 +16,44 @@ extension DataRequest {
         let decoder: JSONDecoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         return cURLDescription(calling: { requestURL in
-            #if DEBUG
+#if DEBUG
             if !requestURL.contains("api.splatnet3.com") {
-                SwiftyLogger.debug(requestURL)
+//                SwiftyLogger.debug(requestURL)
             }
-            #endif
+#endif
         })
         .validate({ request, response, data in
             DataRequest.ValidationResult(catching: {
-                /// 簡易的にアクセスしたURLの中身を返す
+                /// リクエストURL
                 if let targetURL: URL = request?.url {
                     SwiftyLogger.info("Request URL: \(targetURL)")
                 }
+
+                /// リクエストヘッダー
                 if let headers: HTTPHeaders = request?.headers {
                     headers.forEach({ header in
                         /// 認証に関するヘッダー以外を出力する
-                        if header.name != "Authorization" {
-                            SwiftyLogger.info("Request Headers: \(header)")
-                        } else {
-                            SwiftyLogger.info("Request Headers: \(header.name): Bearer \(Array(repeating: "*", count: max(0, header.value.count - 7)).joined())")
-                        }
-                    })
-                }
-                if let targetURL: URL = request?.url,
-                   let httpBody: Data = request?.httpBody,
-                   let body: [String: Any] = try? JSONSerialization.jsonObject(with: httpBody, options: [.json5Allowed]) as? [String: Any],
-                   targetURL.lastPathComponent == "graphql"
-                {
-                    body.forEach({ key, value in
-                        if key.contains("variables") {
-                            SwiftyLogger.info("Request Body: \(key): \(value)")
-                        }
+                        let requestHeader: RequestHeader = RequestHeader(header: header)
+                        SwiftyLogger.info("Request Headers: \(requestHeader.description)")
                     })
                 }
 
-                if let data = data {
+                /// リクエストボディ
+                if let httpBody: Data = request?.httpBody,
+                   let dictionary: [String: Any] = try? JSONSerialization.jsonObject(with: httpBody) as? [String: Any]
+                {
+                    dictionary.flatten.forEach({ (key, value) in
+                        SwiftyLogger.info("Request Body: \(key): \(value)")
+                    })
+                }
+
+                if let data: Data = data,
+                   let dictionary: [String: Any] = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+                {
+                    /// レスポンスボディ
+                    dictionary.flatten.forEach({ (key, value) in
+                        SwiftyLogger.info("Response Body: \(key): \(value)")
+                    })
                     if let failure = try? decoder.decode(Failure.NSO.self, from: data) {
                         SwiftyLogger.error(failure.errorMessage.rawValue)
                         throw failure
