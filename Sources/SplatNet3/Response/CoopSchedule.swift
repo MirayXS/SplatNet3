@@ -26,7 +26,16 @@ public struct CoopSchedule: Codable {
         self.rareWeapon = try container.decodeIfPresent(WeaponId.self, forKey: .rareWeapon)
         let setting: CoopSetting = try container.decode(CoopSetting.self, forKey: .setting)
         self.mode = .REGULAR
-        self.rule = setting == .CoopBigRunSetting ? .BIG_RUN : .REGULAR
+        self.rule = {
+            switch setting {
+            case .CoopBigRunSetting:
+                return .BIG_RUN
+            case .CoopNormalSetting:
+                return .REGULAR
+            case .CoopContestSetting:
+                return .CONTEST
+            }
+        }()
         self.setting = setting
     }
 
@@ -35,7 +44,16 @@ public struct CoopSchedule: Codable {
         self.startTime = schedule.startTime
         self.endTime = schedule.endTime
         self.mode = .REGULAR
-        self.rule = schedule.setting.isCoopSetting == .CoopNormalSetting ? .REGULAR : .BIG_RUN
+        self.rule = {
+            switch schedule.setting.isCoopSetting {
+            case .CoopBigRunSetting:
+                return .BIG_RUN
+            case .CoopNormalSetting:
+                return .REGULAR
+            case .CoopContestSetting:
+                return .CONTEST
+            }
+        }()
         self.weaponList = schedule.setting.weapons.map({ $0.image.url.asWeaponId() })
         self.rareWeapon = nil
         self.setting = schedule.setting.isCoopSetting

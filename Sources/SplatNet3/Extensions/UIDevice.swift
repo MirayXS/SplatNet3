@@ -32,5 +32,10 @@ extension UIDevice {
         }
         return bundleShortVersion
     }
+
+    /// アプリバージョンをUInt64に変換した数値
+    public var versionId: UInt64 {
+        UInt64(version.split(separator: ".").compactMap({ Int($0) }).map({ String(format: "%02d", $0)}).joined(), radix: 16) ?? 0
+    }
 }
 

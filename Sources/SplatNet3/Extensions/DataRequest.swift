@@ -18,7 +18,7 @@ extension DataRequest {
         return cURLDescription(calling: { requestURL in
 #if DEBUG
             if !requestURL.contains("api.splatnet3.com") {
-//                SwiftyLogger.debug(requestURL)
+                SwiftyLogger.debug(requestURL)
             }
 #endif
         })
@@ -40,7 +40,9 @@ extension DataRequest {
 
                 /// リクエストボディ
                 if let httpBody: Data = request?.httpBody,
-                   let dictionary: [String: Any] = try? JSONSerialization.jsonObject(with: httpBody) as? [String: Any]
+                   let dictionary: [String: Any] = try? JSONSerialization.jsonObject(with: httpBody) as? [String: Any],
+                   let targetURL: URL = request?.url,
+                   !["results"].contains(targetURL.lastPathComponent)
                 {
                     dictionary.flatten.forEach({ (key, value) in
                         SwiftyLogger.info("Request Body: \(key): \(value)")
@@ -48,7 +50,9 @@ extension DataRequest {
                 }
 
                 if let data: Data = data,
-                   let dictionary: [String: Any] = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+                   let dictionary: [String: Any] = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let targetURL: URL = request?.url,
+                   !["graphql", "results"].contains(targetURL.lastPathComponent)
                 {
                     /// レスポンスボディ
                     dictionary.flatten.forEach({ (key, value) in

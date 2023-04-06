@@ -195,8 +195,8 @@ public struct CoopResult: Codable {
             self.isClear = {
                 // EX-WAVEがあれば
                 if let bossDefeated = bossDefeated {
-                    // EX-WAVEの結果はbossDefeated、それ以外はクリア
-                    return content.waveNumber == 4 ? bossDefeated : true
+                    // ノルマがnullならEX-WAVEはbossDefeated、それ以外はクリア
+                    return content.deliverNorm == nil ? bossDefeated : true
                 }
                 // それ以外は失敗したWAVEかどうか
                 return !(content.waveNumber == resultWave)

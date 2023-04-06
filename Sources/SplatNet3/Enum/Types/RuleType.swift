@@ -12,5 +12,6 @@ public enum RuleType: String, CaseIterable, Codable {
 
     case UNKNOWN
     case REGULAR
+    case CONTEST
     case BIG_RUN
 }

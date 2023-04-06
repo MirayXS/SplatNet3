@@ -55,11 +55,11 @@ public final class StageScheduleQuery: GraphQL {
     public struct BankaraSchedule: Codable {
         public let startTime: Date
         public let endTime: Date
-        public let bankaraMatchSettings: [MatchSetting]?
+//        public let bankaraMatchSettings: [MatchSetting]?
 //        public let festMatchSetting: JSONNull?
-        public let leagueMatchSetting: MatchSetting?
-        public let regularMatchSetting: MatchSetting?
-        public let xMatchSetting: MatchSetting?
+//        public let leagueMatchSetting: MatchSetting?
+//        public let regularMatchSetting: MatchSetting?
+//        public let xMatchSetting: MatchSetting?
     }
 
     // MARK: - MatchSetting
@@ -142,12 +142,7 @@ public final class StageScheduleQuery: GraphQL {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.coopStage = try container.decode(StageScheduleQuery.CoopStage.self, forKey: StageScheduleQuery.Setting.CodingKeys.coopStage)
             self.weapons = try container.decode([WeaponType].self, forKey: StageScheduleQuery.Setting.CodingKeys.weapons)
-            self.isCoopSetting = {
-                if let setting: CoopSetting = try? container.decode(CoopSetting.self, forKey: .isCoopSetting) {
-                    return setting
-                }
-                return .CoopNormalSetting
-            }()
+            self.isCoopSetting = try container.decode(CoopSetting.self, forKey: .isCoopSetting)
         }
     }
 
