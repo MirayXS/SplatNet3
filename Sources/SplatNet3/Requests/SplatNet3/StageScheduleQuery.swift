@@ -49,6 +49,11 @@ public final class StageScheduleQuery: GraphQL {
         public let regularSchedules: Common.Node<CoopSchedule>
         public let bigRunSchedules: Common.Node<CoopSchedule>
         public let teamContestSchedules: Common.Node<CoopSchedule>
+
+        /// いつものバイト、ビッグラン、チームコンテンストのスケジュールをマージしたもの
+        public var schedules: [CoopSchedule] {
+            [regularSchedules, bigRunSchedules, teamContestSchedules].flatMap({ $0.nodes })
+        }
     }
 
     // MARK: - BankaraSchedulesNode

@@ -42,7 +42,7 @@ extension DataRequest {
                 if let httpBody: Data = request?.httpBody,
                    let dictionary: [String: Any] = try? JSONSerialization.jsonObject(with: httpBody) as? [String: Any],
                    let targetURL: URL = request?.url,
-                   !["results"].contains(targetURL.lastPathComponent)
+                   !["results", "pages", "query"].contains(targetURL.lastPathComponent)
                 {
                     dictionary.flatten.forEach({ (key, value) in
                         SwiftyLogger.info("Request Body: \(key): \(value)")
@@ -52,7 +52,7 @@ extension DataRequest {
                 if let data: Data = data,
                    let dictionary: [String: Any] = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                    let targetURL: URL = request?.url,
-                   !["graphql", "results"].contains(targetURL.lastPathComponent)
+                   !["graphql", "results", "pages", "query"].contains(targetURL.lastPathComponent)
                 {
                     /// レスポンスボディ
                     dictionary.flatten.forEach({ (key, value) in

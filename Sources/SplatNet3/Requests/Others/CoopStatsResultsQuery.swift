@@ -11,12 +11,11 @@ import Alamofire
 public class CoopStatsResultsQuery: RequestType {
     public typealias ResponseType = [Response]
     #if DEBUG
-//    public var baseURL: URL = URL(unsafeString: "https://api.splatnet3.com/")
     public var baseURL: URL = URL(unsafeString: "http://localhost:8080/")
     #else
     public var baseURL: URL = URL(unsafeString: "https://api.splatnet3.com/")
     #endif
-    public var path: String = "v1/results"
+    public var path: String = "v2/results"
     public var parameters: Parameters?
     public var headers: [String: String]?
     public var method: HTTPMethod = .post

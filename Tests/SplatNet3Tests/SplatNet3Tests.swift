@@ -79,7 +79,8 @@ final class SplatNet3Tests: XCTestCase {
             do {
                 try autoreleasepool(invoking: {
                     let data: Data = try Data(contentsOf: path)
-                    try decoder.decode(StageScheduleQuery.Response.self, from: data)
+                    let response: StageScheduleQuery.Response = try decoder.decode(StageScheduleQuery.Response.self, from: data)
+                    print(response.data.coopGroupingSchedule.teamContestSchedules)
                 })
             } catch (let error) {
                 SwiftyLogger.info(path)

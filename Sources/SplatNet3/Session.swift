@@ -64,6 +64,11 @@ open class Session: ObservableObject {
     init() {
         // インスタンス生成時にアカウントを読み込み
         self.account = keychain.get()
+        #if DEBUG
+        if let account: UserInfo = account {
+            SwiftyLogger.debug("GameWebToken: \(account.gameWebToken)")
+        }
+        #endif
     }
 
     /// 一般的に使うリクエスト

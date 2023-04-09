@@ -82,9 +82,7 @@ open class SP3Session: Session {
 
     @discardableResult
     open func getCoopStageScheduleQuery() async throws -> [CoopSchedule] {
-        let response: StageScheduleQuery.CoopGroupingSchedule = try await request(StageScheduleQuery()).data.coopGroupingSchedule
-        let nodes: [StageScheduleQuery.CoopSchedule] = response.bigRunSchedules.nodes + response.regularSchedules.nodes
-        return nodes.map({ CoopSchedule(schedule: $0) })
+        try await request(StageScheduleQuery()).data.coopGroupingSchedule.schedules.map({ CoopSchedule(schedule: $0) })
     }
 
     open func getCoopHistoryQuery() async throws -> CoopHistoryQuery.CoopResult {
@@ -263,9 +261,9 @@ extension SP3Session: Authenticator {
         return try await request(CheckinWithQRCodeMutation(eventId: eventId)).data.createCheckinHistory
     }
 
-    private func getCoopStageScheduleQuery() async throws -> [StageScheduleQuery.CoopSchedule] {
-        return try await request(StageScheduleQuery()).data.coopGroupingSchedule.regularSchedules.nodes
-    }
+//    private func getCoopStageScheduleQuery() async throws -> [StageScheduleQuery.CoopSchedule] {
+//        return try await request(StageScheduleQuery()).data.coopGroupingSchedule.schedules
+//    }
 
     private func getCoopHistoryDetailQuery(resultId: Common.ResultId) async throws -> CoopHistoryDetailQuery.CoopHistoryDetail {
         return try await request(CoopHistoryDetailQuery(resultId: resultId)).data.coopHistoryDetail
