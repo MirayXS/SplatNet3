@@ -893,5 +893,5 @@ CoopHistory_RestoreFailure = "Herstelresultaten mislukt. Niet ondersteund formaa
 CoopHistory_DeveloperAnswer = "Antwoord van de ontwikkelaar";
 CoopHistory_MinimumVersion = "Omdat de gegevens zijn opgeslagen in een niet-ondersteunde versie, konden ze niet worden hersteld.";
 CoopHistory_InvalidSignature = "Omdat de handtekening van de gegevens niet overeenkwam, kon hij niet herstellen.";
-CoopHistory_SystemTheme = "Afhankelijk van de apparaatinstellingen";
+CoopHistory_SystemTheme = "Apparaatinstellingen gebruiken";
 CoopHistory_License = "Licentie";

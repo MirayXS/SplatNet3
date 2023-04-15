@@ -11,7 +11,8 @@ import Alamofire
 public class CoopStageScheduleQuery: RequestType {
     public typealias ResponseType = [CoopSchedule]
     #if DEBUG
-    public var baseURL: URL = URL(unsafeString: "http://localhost:8080/")
+    public var baseURL: URL = URL(unsafeString: "https://api.splatnet3.com/")
+//    public var baseURL: URL = URL(unsafeString: "http://localhost:8080/")
     #else
     public var baseURL: URL = URL(unsafeString: "https://api.splatnet3.com/")
     #endif

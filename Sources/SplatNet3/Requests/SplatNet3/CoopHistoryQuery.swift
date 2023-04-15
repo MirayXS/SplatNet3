@@ -75,9 +75,10 @@ public final class CoopHistoryQuery: GraphQL {
 
     // MARK: - HighestResult
     public struct HighestResult: Codable {
-        public let grade: GradeType
-        public let gradePoint: Int
+        public let grade: GradeType?
+        public let gradePoint: Int?
         public let jobScore: Int
+//        public let trophy: Int?
     }
 
     // MARK: - HistoryDetail

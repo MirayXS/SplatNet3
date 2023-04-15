@@ -7,15 +7,16 @@
 
 import Foundation
 import Alamofire
+import UIKit
 
 public class CoopStatsResultsQuery: RequestType {
     public typealias ResponseType = [Response]
-    #if DEBUG
+    #if targetEnvironment(simulator)
     public var baseURL: URL = URL(unsafeString: "http://localhost:8080/")
     #else
     public var baseURL: URL = URL(unsafeString: "https://api.splatnet3.com/")
     #endif
-    public var path: String = "v2/results"
+    public var path: String = "v1/results"
     public var parameters: Parameters?
     public var headers: [String: String]?
     public var method: HTTPMethod = .post
@@ -33,9 +34,27 @@ public class CoopStatsResultsQuery: RequestType {
     }
 
     init(results: [CoopResult]) {
+        self.headers = [
+            "ClientVersion": UIDevice.current.version
+        ]
+        #if targetEnvironment(simulator)
+        if let result: CoopResult = results.first(where: { $0.goldenIkuraNum == 142 }) {
+            let encoder: JSONEncoder = JSONEncoder()
+            encoder.dateEncodingStrategy = .iso8601
+            print(String(data: try! encoder.encode(result), encoding: .utf8)!)
+            self.parameters = [
+                "results": [result].map({ $0.asJSON() })
+            ]
+        } else {
+            self.parameters = [
+                "results": results.map({ $0.asJSON() })
+            ]
+        }
+        #else
         self.parameters = [
             "results": results.map({ $0.asJSON() })
         ]
+        #endif
     }
 
     public struct Response: Codable {
@@ -80,7 +99,6 @@ extension Encodable {
         guard let data: Data = try? encoder.encode(self) else {
             return [:]
         }
-        print(String(data: data, encoding: .utf8)!)
         guard var dictionary: [String: Any] = try? JSONSerialization.jsonObject(with: data, options: [.fragmentsAllowed, .json5Allowed, .mutableContainers, .mutableLeaves]) as? [String: Any] else {
             return [:]
         }

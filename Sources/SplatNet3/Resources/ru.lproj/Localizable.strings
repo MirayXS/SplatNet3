@@ -892,5 +892,5 @@ CoopHistory_RestoreFailure = "Сбой результатов восстанов
 CoopHistory_DeveloperAnswer = "Ответ разработчика";
 CoopHistory_MinimumVersion = "Из-за того, что резервная копия данных была создана в неподдерживаемой версии, восстановить ее не удалось.";
 CoopHistory_InvalidSignature = "Из-за несовпадения сигнатур данных, восстановить их не удалось.";
-CoopHistory_SystemTheme = "Зависит от настроек устройства";
+CoopHistory_SystemTheme = "Использовать настройки устройства";
 CoopHistory_License = "Лицензия";

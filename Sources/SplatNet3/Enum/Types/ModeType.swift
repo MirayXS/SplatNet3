@@ -12,6 +12,7 @@ public enum ModeType: String, CaseIterable, Codable {
 
     case UNKNOWN
     case REGULAR
+    case LIMITED
     case PRIVATE_CUSTOM
     case PRIVATE_SCENARIO
 }

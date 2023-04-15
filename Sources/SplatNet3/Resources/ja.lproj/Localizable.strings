@@ -892,5 +892,5 @@ CoopHistory_RestoreFailure = "リザルト復元に失敗しました。未サ�
 CoopHistory_DeveloperAnswer = "デベロッパの回答";
 CoopHistory_MinimumVersion = "サポートされていないバージョンでバックアップされたリザルトのため復元できませんでした。";
 CoopHistory_InvalidSignature = "バックアップの署名が一致しなかったため復元できませんでした。リザルトが改ざんされている可能性があります。";
-CoopHistory_SystemTheme = "端末の設定に依存する";
+CoopHistory_SystemTheme = "端末の設定を利用する";
 CoopHistory_License = "ライセンス";

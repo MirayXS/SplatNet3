@@ -261,10 +261,6 @@ extension SP3Session: Authenticator {
         return try await request(CheckinWithQRCodeMutation(eventId: eventId)).data.createCheckinHistory
     }
 
-//    private func getCoopStageScheduleQuery() async throws -> [StageScheduleQuery.CoopSchedule] {
-//        return try await request(StageScheduleQuery()).data.coopGroupingSchedule.schedules
-//    }
-
     private func getCoopHistoryDetailQuery(resultId: Common.ResultId) async throws -> CoopHistoryDetailQuery.CoopHistoryDetail {
         return try await request(CoopHistoryDetailQuery(resultId: resultId)).data.coopHistoryDetail
     }

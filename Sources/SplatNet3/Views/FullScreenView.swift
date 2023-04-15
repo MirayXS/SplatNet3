@@ -29,6 +29,7 @@ struct CoopResultDownloadView: View {
                         dismiss()
                     })
                 }
+    
                 if session.useSalmonStats {
                     try await session.uploadAllCoopResultDetailQuery(results: results, completion: { value, total in
                     })
