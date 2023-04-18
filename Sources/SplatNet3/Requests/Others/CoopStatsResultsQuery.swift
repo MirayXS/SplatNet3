@@ -41,7 +41,7 @@ public class CoopStatsResultsQuery: RequestType {
         if let result: CoopResult = results.first(where: { $0.goldenIkuraNum == 142 }) {
             let encoder: JSONEncoder = JSONEncoder()
             encoder.dateEncodingStrategy = .iso8601
-            print(String(data: try! encoder.encode(result), encoding: .utf8)!)
+//            print(String(data: try! encoder.encode(result), encoding: .utf8)!)
             self.parameters = [
                 "results": [result].map({ $0.asJSON() })
             ]

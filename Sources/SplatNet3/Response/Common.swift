@@ -157,11 +157,44 @@ public enum Common {
         public let g: Decimal
         public let r: Decimal
 
+        public init(from decoder: Decoder) throws {
+            let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
+            self.a = try container.decode(Decimal.self, forKey: .a)
+            self.r = try container.decode(Decimal.self, forKey: .r)
+            self.g = try container.decode(Decimal.self, forKey: .g)
+            self.b = try container.decode(Decimal.self, forKey: .b)
+        }
+
         public init(r: Decimal, g: Decimal, b: Decimal, a: Decimal) {
             self.r = r
             self.g = g
             self.b = b
             self.a = a
         }
+    }
+}
+
+extension KeyedDecodingContainer {
+    public func decode(_ type: Decimal.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> Decimal {
+        let doubleValue: Double = try decode(Double.self, forKey: key)
+        guard let decimalValue: Decimal = Decimal(string: doubleValue.description)
+        else {
+            throw DecodingError.typeMismatch(Decimal.self, .init(codingPath: codingPath, debugDescription: "Given value \(doubleValue) could not cast as Decimal"))
+        }
+        print(key, decimalValue)
+        return decimalValue
+    }
+
+    public func decodeIfPresent(_ type: Decimal.Type, forKey key: KeyedDecodingContainer<K>.Key) throws -> Decimal? {
+        guard let doubleValue: Double = try decodeIfPresent(Double.self, forKey: key)
+        else {
+            return nil
+        }
+        guard let decimalValue: Decimal = Decimal(string: doubleValue.description)
+        else {
+            throw DecodingError.typeMismatch(Decimal.self, .init(codingPath: codingPath, debugDescription: "Given value \(doubleValue) could not cast as Decimal"))
+        }
+        print(key, decimalValue)
+        return decimalValue
     }
 }

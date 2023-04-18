@@ -43,9 +43,16 @@ final class SplatNet3Tests: XCTestCase {
             print("Test Case: \(paths.count)")
             for path in paths {
                 try autoreleasepool(invoking: {
+                    SwiftyLogger.error("Tested: \(path.lastPathComponent)")
                     let data: Data = try Data(contentsOf: path)
                     let result = try decoder.decode(CoopHistoryDetailQuery.Response.self, from: data)
-                    print(result)
+                    let players = [result.data.coopHistoryDetail.myResult] + result.data.coopHistoryDetail.memberResults
+                    players.forEach({ player in
+                        let textColor: Common.TextColor = player.player.nameplate.background.textColor
+                        if textColor.a != 1 || textColor.b != 1 || textColor.g != 1 || textColor.r != 1 {
+                            print(player.player.nameplate.background.textColor)
+                        }
+                    })
                 })
             }
         } catch (let error) {
