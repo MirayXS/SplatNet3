@@ -75,10 +75,6 @@ struct FullScreen<Content: View>: UIViewControllerRepresentable {
         case true:
             uiViewController.present()
         case false:
-            print(isPresented)
-            print(uiViewController.isMovingToParent)
-            print(uiViewController.isBeingDismissed)
-            print(uiViewController.isBeingPresented)
 //            if !isModalInPresentation {
                 uiViewController.dismiss()
 //            }

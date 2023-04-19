@@ -181,7 +181,6 @@ extension KeyedDecodingContainer {
         else {
             throw DecodingError.typeMismatch(Decimal.self, .init(codingPath: codingPath, debugDescription: "Given value \(doubleValue) could not cast as Decimal"))
         }
-        print(key, decimalValue)
         return decimalValue
     }
 
@@ -194,7 +193,6 @@ extension KeyedDecodingContainer {
         else {
             throw DecodingError.typeMismatch(Decimal.self, .init(codingPath: codingPath, debugDescription: "Given value \(doubleValue) could not cast as Decimal"))
         }
-        print(key, decimalValue)
         return decimalValue
     }
 }

@@ -23,9 +23,8 @@ public struct QRReaderView: UIViewControllerRepresentable {
                     Task(priority: .utility, operation: {
                         do {
                             let response = try await session.getCheckInWithQRCodeMutation(eventId: code)
-                            print(response)
                         } catch(let error) {
-                            print(error)
+                            SwiftyLogger.error(error)
                         }
                         UIApplication.shared.presentedViewController?.dismiss(animated: true)
                     })

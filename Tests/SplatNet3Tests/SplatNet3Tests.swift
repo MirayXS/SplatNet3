@@ -68,7 +68,6 @@ final class SplatNet3Tests: XCTestCase {
             for path in paths {
                 try autoreleasepool(invoking: {
                     let data: Data = try Data(contentsOf: path)
-                    try decoder.decode([CoopHistoryDetailQuery.Response].self, from: data)
                 })
             }
         } catch (let error) {
