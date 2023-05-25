@@ -38,7 +38,7 @@ public class CoopStatsResultsQuery: RequestType {
             "ClientVersion": UIDevice.current.version
         ]
         #if targetEnvironment(simulator)
-        if let result: CoopResult = results.first(where: { $0.goldenIkuraNum == 142 }) {
+        if let result: CoopResult = results.last {
             let encoder: JSONEncoder = JSONEncoder()
             encoder.dateEncodingStrategy = .iso8601
             self.parameters = [

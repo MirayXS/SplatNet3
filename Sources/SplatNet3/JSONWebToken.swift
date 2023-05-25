@@ -36,7 +36,7 @@ struct JSONWebToken: Codable {
     let header: Header
     let payload: Payload
 
-    enum Status: CaseIterable {
+    enum Status: CaseIterable, Codable {
         case Valid
         case Expired
     }
@@ -46,23 +46,23 @@ struct JSONWebToken: Codable {
     }
 
     struct Header: Codable {
-        let typ: String
+        let typ: String?
         let alg: String
         let kid: String
         let jku: String
     }
 
     struct Payload: Codable {
-        let isChildRestricted: Bool
+        let isChildRestricted: Bool?
         let aud: String
         let exp: Int
         let iat: Int
         let iss: String
         let jti: String
         let sub: Int64
-        let links: Link
+        let links: Link?
         let typ: String
-        let membership: Membership
+        let membership: Membership?
     }
 
     struct Link: Codable {

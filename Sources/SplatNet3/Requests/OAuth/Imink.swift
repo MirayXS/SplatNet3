@@ -23,25 +23,51 @@ class Imink: RequestType {
     init(accessToken: AccessToken.Response, server: ServerType = .Imink) {
         self.baseURL = URL(unsafeString: server.rawValue)
         self.path = server.path
-        self.parameters = [
-            "token": accessToken.accessToken,
-            "hash_method": String(IminkType.nso.rawValue),
-        ]
+
+        if let na_id: String = try? JSONWebToken(gameWebToken: accessToken.idToken).payload.sub.description {
+            self.parameters = [
+                "token": accessToken.accessToken,
+                "hash_method": String(IminkType.nso.rawValue),
+                "timestamp": Date().timeIntervalSince1970,
+                "request_id": UUID().uuidString,
+                "na_id": na_id
+            ]
+        } else {
+            self.parameters = [
+                "token": accessToken.accessToken,
+                "hash_method": String(IminkType.nso.rawValue),
+            ]
+        }
     }
 
     init(accessToken: GameServiceToken.Response, server: ServerType = .Imink) {
         self.baseURL = URL(unsafeString: server.rawValue)
         self.path = server.path
-        self.parameters = [
-            "token": accessToken.result.webApiServerCredential.accessToken,
-            "hash_method": String(IminkType.app.rawValue),
-        ]
+        if let na_id: String = try? JSONWebToken(gameWebToken: accessToken.result.webApiServerCredential.accessToken).payload.sub.description {
+            self.parameters = [
+                "token": accessToken.result.webApiServerCredential.accessToken,
+                "hash_method": String(IminkType.nso.rawValue),
+                "timestamp": Date().timeIntervalSince1970,
+                "request_id": UUID().uuidString,
+                "na_id": na_id,
+                "coral_user_id": accessToken.result.user.id.description
+            ]
+        } else {
+            self.parameters = [
+                "token": accessToken.result.webApiServerCredential.accessToken,
+                "hash_method": String(IminkType.nso.rawValue),
+            ]
+        }
     }
 
     enum ServerType: String, CaseIterable {
         case Imink  = "https://api.imink.app/"
         case Flapg  = "https://flapg.com/"
-        case Nxapi  = "https://nxapi-znca-api.fancy.org.uk"
+        #if DEBUG
+        case Nxapi  = "https://ubuntu-2204-vm-test.fancy.org.uk/"
+        #else
+        case Nxapi  = "https://nxapi-znca-api.fancy.org.uk/"
+        #endif
 
         var path: String {
             switch self {

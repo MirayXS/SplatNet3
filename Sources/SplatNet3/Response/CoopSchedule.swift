@@ -16,7 +16,7 @@ public struct CoopSchedule: Codable {
     public let rareWeapon: WeaponId?
     public let mode: ModeType
     public let rule: RuleType
-    public let bossId: EnemyId?
+    public let estimatedKingSalmonId: EnemyId?
     public let setting: CoopSetting
 
     public init(from decoder: Decoder) throws {
@@ -39,7 +39,7 @@ public struct CoopSchedule: Codable {
             }
         }()
         self.setting = setting
-        self.bossId = try container.decodeIfPresent(EnemyId.self, forKey: .bossId)
+        self.estimatedKingSalmonId = try container.decodeIfPresent(EnemyId.self, forKey: .estimatedKingSalmonId)
     }
 
     init(schedule: StageScheduleQuery.CoopSchedule) {
@@ -60,6 +60,6 @@ public struct CoopSchedule: Codable {
         self.weaponList = schedule.setting.weapons.map({ $0.image.url.asWeaponId() })
         self.rareWeapon = nil
         self.setting = schedule.setting.isCoopSetting
-        self.bossId = nil
+        self.estimatedKingSalmonId = nil
     }
 }
