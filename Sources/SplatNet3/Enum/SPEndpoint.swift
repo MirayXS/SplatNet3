@@ -27,11 +27,7 @@ public enum SPEndpoint: String, CaseIterable, Identifiable {
     /// GameWebToken
     case GAME_WEB_TOKEN         = "v2/Game/GetWebServiceToken"
     /// X-Product-Version
-    case VERSION                = "app/id1234806557"
-    /// WebVersion
-    case WEB_VERSION            = "api/version"
-    /// WebRevision
-    case WEB_REVISION           = "api/revision"
+    case VERSION                = "v3/version"
     /// BulletToken
     case BULLET_TOKEN           = "api/bullet_tokens"
     /// Schedule
@@ -58,14 +54,9 @@ public enum SPEndpoint: String, CaseIterable, Identifiable {
             self = .STATS
             return
         }
-        /// Web Revision
-        if path.contains("main") {
-            self = .WEB_REVISION
-            return
-        }
-        /// Web Version
-        if path.isEmpty {
-            self = .WEB_VERSION
+        /// App Version
+        if path.contains("v3/authorize/version") {
+            self = .VERSION
             return
         }
         /// Others
@@ -78,7 +69,7 @@ public enum SPEndpoint: String, CaseIterable, Identifiable {
             return .NSO
         case .GAME_WEB_TOKEN, .GAME_SERVICE_TOKEN, .BULLET_TOKEN:
             return .APP
-        case .WEB_VERSION, .VERSION, .WEB_REVISION:
+        case .VERSION:
             return .API
         case .F:
             return .IMINK
@@ -97,7 +88,7 @@ public enum SPEndpoint: String, CaseIterable, Identifiable {
             return SPColor.SplatNet3.SPSalmonGreen
         case .GAME_WEB_TOKEN, .GAME_SERVICE_TOKEN, .BULLET_TOKEN:
             return SPColor.SplatNet3.SPRed
-        case .WEB_VERSION, .VERSION, .WEB_REVISION, .STATS, .COOP_SCHEDULES:
+        case .VERSION, .STATS, .COOP_SCHEDULES:
             return SPColor.SplatNet3.SPBlue
         case .F, .FLAPG, .NXAPI:
             return SPColor.SplatNet3.SPPink

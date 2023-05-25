@@ -14,6 +14,7 @@ extension Keychain {
     static private let xProductVersion: String = "X-ProductVersion"
     static private let useSalmonStats: String = "SalmonStats"
     static private let useEphemeralSession: String = "prefersEphemeralWebBrowserSession"
+    static private let primaryServer: String = "primaryFCalculationServer"
 
     /// X-Web-View-Ver
     var version: String {
@@ -32,14 +33,29 @@ extension Keychain {
     /// X-ProductVersion
     var xVersion: String {
         get {
-            (try? get(Keychain.xProductVersion)) ?? "2.4.0"
+            (try? get(Keychain.xProductVersion)) ?? "2.5.1"
         }
         set {
             if let data: Data = newValue.data(using: .utf8) {
                 try? set(data, key: Keychain.xProductVersion)
             } else {
-                try? set("2.4.0".data(using: .utf8)!, key: Keychain.xProductVersion)
+                try? set("2.5.1".data(using: .utf8)!, key: Keychain.xProductVersion)
             }
+        }
+    }
+
+    /// Primary f calculation server
+    var primaryServer: ServerType {
+        get {
+            guard let rawValue: String = try? get(Keychain.primaryServer),
+                  let server: ServerType = ServerType(rawValue: rawValue)
+            else {
+                return ServerType.Imink
+            }
+            return server
+        }
+        set {
+            try? set(newValue.rawValue.data(using: .utf8)!, key: Keychain.primaryServer)
         }
     }
 

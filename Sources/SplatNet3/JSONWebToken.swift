@@ -46,23 +46,40 @@ struct JSONWebToken: Codable {
     }
 
     struct Header: Codable {
-        let typ: String?
+//        let typ: String
         let alg: String
-        let kid: String
-        let jku: String
+//        let kid: String
+//        let jku: String
     }
 
     struct Payload: Codable {
-        let isChildRestricted: Bool?
-        let aud: String
+//        let isChildRestricted: Bool
+//        let aud: String
         let exp: Int
-        let iat: Int
-        let iss: String
-        let jti: String
-        let sub: Int64
-        let links: Link?
-        let typ: String
-        let membership: Membership?
+//        let iat: Int
+//        let iss: String
+//        let jti: String
+        let sub: String
+//        let links: Link
+//        let typ: String
+//        let membership: Membership
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+//            self.aud = try container.decode(String.self, forKey: .aud)
+            self.exp = try container.decode(Int.self, forKey: .exp)
+//            self.iat = try container.decode(Int.self, forKey: .iat)
+//            self.iss = try container.decode(String.self, forKey: .iss)
+//            self.jti = try container.decode(String.self, forKey: .jti)
+            self.sub = try {
+                if let rawValue: Int64 = try? container.decode(Int64.self, forKey: .sub) {
+                    return rawValue.description
+                }
+                return try container.decode(String.self, forKey: .sub)
+            }()
+//            self.typ = try container.decode(String.self, forKey: .typ)
+
+        }
     }
 
     struct Link: Codable {

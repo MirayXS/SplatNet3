@@ -61,9 +61,17 @@ open class Session: ObservableObject {
     /// アカウント情報
     @Published public var account: UserInfo?
 
+    /// 優先サーバー
+    @Published public var server: ServerType = .Imink {
+        willSet {
+            keychain.primaryServer = newValue
+        }
+    }
+
     init() {
         // インスタンス生成時にアカウントを読み込み
         self.account = keychain.get()
+        self.server = keychain.primaryServer
     }
 
     /// 一般的に使うリクエスト
@@ -134,7 +142,7 @@ open class Session: ObservableObject {
     @discardableResult
     public func refresh(sessionToken: String, contentId: ContentId) async throws -> UserInfo {
         let accessToken: AccessToken.Response = try await getAccessToken(sessionToken: sessionToken)
-        let version: XVersion.Response = try await getXVersion()
+        let version: AppVersion.Response = try await getAppVersion()
         let gameServiceToken: GameServiceToken.Response = try await getGameServiceToken(accessToken: accessToken, version: version)
         let gameWebToken: GameWebToken.Response = try await getGameWebToken(accessToken: gameServiceToken, version: version, contentId: contentId)
         switch contentId {
@@ -189,28 +197,76 @@ extension Session: RequestInterceptor {
 
     /// ハッシュ取得
     func getHash(accessToken: AccessToken.Response) async throws -> Imink.Response {
+        let timestamp: UInt64 = UInt64(Date().timeIntervalSince1970 * 1000)
+        let requestId: String = UUID().uuidString
+
         do {
-            return try await request(Imink(accessToken: accessToken, server: .Imink))
+            let response: Imink.ServerResponse = try await request(try Imink(accessToken: accessToken, server: server, requestId: requestId, timestamp: timestamp))
+            return Imink.Response(f: response.f, requsetId: requestId, timestamp: timestamp)
         } catch(let error) {
             do {
-                return try await request(Imink(accessToken: accessToken, server: .Flapg), interceptor: self)
+                if server == .Imink {
+                    throw error
+                }
+                let response: Imink.ServerResponse = try await request(try Imink(accessToken: accessToken, server: .Imink, requestId: requestId, timestamp: timestamp))
+                return Imink.Response(f: response.f, requsetId: requestId, timestamp: timestamp)
             } catch(let error) {
-                return try await request(Imink(accessToken: accessToken, server: .Nxapi))
+                do {
+                    if server == .Flapg {
+                        throw error
+                    }
+                    let response: Imink.ServerResponse = try await request(try Imink(accessToken: accessToken, server: .Flapg, requestId: requestId, timestamp: timestamp))
+                    return Imink.Response(f: response.f, requsetId: requestId, timestamp: timestamp)
+                } catch(let error) {
+                    if server == .Nxapi {
+                        throw error
+                    }
+                    let response: Imink.ServerResponse = try await request(try Imink(accessToken: accessToken, server: .Nxapi, requestId: requestId, timestamp: timestamp))
+                    return Imink.Response(f: response.f, requsetId: requestId, timestamp: timestamp)
+                }
             }
         }
     }
 
     /// ハッシュ取得
     func getHash(accessToken: GameServiceToken.Response) async throws -> Imink.Response {
+        let timestamp: UInt64 = UInt64(Date().timeIntervalSince1970 * 1000)
+        let requestId: String = UUID().uuidString
+
         do {
-            return try await request(Imink(accessToken: accessToken, server: .Imink))
+            let response: Imink.ServerResponse = try await request(try Imink(accessToken: accessToken, server: server, requestId: requestId, timestamp: timestamp))
+            return Imink.Response(f: response.f, requsetId: requestId, timestamp: timestamp)
         } catch(let error) {
             do {
-                return try await request(Imink(accessToken: accessToken, server: .Flapg), interceptor: self)
+                if server == .Imink {
+                    throw error
+                }
+                let response: Imink.ServerResponse = try await request(try Imink(accessToken: accessToken, server: .Imink, requestId: requestId, timestamp: timestamp))
+                return Imink.Response(f: response.f, requsetId: requestId, timestamp: timestamp)
             } catch(let error) {
-                return try await request(Imink(accessToken: accessToken, server: .Nxapi))
+                do {
+                    if server == .Flapg {
+                        throw error
+                    }
+                    let response: Imink.ServerResponse = try await request(try Imink(accessToken: accessToken, server: .Flapg, requestId: requestId, timestamp: timestamp))
+                    return Imink.Response(f: response.f, requsetId: requestId, timestamp: timestamp)
+                } catch(let error) {
+                    if server == .Nxapi {
+                        throw error
+                    }
+                    let response: Imink.ServerResponse = try await request(try Imink(accessToken: accessToken, server: .Nxapi, requestId: requestId, timestamp: timestamp))
+                    return Imink.Response(f: response.f, requsetId: requestId, timestamp: timestamp)
+                }
             }
         }
+    }
+
+    /// AppVersion
+    func getAppVersion() async throws -> AppVersion.Response {
+        let response: AppVersion.Response = try await request(AppVersion())
+        self.keychain.xVersion = response.version
+        self.keychain.version = response.webVersion
+        return response
     }
 
     /// X-ProductVersion取得
@@ -233,28 +289,26 @@ extension Session: RequestInterceptor {
     }
 
     /// GameServiceToken取得
-    func getGameServiceToken(accessToken: AccessToken.Response, version: XVersion.Response) async throws -> GameServiceToken.Response {
+    func getGameServiceToken(accessToken: AccessToken.Response, version: AppVersion.Response) async throws -> GameServiceToken.Response {
         let response : Imink.Response = try await getHash(accessToken: accessToken)
         return try await request(GameServiceToken(imink: response, accessToken: accessToken, version: version))
     }
 
     /// GameWebToken取得
-    func getGameWebToken(accessToken: GameServiceToken.Response, version: XVersion.Response, contentId: ContentId) async throws -> GameWebToken.Response {
+    func getGameWebToken(accessToken: GameServiceToken.Response, version: AppVersion.Response, contentId: ContentId) async throws -> GameWebToken.Response {
         let response : Imink.Response = try await getHash(accessToken: accessToken)
         return try await request(GameWebToken(imink: response, accessToken: accessToken, contentId: contentId, version: version))
     }
 
     /// BulletToken取得
     func getBulletToken(gameWebToken: GameWebToken.Response) async throws -> BulletToken.Response {
-        let response: WebVersion.Response = try await getWebVersion()
-        let revision: WebRevision.Response = try await getWebRevision(hash: response.hash)
+        let revision: String = keychain.version
         return try await request(BulletToken(accessToken: gameWebToken.result.accessToken, version: revision))
     }
 
     /// BulletToken取得
     func getBulletToken(gameWebToken: String) async throws -> BulletToken.Response {
-        let response: WebVersion.Response = try await getWebVersion()
-        let revision: WebRevision.Response = try await getWebRevision(hash: response.hash)
+        let revision: String = keychain.version
         return try await request(BulletToken(accessToken: gameWebToken, version: revision))
     }
 
