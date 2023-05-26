@@ -7,6 +7,7 @@
 
 import Foundation
 
+// Salmon Statsから取得したスケジュール
 public struct CoopSchedule: Codable {
     public let stageId: CoopStageId
     public let startTime: Date
@@ -15,6 +16,8 @@ public struct CoopSchedule: Codable {
     public let rareWeapon: WeaponId?
     public let mode: ModeType
     public let rule: RuleType
+    public let estimatedKingSalmonId: EnemyId?
+    public let setting: CoopSetting
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -23,17 +26,40 @@ public struct CoopSchedule: Codable {
         self.endTime = try container.decode(Date.self, forKey: .endTime)
         self.weaponList = try container.decode([WeaponId].self, forKey: .weaponList)
         self.rareWeapon = try container.decodeIfPresent(WeaponId.self, forKey: .rareWeapon)
-        self.mode = .REGULAR
-        self.rule = .REGULAR
+        let setting: CoopSetting = try container.decode(CoopSetting.self, forKey: .setting)
+        self.mode = setting == .CoopTeamContestSetting ? .LIMITED : .REGULAR
+        self.rule = {
+            switch setting {
+            case .CoopBigRunSetting:
+                return .BIG_RUN
+            case .CoopNormalSetting:
+                return .REGULAR
+            case .CoopTeamContestSetting:
+                return .TEAM_CONTEST
+            }
+        }()
+        self.setting = setting
+        self.estimatedKingSalmonId = try container.decodeIfPresent(EnemyId.self, forKey: .estimatedKingSalmonId)
     }
 
     init(schedule: StageScheduleQuery.CoopSchedule) {
         self.stageId = schedule.setting.coopStage.id
         self.startTime = schedule.startTime
         self.endTime = schedule.endTime
-        self.mode = .REGULAR
-        self.rule = .REGULAR
+        self.mode = schedule.setting.isCoopSetting == .CoopTeamContestSetting ? .LIMITED : .REGULAR
+        self.rule = {
+            switch schedule.setting.isCoopSetting {
+            case .CoopBigRunSetting:
+                return .BIG_RUN
+            case .CoopNormalSetting:
+                return .REGULAR
+            case .CoopTeamContestSetting:
+                return .TEAM_CONTEST
+            }
+        }()
         self.weaponList = schedule.setting.weapons.map({ $0.image.url.asWeaponId() })
         self.rareWeapon = nil
+        self.setting = schedule.setting.isCoopSetting
+        self.estimatedKingSalmonId = nil
     }
 }

@@ -7,7 +7,8 @@
 
 import Foundation
 
-public enum GradeKey: String, Identifiable, CaseIterable, Codable {
+public enum GradeKey: String, UnsafeRawRepresentable {
+    public static var defaultValue: Self = .Apprentice
     public var id: String { rawValue }
 
     case Apprentice             = "b4f1e5a491aa8f1952352fb4831a4e6a82817bc1179b51739928c6c5a1deb484"

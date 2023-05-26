@@ -21,9 +21,10 @@ public struct IntegerRawValue<T: RawRepresentable>: Codable where T.RawValue == 
 
         guard let data: Data = Data(base64Encoded: stringValue),
               let stringValue: String = String(data: data, encoding: .utf8),
-              let capture: String = stringValue.capture(pattern: "([0-9]*)$", group: 1),
+              let capture: String = stringValue.capture(pattern: "-([0-9-]*)$", group: 1),
               let intValue: Int = Int(capture),
-              let value: T = T(rawValue: intValue) else {
+              let value: T = T(rawValue: intValue)
+        else {
             throw DecodingError.valueNotFound(T.self, .init(codingPath: container.codingPath, debugDescription: "Given value \(stringValue) is not associated for \(T.self)"))
         }
         self.wrappedValue = value

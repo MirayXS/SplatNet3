@@ -20,14 +20,14 @@ public enum SPEndpoint: String, CaseIterable, Identifiable {
     case F                      = "f"
     /// FLAPG
     case FLAPG                  = "ika/api/login-main"
+    /// Results
+    case NXAPI                  = "api/znca/f"
     /// GameServiceToken
     case GAME_SERVICE_TOKEN     = "v3/Account/Login"
     /// GameWebToken
     case GAME_WEB_TOKEN         = "v2/Game/GetWebServiceToken"
     /// X-Product-Version
-    case VERSION                = "app/id1234806557"
-    /// WebVersion
-    case WEB_VERSION            = "api/web_version"
+    case VERSION                = "v3/version"
     /// BulletToken
     case BULLET_TOKEN           = "api/bullet_tokens"
     /// Schedule
@@ -38,6 +38,10 @@ public enum SPEndpoint: String, CaseIterable, Identifiable {
     case COOP_RESULT            = "api/results"
     /// Unknown
     case UNKNOWN                = "unknown"
+    /// Salmon Stats
+    case STATS                  = "api/salmonstats"
+    /// Salmon Stats
+    case COOP_SCHEDULES         = "v1/schedules"
 
     init<T: RequestType>(request: T) {
         let path: String = request.path.replacingOccurrences(of: "connect/1.0.0/", with: "")
@@ -45,10 +49,17 @@ public enum SPEndpoint: String, CaseIterable, Identifiable {
             self = value
             return
         }
-        if path.isEmpty {
-            self = .WEB_VERSION
+        /// Salmon Stats
+        if path.contains("v2/results") {
+            self = .STATS
             return
         }
+        /// App Version
+        if path.contains("v3/authorize/version") {
+            self = .VERSION
+            return
+        }
+        /// Others
         self = .UNKNOWN
     }
 
@@ -58,12 +69,14 @@ public enum SPEndpoint: String, CaseIterable, Identifiable {
             return .NSO
         case .GAME_WEB_TOKEN, .GAME_SERVICE_TOKEN, .BULLET_TOKEN:
             return .APP
-        case .WEB_VERSION, .VERSION:
+        case .VERSION:
             return .API
         case .F:
             return .IMINK
         case .FLAPG:
             return .FLAPG
+        case .NXAPI:
+            return .NXAPI
         default:
             return .API
         }
@@ -75,9 +88,9 @@ public enum SPEndpoint: String, CaseIterable, Identifiable {
             return SPColor.SplatNet3.SPSalmonGreen
         case .GAME_WEB_TOKEN, .GAME_SERVICE_TOKEN, .BULLET_TOKEN:
             return SPColor.SplatNet3.SPRed
-        case .WEB_VERSION, .VERSION:
+        case .VERSION, .STATS, .COOP_SCHEDULES:
             return SPColor.SplatNet3.SPBlue
-        case .F, .FLAPG:
+        case .F, .FLAPG, .NXAPI:
             return SPColor.SplatNet3.SPPink
         default:
             return SPColor.SplatNet3.SPPurple

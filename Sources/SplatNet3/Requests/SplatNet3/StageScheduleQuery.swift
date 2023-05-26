@@ -28,11 +28,11 @@ public final class StageScheduleQuery: GraphQL {
 
     // MARK: - DataClass
     public struct DataClass: Codable {
-        public let xSchedules: Schedules
-        public let festSchedules: Schedules
-        public let leagueSchedules: Schedules
-        public let regularSchedules: Schedules
-        public let bankaraSchedules: Schedules
+//        public let xSchedules: Schedules
+//        public let festSchedules: Schedules
+//        public let leagueSchedules: Schedules
+//        public let regularSchedules: Schedules
+//        public let bankaraSchedules: Schedules
         public let coopGroupingSchedule: CoopGroupingSchedule
 //        public let currentFest: JSONNull?
         public let currentPlayer: CurrentPlayer
@@ -47,18 +47,24 @@ public final class StageScheduleQuery: GraphQL {
     // MARK: - CoopGroupingSchedule
     public struct CoopGroupingSchedule: Codable {
         public let regularSchedules: Common.Node<CoopSchedule>
-//        public let bigRunSchedules: Schedules
+        public let bigRunSchedules: Common.Node<CoopSchedule>
+        public let teamContestSchedules: Common.Node<CoopSchedule>
+
+        /// いつものバイト、ビッグラン、チームコンテンストのスケジュールをマージしたもの
+        public var schedules: [CoopSchedule] {
+            [regularSchedules, bigRunSchedules, teamContestSchedules].flatMap({ $0.nodes })
+        }
     }
 
     // MARK: - BankaraSchedulesNode
     public struct BankaraSchedule: Codable {
         public let startTime: Date
         public let endTime: Date
-        public let bankaraMatchSettings: [MatchSetting]?
+//        public let bankaraMatchSettings: [MatchSetting]?
 //        public let festMatchSetting: JSONNull?
-        public let leagueMatchSetting: MatchSetting?
-        public let regularMatchSetting: MatchSetting?
-        public let xMatchSetting: MatchSetting?
+//        public let leagueMatchSetting: MatchSetting?
+//        public let regularMatchSetting: MatchSetting?
+//        public let xMatchSetting: MatchSetting?
     }
 
     // MARK: - MatchSetting
@@ -129,13 +135,27 @@ public final class StageScheduleQuery: GraphQL {
     public struct Setting: Codable {
         public let coopStage: CoopStage
         public let weapons: [WeaponType]
+        public let isCoopSetting: CoopSetting
+
+        enum CodingKeys: String, CodingKey {
+            case coopStage
+            case weapons
+            case isCoopSetting  = "__isCoopSetting"
+        }
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.coopStage = try container.decode(StageScheduleQuery.CoopStage.self, forKey: StageScheduleQuery.Setting.CodingKeys.coopStage)
+            self.weapons = try container.decode([WeaponType].self, forKey: StageScheduleQuery.Setting.CodingKeys.weapons)
+            self.isCoopSetting = try container.decode(CoopSetting.self, forKey: .isCoopSetting)
+        }
     }
 
     // MARK: - Stats
     public struct Stats: Codable {
-//        public let winRateAr: JSONNull?
-//        public let winRateLF: JSONNull?
-//        public let winRateGl: JSONNull?
-//        public let winRateCl: JSONNull?
+        public let winRateAr: Decimal?
+        public let winRateLF: Decimal?
+        public let winRateGl: Decimal?
+        public let winRateCl: Decimal?
     }
 }

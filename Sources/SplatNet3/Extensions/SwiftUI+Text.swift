@@ -13,13 +13,40 @@ public extension Text {
         self.init(NSLocalizedString(bundle.rawValue, bundle: .module, comment: ""))
     }
 
+    init(_ value: EnemyId) {
+        let index: Int = EnemyId.allCases.firstIndex(of: value) ?? 0
+        let enemyKey: EnemyKey = EnemyKey.allCases[index]
+        self.init(NSLocalizedString("CoopEnemy_\(String(describing: enemyKey))", bundle: .module, comment: ""))
+    }
+
+    init(_ value: EnemyKey) {
+        self.init(NSLocalizedString("CoopEnemy_\(String(describing: value))", bundle: .module, comment: ""))
+    }
+
     /// 称号をテキストに変換
     init(_ value: GradeId?) {
         if let value = value {
-            self.init(NSLocalizedString("Grade_0\(value.id)", bundle: .module, comment: ""))
+            self.init(NSLocalizedString("CoopGrade_Grade_0\(value.id)", bundle: .module, comment: ""))
         } else {
             self.init("-")
         }
+    }
+
+    init(_ waterLevel: WaterLevelId) {
+        self.init(NSLocalizedString("CoopHistory_WaveLevel\(waterLevel.rawValue)", bundle: .module, comment: ""))
+    }
+
+    init(_ eventType: EventId) {
+        if eventType == .Water_Levels {
+            self.init("-")
+        } else {
+            self.init(NSLocalizedString("CoopEvent_\(String(describing: eventType))", bundle: .module, comment: ""))
+        }
+    }
+
+    /// ステージ名をテキストに変換
+    init(_ value: CoopStageId) {
+        self.init(NSLocalizedString("CoopStage_\(String(describing: value))", bundle: .module, comment: ""))
     }
 
     /// 任意のオプショナル型を変換
@@ -30,18 +57,11 @@ public extension Text {
             self.init("-")
         }
     }
+}
 
-    init(_ value: CoopStageId) {
-        if let index: Int = CoopStageId.allCases.firstIndex(of: value) {
-            self.init(NSLocalizedString(CoopStageKey.allCases[index].rawValue, bundle: .module, comment: ""))
-        } else {
-            self.init(NSLocalizedString(CoopStageKey.Unknown.rawValue, bundle: .module, comment: ""))
-        }
-    }
-
-//    init<T: RawRepresentable>(_ value: T?) where T.RawValue == String {
-//
-//    }
+public enum ImageSize: Int, CaseIterable {
+    case Regular
+    case Header
 }
 
 public extension Image {
@@ -55,5 +75,24 @@ public extension Image {
 
     init(_ value: EnemyId) {
         self.init("Enemies/\(value.rawValue)", bundle: .module)
+    }
+
+    init(_ value: EnemyKey) {
+        let enemyId: EnemyId = EnemyId.allCases[EnemyKey.allCases.firstIndex(of: value) ?? 0]
+
+        self.init("Enemies/\(enemyId.rawValue)", bundle: .module)
+    }
+
+    init(_ value: CoopStageId, size: ImageSize = .Regular) {
+        let namespace: String = size == .Regular ? "CoopStage" : "CoopStageHeader"
+        self.init("\(namespace)/\(value.rawValue)", bundle: .module)
+    }
+
+    init(_ value: ScaleType) {
+        self.init("Scale/\(value.rawValue)", bundle: .module)
+    }
+
+    init(_ value: SpecialId) {
+        self.init("Specials/\(value.rawValue)", bundle: .module)
     }
 }

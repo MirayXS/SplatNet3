@@ -20,7 +20,7 @@ class GameServiceToken: RequestType {
     //  swiftlint:disable:next discouraged_optional_collection
     var headers: [String: String]?
 
-    init(imink: Imink.Response, accessToken: AccessToken.Response, version: XVersion.Response) {
+    init(imink: Imink.Response, accessToken: AccessToken.Response, version: AppVersion.Response) {
         self.headers = [
             "X-ProductVersion": "\(version.version)",
             "X-Platform": "Android",
@@ -28,7 +28,7 @@ class GameServiceToken: RequestType {
         self.parameters = [
             "parameter": [
                 "f": imink.f,
-                "naIdToken": accessToken.accessToken,
+                "naIdToken": accessToken.idToken,
                 "timestamp": imink.timestamp,
                 "requestId": imink.requestId,
                 "naCountry": "JP",

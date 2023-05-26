@@ -7,8 +7,11 @@
 
 import Foundation
 
-public enum VsStageKey: String, CaseIterable, Identifiable, Codable {
+public enum VsStageKey: String, UnsafeRawRepresentable {
+    public static var defaultValue: Self = .Stage00
     public var id: String { rawValue }
+
+    case Stage00 = ""
     /// ユノハナ大渓谷
     case Stage01 = "35f9ca08ccc2bf759774ab2cb886567c117b9287875ca92fb590c1294ddcdc1e"
     /// ゴンズイ地区
@@ -41,4 +44,5 @@ public enum VsStageKey: String, CaseIterable, Identifiable, Codable {
     case Stage15 = "a8ba96c3dbd015b7bc6ea4fa067245c4e9aee62b6696cb41e02d35139dd21fe7"
     /// スメーシーワールド
     case Stage16 = "61ea801fa4ed32360dcaf83986222ded46a72dbf56194acc6d0cf4659a92ba85"
+    case Dummy   = "59a42245071d692c58b9825886f89f95e092ae0aa83a46617fdb4cbcb2f5f2b8"
 }

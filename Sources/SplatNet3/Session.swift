@@ -11,7 +11,7 @@ import Alamofire
 import KeychainAccess
 
 /// 基本となるリクエストなどが定義されたクラス
-open class Session {
+open class Session: ObservableObject {
     /// 通信用のセッション
     public let session: Alamofire.Session = {
         let configuration: URLSessionConfiguration = URLSessionConfiguration.default
@@ -22,37 +22,87 @@ open class Session {
         return Alamofire.Session(configuration: configuration)
     }()
 
+    /// キーチェイン
     private let keychain: Keychain = Keychain(service: Bundle.module.bundleIdentifier!)
+
+    /// X-Web-View-Ver
+    public var version: String {
+        keychain.version
+    }
+
+    /// X-ProductVersion
+    public var xVersion: String {
+        keychain.xVersion
+    }
+
+    /// デコーダー
     public let decoder: SPDecoder = SPDecoder()
-    public var account: UserInfo? {
+
+    /// Salmon Stats
+    public var useSalmonStats: Bool {
         get {
-            keychain.get()
+            keychain.useSalmonStats
         }
+        set {
+            keychain.useSalmonStats = newValue
+        }
+    }
+
+    /// Safari Session
+    public var useEphmeralSession: Bool {
+        get {
+            keychain.useEphemeralSession
+        }
+        set {
+            keychain.useEphemeralSession = newValue
+        }
+    }
+
+    /// アカウント情報
+    @Published public var account: UserInfo?
+
+    /// 優先サーバー
+    @Published public var server: ServerType = .Imink {
+        willSet {
+            keychain.primaryServer = newValue
+        }
+    }
+
+    init() {
+        // インスタンス生成時にアカウントを読み込み
+        self.account = keychain.get()
+        self.server = keychain.primaryServer
     }
 
     /// 一般的に使うリクエスト
     open func request<T: RequestType>(_ request: T, interceptor: RequestInterceptor? = nil) async throws -> T.ResponseType {
-        try await session.request(request, interceptor: interceptor)
-            .validationWithNXError()
-            .serializingDecodable(T.ResponseType.self, decoder: decoder)
-            .value
+        try await withSwiftyLogger(execute: {
+            try await session.request(request, interceptor: interceptor)
+                .validationWithNXError()
+                .serializingDecodable(T.ResponseType.self, decoder: decoder)
+                .value
+        })
     }
 
     /// 文字列を取得するためのリクエスト
     open func request<T: RequestType>(_ request: T, interceptor: RequestInterceptor? = nil) async throws -> String {
-        try await session.request(request, interceptor: interceptor)
-            .validationWithNXError()
-            .serializingString(encoding: .utf8)
-            .value
+        try await withSwiftyLogger(execute: {
+            try await session.request(request, interceptor: interceptor)
+                .validationWithNXError()
+                .serializingString(encoding: .utf8)
+                .value
+        })
     }
 
     /// イカスミセッション専用のリクエスト
     func request(_ request: IksmSession) async -> [String: String]? {
-        await session.request(request)
-            .validationWithNXError()
-            .serializingString()
-            .response
-            .response?.allHeaderFields as? [String: String]
+        try? await withSwiftyLogger(execute: {
+            await session.request(request)
+                .validationWithNXError()
+                .serializingString()
+                .response
+                .response?.allHeaderFields as? [String: String]
+        })
     }
 
     /// SP2/3: URLSchemeを使って認証情報を取得
@@ -65,47 +115,71 @@ open class Session {
     /// SP3: GameWebTokenを使って認証情報を取得
     public func refresh(gameWebToken: String) async throws -> UserInfo {
         let bulletToken: BulletToken.Response = try await getBulletToken(gameWebToken: gameWebToken)
-        return try keychain.update(bulletToken)
+        let account: UserInfo = try keychain.update(bulletToken)
+        /// アップデートしたアカウントで上書き
+        self.account = account
+        return account
     }
 
-    public func refresh(contentId: ContentId) async throws -> UserInfo {
-        guard let account = self.account else {
+    /// SP2/3: トークンが切れたときにリフレッシュする
+    @discardableResult
+    public func refreshIfNeeded(contentId: ContentId) async throws -> UserInfo {
+        guard let account = keychain.get() else {
             throw DecodingError.valueNotFound(UserInfo.self, .init(codingPath: [], debugDescription: "Account Not Found"))
         }
         if account.requiresGameWebTokenRefresh {
+            SwiftyLogger.info("GameWebToken is expired.")
             return try await refresh(sessionToken: account.sessionToken, contentId: contentId)
         }
         if account.requiresRefresh {
+            SwiftyLogger.info("Bullet token is expired.")
             return try await refresh(gameWebToken: account.gameWebToken)
         }
         return account
     }
 
     /// SP2/3: SessionTokenを使って認証情報を取得
+    @discardableResult
     public func refresh(sessionToken: String, contentId: ContentId) async throws -> UserInfo {
         let accessToken: AccessToken.Response = try await getAccessToken(sessionToken: sessionToken)
-        let version: XVersion.Response = try await getXVersion()
+        let version: AppVersion.Response = try await getAppVersion()
         let gameServiceToken: GameServiceToken.Response = try await getGameServiceToken(accessToken: accessToken, version: version)
         let gameWebToken: GameWebToken.Response = try await getGameWebToken(accessToken: gameServiceToken, version: version, contentId: contentId)
         switch contentId {
         case .SP2:
             let iksmSession: IksmSession.Response = try await getIksmSession(gameWebToken: gameWebToken)
             let account: UserInfo = UserInfo(sessionToken: sessionToken, gameServiceToken: gameServiceToken, gameWebToken: gameWebToken, iksmSession: iksmSession)
-            print(account)
-            self.keychain.set(account)
+            /// ログイン時はアカウントを上書き
+            self.account = keychain.set(account)
             return account
         case .SP3:
             let bulletToken: BulletToken.Response = try await getBulletToken(gameWebToken: gameWebToken)
             let account: UserInfo = UserInfo(sessionToken: sessionToken, gameServiceToken: gameServiceToken, gameWebToken: gameWebToken.result.accessToken, bulletToken: bulletToken)
-            print(account)
-            self.keychain.set(account)
+            /// ログイン時はアカウントを上書き
+            self.account = keychain.set(account)
             return account
         }
+    }
+
+    /// 保存されているアカウント全削除
+    public func removeAll() {
+        self.account = nil
+        try? self.keychain.removeAll()
     }
 }
 
 /// 秘匿したい関数を定義したExtension
 extension Session: RequestInterceptor {
+    /// エラー発生時に自動でログを出力するリクエスト
+    private func withSwiftyLogger<T>(execute: () async throws -> T) async throws -> T {
+        do {
+            return try await execute()
+        } catch(let error) {
+            SwiftyLogger.error(error)
+            throw error
+        }
+    }
+
     /// 通信失敗した場合のリトライ
     public func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
         completion(request.retryCount == 0 ? .retryWithDelay(0.5) : .doNotRetry)
@@ -123,28 +197,83 @@ extension Session: RequestInterceptor {
 
     /// ハッシュ取得
     func getHash(accessToken: AccessToken.Response) async throws -> Imink.Response {
+        let timestamp: UInt64 = UInt64(Date().timeIntervalSince1970 * 1000)
+        let requestId: String = UUID().uuidString
+
         do {
-            return try await request(Imink(accessToken: accessToken, server: .Imink))
+            let response: Imink.ServerResponse = try await request(try Imink(accessToken: accessToken, server: server, requestId: requestId, timestamp: timestamp))
+            return Imink.Response(f: response.f, requsetId: requestId, timestamp: timestamp)
         } catch(let error) {
-            print(error)
-            return try await request(Imink(accessToken: accessToken, server: .Flapg), interceptor: self)
+            do {
+                if server == .Imink {
+                    throw error
+                }
+                let response: Imink.ServerResponse = try await request(try Imink(accessToken: accessToken, server: .Imink, requestId: requestId, timestamp: timestamp))
+                return Imink.Response(f: response.f, requsetId: requestId, timestamp: timestamp)
+            } catch(let error) {
+                do {
+                    if server == .Flapg {
+                        throw error
+                    }
+                    let response: Imink.ServerResponse = try await request(try Imink(accessToken: accessToken, server: .Flapg, requestId: requestId, timestamp: timestamp))
+                    return Imink.Response(f: response.f, requsetId: requestId, timestamp: timestamp)
+                } catch(let error) {
+                    if server == .Nxapi {
+                        throw error
+                    }
+                    let response: Imink.ServerResponse = try await request(try Imink(accessToken: accessToken, server: .Nxapi, requestId: requestId, timestamp: timestamp))
+                    return Imink.Response(f: response.f, requsetId: requestId, timestamp: timestamp)
+                }
+            }
         }
     }
 
     /// ハッシュ取得
     func getHash(accessToken: GameServiceToken.Response) async throws -> Imink.Response {
+        let timestamp: UInt64 = UInt64(Date().timeIntervalSince1970 * 1000)
+        let requestId: String = UUID().uuidString
+
         do {
-            return try await request(Imink(accessToken: accessToken, server: .Imink))
+            let response: Imink.ServerResponse = try await request(try Imink(accessToken: accessToken, server: server, requestId: requestId, timestamp: timestamp))
+            return Imink.Response(f: response.f, requsetId: requestId, timestamp: timestamp)
         } catch(let error) {
-            print(error)
-            return try await request(Imink(accessToken: accessToken, server: .Flapg), interceptor: self)
+            do {
+                if server == .Imink {
+                    throw error
+                }
+                let response: Imink.ServerResponse = try await request(try Imink(accessToken: accessToken, server: .Imink, requestId: requestId, timestamp: timestamp))
+                return Imink.Response(f: response.f, requsetId: requestId, timestamp: timestamp)
+            } catch(let error) {
+                do {
+                    if server == .Flapg {
+                        throw error
+                    }
+                    let response: Imink.ServerResponse = try await request(try Imink(accessToken: accessToken, server: .Flapg, requestId: requestId, timestamp: timestamp))
+                    return Imink.Response(f: response.f, requsetId: requestId, timestamp: timestamp)
+                } catch(let error) {
+                    if server == .Nxapi {
+                        throw error
+                    }
+                    let response: Imink.ServerResponse = try await request(try Imink(accessToken: accessToken, server: .Nxapi, requestId: requestId, timestamp: timestamp))
+                    return Imink.Response(f: response.f, requsetId: requestId, timestamp: timestamp)
+                }
+            }
         }
+    }
+
+    /// AppVersion
+    func getAppVersion() async throws -> AppVersion.Response {
+        let response: AppVersion.Response = try await request(AppVersion())
+        self.keychain.xVersion = response.version
+        self.keychain.version = response.webVersion
+        return response
     }
 
     /// X-ProductVersion取得
     func getXVersion() async throws -> XVersion.Response {
-        let response: String = try await request(XVersion())
-        return XVersion.Response(context: response)
+        let response: XVersion.Response = XVersion.Response(context: try await request(XVersion()))
+        self.keychain.xVersion = response.version
+        return response
     }
 
     /// WebVersion取得
@@ -153,28 +282,34 @@ extension Session: RequestInterceptor {
         return WebVersion.Response(context: response)
     }
 
+    func getWebRevision(hash: String) async throws -> WebRevision.Response {
+        let response: WebRevision.Response = WebRevision.Response(context: try await request(WebRevision(hash: hash)))
+        self.keychain.version = response.description
+        return response
+    }
+
     /// GameServiceToken取得
-    func getGameServiceToken(accessToken: AccessToken.Response, version: XVersion.Response) async throws -> GameServiceToken.Response {
+    func getGameServiceToken(accessToken: AccessToken.Response, version: AppVersion.Response) async throws -> GameServiceToken.Response {
         let response : Imink.Response = try await getHash(accessToken: accessToken)
         return try await request(GameServiceToken(imink: response, accessToken: accessToken, version: version))
     }
 
     /// GameWebToken取得
-    func getGameWebToken(accessToken: GameServiceToken.Response, version: XVersion.Response, contentId: ContentId) async throws -> GameWebToken.Response {
+    func getGameWebToken(accessToken: GameServiceToken.Response, version: AppVersion.Response, contentId: ContentId) async throws -> GameWebToken.Response {
         let response : Imink.Response = try await getHash(accessToken: accessToken)
-        return try await request(GameWebToken(imink: response, accessToken: accessToken, contentId: contentId))
+        return try await request(GameWebToken(imink: response, accessToken: accessToken, contentId: contentId, version: version))
     }
 
     /// BulletToken取得
     func getBulletToken(gameWebToken: GameWebToken.Response) async throws -> BulletToken.Response {
-        let response: WebVersion.Response = try await getWebVersion()
-        return try await request(BulletToken(accessToken: gameWebToken.result.accessToken, version: response))
+        let revision: String = keychain.version
+        return try await request(BulletToken(accessToken: gameWebToken.result.accessToken, version: revision))
     }
 
     /// BulletToken取得
     func getBulletToken(gameWebToken: String) async throws -> BulletToken.Response {
-        let response: WebVersion.Response = try await getWebVersion()
-        return try await request(BulletToken(accessToken: gameWebToken, version: response))
+        let revision: String = keychain.version
+        return try await request(BulletToken(accessToken: gameWebToken, version: revision))
     }
 
     /// IksmSession取得

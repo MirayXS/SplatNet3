@@ -10,92 +10,110 @@ import Foundation
 import WebKit
 
 enum NSScriptMessage {
+    /// ウィンドウを閉じる
     case closeWebView
+    /// リロード
     case reloadExtension
+    /// ロード完了
     case completeLoading
-    case invokeNativeShare(ShareImg)
-    case invokeNativeShareUrl(ShareURL)
+    /// アルバムの画像をシェア
+    case invokeNativeShare(ShareURL)
+    /// URLをシェア
+    case invokeNativeShareUrl(ShareImg)
+    ///  クリップボードにコピー
     case copyToClipboard(String)
+    ///  画像のURLを返す
     case downloadImages([URL])
+    ///  最近追加されたよくわからないやつ
+    case endHookConsole
+    case sourceCamera
+    case sourcePhotoLibrary
 
     init?(rawValue: Any?) {
+        let decoder: SPDecoder = SPDecoder()
         guard let rawValue: String = rawValue as? String,
-              let data: Data = rawValue.data(using: .utf8)
+              let data: Data = rawValue.data(using: .utf8),
+              let script: NSScriptMessageName = NSScriptMessageName.from(rawValue: rawValue)
         else {
             return nil
         }
-
-        if let script: NSScriptMessageName = NSScriptMessageName(rawValue: rawValue) {
-            switch script {
-            case .closeWebView:
-                /// closeWebView
-                self = .closeWebView
-                return
-            case .reloadExtension:
-                /// reloadExtension
-                self = .reloadExtension
-                return
-            case .completeLoading:
-                /// completeLoading
-                self = .completeLoading
-                return
-            default:
-                break
+        
+        switch script {
+        case .closeWebView:
+            self = .closeWebView
+            return
+        case .reloadExtension:
+            self = .reloadExtension
+            return
+        case .completeLoading:
+            self = .completeLoading
+            return
+        case .invokeNativeShare:
+            /// invokeNativeShare
+            guard let shareImg: ShareImg = try? decoder.decode(ShareImg.self, from: data)
+            else {
+                return nil
             }
-        }
-
-        let decoder: SPDecoder = SPDecoder()
-
-        /// invokeNativeShareUrl
-        if let shareURL: ShareURL = try? decoder.decode(ShareURL.self, from: data) {
-            self = .invokeNativeShareUrl(shareURL)
+            self = .invokeNativeShareUrl(shareImg)
             return
-        }
-
-        /// invokeNativeShare
-        if let shareImg: ShareImg = try? decoder.decode(ShareImg.self, from: data) {
-            self = .invokeNativeShare(shareImg)
+        case .invokeNativeShareUrl:
+            /// invokeNativeShareUrl
+            guard let shareURL: ShareURL = try? decoder.decode(ShareURL.self, from: data)
+            else {
+                return nil
+            }
+            self = .invokeNativeShare(shareURL)
             return
-        }
-
-        /// copyToClipboard
-        if let code: String = rawValue.capture(pattern: #"([A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4})"#, group: 1) {
+        case .copyToClipboard:
+            /// copyToClipboard
+            guard let code: String = rawValue.capture(pattern: #"([A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4})"#, group: 1)
+            else {
+                return nil
+            }
             self = .copyToClipboard(code)
             return
-        }
-
-        /// downloadImages
-        let imageURLs: [URL] = rawValue.capture(pattern: #"(https://[^,^\]]*)"#).compactMap({ URL(string: $0) })
-        if !imageURLs.isEmpty {
+        case .downloadImages:
+            /// downloadImages
+            let imageURLs: [URL] = rawValue.capture(pattern: #"(https://[^,^\]]*)"#).compactMap({ URL(string: $0) })
+            if imageURLs.isEmpty {
+                return nil
+            }
             self = .downloadImages(imageURLs)
             return
-        }
-
-        return nil
-    }
-
-    struct ShareURL: Codable {
-        let text: String
-        let imageUrl: URL
-        let hashtags: [String]
-
-        init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.text = try container.decode(String.self, forKey: .text)
-            self.imageUrl = try container.decode(URL.self, forKey: .imageUrl)
-            self.hashtags = try container.decode([String].self, forKey: .hashtags)
+        case .endHookConsole:
+            self = .endHookConsole
+            return
+        case .sourceCamera:
+            self = .sourceCamera
+            return
+        case .sourcePhotoLibrary:
+            self = .sourcePhotoLibrary
+            return
         }
     }
+}
 
-    struct ShareImg: Codable {
-        let text: String
-        let url: URL
+struct ShareURL: Codable {
+    let text: String
+    let imageUrl: URL
+    let hashtags: [String]
 
-        init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.text = try container.decode(String.self, forKey: .text)
-            self.url = try container.decode(URL.self, forKey: .url)
-        }
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.text = try container.decode(String.self, forKey: .text)
+        self.imageUrl = try container.decode(URL.self, forKey: .imageUrl)
+        self.hashtags = try container.decode([String].self, forKey: .hashtags)
+    }
+}
+
+struct ShareImg: Codable {
+    let text: String
+    let url: URL
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.text = try container.decode(String.self, forKey: .text)
+        self.url = try container.decode(URL.self, forKey: .url)
     }
 }
 
@@ -107,4 +125,37 @@ enum NSScriptMessageName: String, CaseIterable {
     case invokeNativeShareUrl
     case copyToClipboard
     case downloadImages
+    case endHookConsole = "end hook Console."
+    case sourceCamera = #"{"source":"camera"}"#
+    case sourcePhotoLibrary = #"{"source":"photo_library"}"#
+
+    static func from(rawValue: String) -> Self? {
+        if let script: Self = Self(rawValue: rawValue) {
+            return script
+        }
+
+        guard let data: Data = rawValue.data(using: .utf8)
+        else {
+            return nil
+        }
+
+        let decoder: SPDecoder = SPDecoder()
+        if let _ = try? decoder.decode(ShareURL.self, from: data) {
+            return .invokeNativeShareUrl
+        }
+
+        if let _ = try? decoder.decode(ShareImg.self, from: data) {
+            return .invokeNativeShare
+        }
+
+        if let _ = rawValue.capture(pattern: #"([A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4})"#, group: 1) {
+            return .copyToClipboard
+        }
+
+        if !rawValue.capture(pattern: #"(https://[^,^\]]*)"#).isEmpty {
+            return .downloadImages
+        }
+
+        return nil
+    }
 }

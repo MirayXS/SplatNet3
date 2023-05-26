@@ -1,5 +1,5 @@
 //
-//  ModeType.swift
+//  RuleType.swift
 //  
 //
 //  Created by devonly on 2022/11/24.
@@ -7,17 +7,24 @@
 
 import Foundation
 
-public enum ModeType: String, CaseIterable, Codable {
+public enum RuleType: String, CaseIterable, Codable {
     public var id: String { rawValue }
 
     case UNKNOWN
     case REGULAR
-    case PRIVATE_CUSTOM
-    case PRIVATE_SCENARIO
+    case BIG_RUN
+    case TEAM_CONTEST
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        let stringValue: String = try container.decode(String.self)
-        self = Self(rawValue: stringValue) ?? .UNKNOWN
+        let rawValue: String = try {
+            let rawValue: String = try container.decode(String.self)
+            return rawValue == "CONTEST" ? "TEAM_CONTEST" : rawValue
+        }()
+        guard let rule: RuleType = RuleType(rawValue: rawValue)
+        else {
+            throw DecodingError.valueNotFound(RuleType.self, .init(codingPath: container.codingPath, debugDescription: "\(rawValue) is not associated of RuleType"))
+        }
+        self = rule
     }
 }

@@ -7,8 +7,6 @@
 
 import Foundation
 import RealmSwift
-
-3
 import SwiftUI
 
 public actor RealmService: ObservableObject {
@@ -30,13 +28,13 @@ public actor RealmService: ObservableObject {
         let encoder: JSONEncoder = {
             let encoder: JSONEncoder = JSONEncoder()
             encoder.keyEncodingStrategy = .convertToSnakeCase
+            encoder.dataEncodingStrategy
             encoder.dateEncodingStrategy = .iso8601
             return encoder
         }()
         let schedules: RealmSwift.Results<RealmCoopSchedule> = realm.objects(RealmCoopSchedule.self)
         let fileName: String = {
-            let formatter: DateFormatter = DateFormatter()
-            formatter.dateFormat = "yyyymmddHHMMss"
+            let formatter: SPDateFormatter = SPDateFormatter()
             return formatter.string(from: Date())
         }()
         do {
@@ -49,7 +47,6 @@ public actor RealmService: ObservableObject {
             try data.write(to: path, options: .atomic)
             return path
         } catch(let error) {
-            print(error)
             throw error
         }
     }

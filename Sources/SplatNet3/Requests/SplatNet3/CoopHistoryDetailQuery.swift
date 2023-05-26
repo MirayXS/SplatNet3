@@ -17,9 +17,9 @@ public final class CoopHistoryDetailQuery: GraphQL {
 	public var variables: [String: String] = [:]
 	public var parameters: Parameters?
 
-    init(resultId: String) {
+    init(resultId: Common.ResultId) {
         self.variables = [
-            "coopHistoryDetailId": resultId
+            "coopHistoryDetailId": resultId.description
         ]
     }
 
@@ -46,7 +46,7 @@ public final class CoopHistoryDetailQuery: GraphQL {
         public let resultWave: Int
         public let playedTime: Date
         public let coopStage: CoopStageType
-        public let dangerRate: Double
+        public let dangerRate: Decimal
         public let scenarioCode: String?
         public let smellMeter: Int?
         public let weapons: [WeaponType]
@@ -54,15 +54,10 @@ public final class CoopHistoryDetailQuery: GraphQL {
         public let scale: CoopHistory.Scale?
         public let jobPoint: Int?
         public let jobScore: Int?
-        public let jobRate: Double?
+        public let jobRate: Decimal?
         public let jobBonus: Int?
         public let nextHistoryDetail: CoopHistory.HistoryDetailElement?
         public let previousHistoryDetail: CoopHistory.HistoryDetailElement?
-    }
-
-    // MARK: - Image
-    public struct Image<T: RawRepresentable>: Codable where T.RawValue == String {
-        @SHA256HashRawValue public var url: T
     }
 
     // MARK: - EnemyResult
@@ -88,12 +83,12 @@ public final class CoopHistoryDetailQuery: GraphQL {
 
     // MARK: - ResultPlayer
     public struct ResultPlayer: Codable {
+        public let id: Common.PlayerId
         public let byname: String
         public let name: String
         public let nameId: String
         public let nameplate: Nameplate
         public let uniform: SkinType
-        public let id: String
         public let species: SpeciesType
     }
 
@@ -106,14 +101,14 @@ public final class CoopHistoryDetailQuery: GraphQL {
     // MARK: - Background
     public struct Background: Codable {
         public let textColor: Common.TextColor
-        public let image: Image<NameplateKey>
-        @IntegerRawValue public var id: NameplateId
+        public let image: Common.URL<NamePlateBgInfoKey>
+        @IntegerRawValue public var id: NamePlateBgInfoId
     }
 
     // MARK: - Badge
     public struct Badge: Codable {
-        @IntegerRawValue public var id: BadgeId
-        public let image: Image<BadgeKey>
+        @UnsafeRawValue public var id: BadgeInfoId
+        public let image: Common.URL<BadgeInfoKey>
     }
 
     // MARK: - WaveResult

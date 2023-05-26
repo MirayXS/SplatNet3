@@ -39,7 +39,7 @@ public final class CoopHistoryQuery: GraphQL {
     // MARK: - CoopResult
     public struct CoopResult: Codable {
         public let historyGroupsOnlyFirst: Common.Node<HistoryGroupsOnlyFirstNode>
-        public let regularAverageClearWave: Double
+        public let regularAverageClearWave: Decimal
         public let regularGrade: GradeType
         public let regularGradePoint: Int
         public let monthlyGear: GearType
@@ -75,9 +75,10 @@ public final class CoopHistoryQuery: GraphQL {
 
     // MARK: - HighestResult
     public struct HighestResult: Codable {
-        public let grade: GradeType
-        public let gradePoint: Int
+        public let grade: GradeType?
+        public let gradePoint: Int?
         public let jobScore: Int
+//        public let trophy: Int?
     }
 
     // MARK: - HistoryDetail
@@ -105,7 +106,7 @@ public final class CoopHistoryQuery: GraphQL {
     // MARK: - Result
     public struct Result: Codable {
         public let deliverCount: Int
-        public let goldenDeliverCount: Int
+//        public let goldenDeliverCount: Int
     }
 
     // MARK: - WaveResult

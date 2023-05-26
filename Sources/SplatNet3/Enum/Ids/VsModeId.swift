@@ -7,9 +7,11 @@
 
 import Foundation
 
-public enum VsModeId: Int, CaseIterable, Identifiable, Codable {
+public enum VsModeId: Int, UnsafeRawRepresentable {
+    public static var defaultValue: Self = .UNKNOWN
     public var id: Int { rawValue }
 
+    case UNKNOWN            = 0
     case REGULAR            = 1
     case BANKARA_CHALLENGE  = 2
     case PRIVATE            = 5

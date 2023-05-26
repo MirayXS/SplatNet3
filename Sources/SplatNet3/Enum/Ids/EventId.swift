@@ -6,8 +6,10 @@
 //
 
 import Foundation
+import Charts
 
-public enum EventId: Int, Identifiable, CaseIterable, Codable {
+public enum EventId: Int, UnsafeRawRepresentable {
+    public static var defaultValue: Self = .Water_Levels
     public var id: Int { rawValue }
 
     case Water_Levels   = 0
@@ -19,4 +21,41 @@ public enum EventId: Int, Identifiable, CaseIterable, Codable {
     case Cohock_Charge  = 6
     case Giant          = 7
     case Mudmouth       = 8
+
+    public var description: String {
+        return NSLocalizedString("CoopEvent_\(String(describing: self))", bundle: .module, comment: "")
+    }
+
+    public static func allEvents(isBigRun: Bool = false) -> [EventId] {
+        switch isBigRun {
+        case true:
+            return [
+                .Water_Levels,
+                .Rush,
+                .Griller,
+                .The_Mothership,
+                .Fog,
+            ]
+        case false:
+            return allCases
+        }
+    }
+}
+
+extension EventId: Identifiable {}
+
+@available(iOS 16.0, *)
+extension EventId: Plottable {
+    public var primitivePlottable: String {
+        String(self.rawValue)
+    }
+
+    public init?(primitivePlottable: String) {
+        guard let rawValue: Int = Int(primitivePlottable) else {
+            return nil
+        }
+        self.init(rawValue: rawValue)
+    }
+
+    public typealias PrimitivePlottable = String
 }

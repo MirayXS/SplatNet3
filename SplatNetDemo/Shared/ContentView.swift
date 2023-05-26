@@ -39,7 +39,7 @@ struct ContentView: View {
                     Text("RequestView")
                 })
                 HStack(content: {
-                    Text("リザルト件数")
+                    Text(bundle: .CoopHistory_ResultsCount)
                     Spacer()
                     Text("\(results.count)")
                 })
@@ -56,8 +56,8 @@ struct FileExportButton: View {
         Button(action: {
             Task {
                 let path: URL = try await RealmService.shared.exports()
-                let controller: UIActivityViewController = UIActivityViewController(activityItems: [path], applicationActivities: nil)
-                UIApplication.shared.rootViewController?.popover(controller, animated: true)
+                let activity: UIActivityViewController = UIActivityViewController(activityItems: [path], applicationActivities: nil)
+                UIApplication.shared.rootViewController?.popover(activity, animated: true)
             }
         }, label: {
             Text("Export")
@@ -129,9 +129,9 @@ struct FilePickerButton: View {
         })
         .fullScreenCover(isPresented: $isPresented, content: {
             FilePickerView(fileType: .json, onSelected: { url in
-                Task {
+                Task(priority: .utility, {
                     try await RealmService.shared.imports(contentsOf: url)
-                }
+                })
             })
         })
     }

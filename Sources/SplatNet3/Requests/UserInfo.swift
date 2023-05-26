@@ -10,17 +10,17 @@ import Foundation
 
 public struct UserInfo: SPCredential {
     /// ニックネーム
-    let nickname: String
+    public let nickname: String
     /// メンバーシップ加入しているか
     let membership: Bool
     /// フレンドコード
-    let friendCode: String
+    public let friendCode: String
     /// 画像URL
-    let thumbnailURL: URL
+    public let thumbnailURL: URL
     /// ID
     var nsaid: String
     /// イカスミセッション
-    var iksmSession: String? = nil
+    public internal(set) var iksmSession: String? = nil
     /// イカリング3トークン
     public internal(set) var bulletToken: String? = nil
     /// セッショントークン
@@ -33,7 +33,6 @@ public struct UserInfo: SPCredential {
     var expiration: Date
     /// リフレッシュが必要かどうか
     public var requiresRefresh: Bool {
-        print("BulletToken", expiration, Date(), expiration <= Date(timeIntervalSinceNow: 0))
         return expiration <= Date(timeIntervalSinceNow: 0)
     }
 
@@ -41,7 +40,6 @@ public struct UserInfo: SPCredential {
         guard let token: JSONWebToken = try? JSONWebToken(gameWebToken: gameWebToken) else {
             return true
         }
-        print("GameWebToken", Date(timeIntervalSince1970: TimeInterval(token.payload.exp)), Date(), Date(timeIntervalSince1970: TimeInterval(token.payload.exp)) <= Date())
         return Date(timeIntervalSince1970: TimeInterval(token.payload.exp)) <= Date()
     }
 

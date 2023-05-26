@@ -7,53 +7,161 @@
 
 import Foundation
 import UIKit
+import SwiftUI
 
 extension UIApplication {
+//    /// UIKitのコンポーネントをSwiftUIに変換して表示する
+//    public func present<Content: View>(
+//        isPresented: Binding<Bool>,
+//        isModalInPresentation: Bool = false,
+//        modalTransitionStyle: UIModalTransitionStyle = .coverVertical,
+//        modalPresentationStyle: UIModalPresentationStyle = .overFullScreen,
+//        @ViewBuilder content: @escaping () -> Content
+//    ) -> Void {
+//        guard let window: UIWindow = lastWindow
+//        else {
+//            return
+//        }
+//
+//        if isPresented.wrappedValue {
+//            window.isHidden = true
+//            let hosting: UIHostingController = UIHostingController(rootView: content())
+//            hosting.modalPresentationStyle = .overFullScreen
+//            hosting.isModalInPresentation = isModalInPresentation
+//            hosting.modalPresentationStyle = modalPresentationStyle
+//            hosting.modalTransitionStyle = modalTransitionStyle
+//            hosting.view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
+//            UIApplication.shared.presentedViewController?.present(hosting, animated: true, completion: nil)
+//        }
+//    }
+
+    /// UIWindow
+    public var window: UIWindow? {
+        UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first?.windows.first
+    }
+
+    /// UIWindow
+    public var firstWindow: UIWindow? {
+        UIApplication.shared.foregroundScene?.windows.first
+    }
+
+    /// UIWindow
+    public var lastWindow: UIWindow? {
+        UIApplication.shared.foregroundScene?.windows.last
+    }
+
+    /// UIWindowScene
+    public var foregroundScene: UIWindowScene? {
+        UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first(where: { $0.activationState == .foregroundActive })
+    }
+
+    /// 現在表示されているViewの親View
     public var rootViewController: UIViewController? {
-        UIApplication.shared.connectedScenes
-            .filter({ $0.activationState == .foregroundActive })
-            .compactMap({ $0 as? UIWindowScene })
-            .first?
-            .windows
-            .first?
-            .rootViewController
+        firstWindow?.rootViewController
     }
 
-    private func findVisibleViewController(viewController: UIViewController) -> UIViewController {
-        /// UINavigationController
-        if let navigationController = viewController as? UINavigationController,
-           let visibleController = navigationController.visibleViewController
-        {
-            return findVisibleViewController(viewController: visibleController)
+    /// 現在表示されている最も上位のView
+    public var presentedViewController: UIViewController? {
+        guard let window: UIWindow = firstWindow
+        else {
+            return nil
+        }
+        // 秘密のおまじない
+        window.makeKeyAndVisible()
+
+        guard let rootViewController = window.rootViewController
+        else {
+            return nil
         }
 
-        /// UITabBarController
-        if let tabBarController = viewController as? UITabBarController,
-           let selectedTabController = tabBarController.selectedViewController
-        {
-            return findVisibleViewController(viewController: selectedTabController)
+        var topViewController: UIViewController? = rootViewController
+        while let newTopViewController: UIViewController = topViewController?.presentedViewController {
+            topViewController = newTopViewController
         }
-
-        /// PresentedViewController
-        if let presentedViewController = viewController.presentedViewController {
-            return findVisibleViewController(viewController: presentedViewController)
-        }
-
-        return viewController
+        return topViewController
     }
 
-    public func dismiss() {
+    /// ロード画面を表示して処理を実行する
+    public func startAnimating(completion: @escaping () -> Void) {
+        let controller: UIViewController = UIViewController(nibName: nil, bundle: nil)
+
+        let progress: UIActivityIndicatorView = UIActivityIndicatorView(style: .medium)
+        progress.overrideUserInterfaceStyle = .dark
+        progress.hidesWhenStopped = true
+        progress.startAnimating()
+        progress.center = controller.view.center
+        controller.modalTransitionStyle = .crossDissolve
+        controller.modalPresentationStyle = .overFullScreen
+        controller.overrideUserInterfaceStyle = .dark
+        controller.view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
+        controller.view.addSubview(progress)
+        UIApplication.shared.presentedViewController?.present(controller, animated: true, completion: completion)
+        UIApplication.shared.presentedViewController?.dismiss(animated: true)
+    }
+
+    public func startAnimatingWithAsync(completion: @escaping @Sendable () async throws -> Void) async throws -> Void {
+        let controller: UIViewController = UIViewController(nibName: nil, bundle: nil)
+
+        let progress: UIActivityIndicatorView = UIActivityIndicatorView(style: .medium)
+        progress.overrideUserInterfaceStyle = .dark
+        progress.hidesWhenStopped = true
+        progress.startAnimating()
+        progress.center = controller.view.center
+        controller.modalTransitionStyle = .crossDissolve
+        controller.modalPresentationStyle = .overFullScreen
+        controller.overrideUserInterfaceStyle = .dark
+        controller.view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
+        controller.view.addSubview(progress)
+        UIApplication.shared.presentedViewController?.present(controller, animated: true)
+        do {
+            try await completion()
+            UIApplication.shared.presentedViewController?.dismiss(animated: true)
+        } catch(let error) {
+            UIApplication.shared.presentedViewController?.dismiss(animated: true)
+            throw error
+        }
+    }
+
+    public func authorize(sessionToken: String, contentId: ContentId) {
+        let hosting: UIHostingController = UIHostingController(rootView: _SignInView(sessionToken: sessionToken))
+        hosting.modalPresentationStyle = .overFullScreen
+        hosting.modalTransitionStyle = .coverVertical
+        hosting.overrideUserInterfaceStyle = .dark
+        hosting.view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.3)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
+            self.presentedViewController?.present(hosting, animated: true)
+        })
+    }
+
+    /// 一番上にジャンプする
+    public func popToRootView() {
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let rootViewController = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController
+           let rootViewController = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController,
+           let navigationController = findNavigationController(rootViewController)
         {
-            let visibleViewController = findVisibleViewController(viewController: rootViewController)
-            visibleViewController.dismiss(animated: true, completion: nil)
+            navigationController.popToRootViewController(animated: true)
         }
+    }
+
+    private func findNavigationController(_ viewController: UIViewController?) -> UINavigationController? {
+        guard let viewController = viewController else {
+            return nil
+        }
+
+        if let navigationController = viewController as? UINavigationController {
+            return navigationController
+        }
+
+        for childViewController in viewController.children {
+            return findNavigationController(childViewController)
+        }
+
+        return nil
     }
 }
 
 extension UIViewController {
-    public func popover(_ viewControllerToPresent: UIActivityViewController, animated: Bool) {
+    public func popover(_ viewControllerToPresent: UIActivityViewController, animated: Bool, completion: (() -> Void)? = nil) {
         if UIDevice.current.userInterfaceIdiom == .pad {
             if let popover = viewControllerToPresent.popoverPresentationController {
                 popover.sourceView = viewControllerToPresent.view
@@ -61,6 +169,7 @@ extension UIViewController {
                 popover.sourceRect = viewControllerToPresent.accessibilityFrame
             }
         }
-        present(viewControllerToPresent, animated: animated)
+        present(viewControllerToPresent, animated: animated, completion: completion)
     }
 }
+

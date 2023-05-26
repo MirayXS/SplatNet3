@@ -6,38 +6,54 @@
 //
 
 import SwiftUI
+import Introspect
 
 public extension View {
     /// モーダルをUIKit風に表示する
     func fullScreen<Content: View>(
         isPresented: Binding<Bool>,
-        content: @escaping () -> Content
+        presentationStyle: UIModalPresentationStyle = .overFullScreen,
+        transitionStyle: UIModalTransitionStyle = .coverVertical,
+        backgroundColor: UIColor = .systemBackground,
+        isModalInPresentation: Bool = true,
+        @ViewBuilder content: @escaping () -> Content
     ) -> some View {
-        self.overlay(
-            FullScreen(
-                isPresented: isPresented,
-                content: content())
-            .frame(width: 0, height: 0)
-        )
+            self.fullScreenCover(isPresented: isPresented, onDismiss: nil, content: {
+                content()
+                    .introspectViewController(customize: { controller in
+                        controller.view.backgroundColor = .clear
+                    })
+            })
+        }
+
+    func fullScreen(
+        isPresented: Binding<Bool>,
+        session: SP3Session,
+        presentationStyle: UIModalPresentationStyle = .overFullScreen,
+        transitionStyle: UIModalTransitionStyle = .coverVertical,
+        backgroundColor: UIColor = .systemBackground,
+        isModalInPresentation: Bool = true
+    ) -> some View {
+        self.fullScreen(isPresented: isPresented, backgroundColor: backgroundColor, content: {
+            CoopResultDownloadView()
+                .environmentObject(session)
+        })
     }
 
-    func fullScreen<Content: View>(
+    /// モーダルをUIKit風に表示する
+    func sheet<Content: View>(
         isPresented: Binding<Bool>,
-        presentationStyle: UIModalPresentationStyle? = nil,
-        transitionStyle: UIModalTransitionStyle? = nil,
-        backgroundColor: Color = Color(UIColor(red: 0, green: 0, blue: 0, alpha: 0.3)),
+        presentationStyle: UIModalPresentationStyle = .overFullScreen,
+        transitionStyle: UIModalTransitionStyle = .coverVertical,
+        backgroundColor: UIColor = .systemBackground,
         isModalInPresentation: Bool = true,
-        content: @escaping () -> Content
+        @ViewBuilder content: @escaping () -> Content
     ) -> some View {
-        self.overlay(
-            FullScreen(
-                isPresented: isPresented,
-                presentationStyle: presentationStyle,
-                transitionStyle: transitionStyle,
-                isModalInPresentation: isModalInPresentation,
-                backgroundColor: backgroundColor,
-                content: content())
-            .frame(width: 0, height: 0)
-        )
-    }
+            self.sheet(isPresented: isPresented, onDismiss: nil, content: {
+                content()
+                    .introspectViewController(customize: { controller in
+                        controller.view.backgroundColor = backgroundColor
+                    })
+            })
+        }
 }

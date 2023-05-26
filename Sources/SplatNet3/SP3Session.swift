@@ -1,5 +1,5 @@
 //
-//  SPSessionr.swift
+//  SPSession.swift
 //  SplatNet3
 //
 //  Created by tkgstrator on 2021/07/13.
@@ -9,18 +9,16 @@
 import Foundation
 import Alamofire
 
-//public protocol SP3RequestDelegate: AnyObject {
-//    func getAllCoopHistoryDetailQuery() async throws -> [CoopResult]
-//}
-
 /// SP3用のセッションクラス
-open class SP3Session: Session,  ObservableObject {
+open class SP3Session: Session {
     public typealias Credential = UserInfo
     public typealias Completion = (Float, Float) -> Void
 
     @Published var requests: [SPProgress] = []
 
-    public override init() {}
+    public override init() {
+        super.init()
+    }
 
     override func request(_ request: IksmSession) async -> [String : String]? {
         DispatchQueue.main.async(execute: {
@@ -33,19 +31,27 @@ open class SP3Session: Session,  ObservableObject {
         return response
     }
 
+    /// 通常のリクエスト
     override open func request<T>(_ request: T, interceptor: RequestInterceptor? = nil) async throws -> T.ResponseType where T : RequestType {
+        let endpoint: SPEndpoint = SPEndpoint(request: request)
         do {
             DispatchQueue.main.async(execute: {
-                self.requests.append(SPProgress(request))
+                if endpoint != .UNKNOWN && endpoint != .STATS {
+                    self.requests.append(SPProgress(request))
+                }
             })
             let response: T.ResponseType = try await super.request(request)
             DispatchQueue.main.async(execute: {
-                self.requests.success()
+                if endpoint != .UNKNOWN && endpoint != .STATS {
+                    self.requests.success()
+                }
             })
             return response
         } catch(let error) {
             DispatchQueue.main.async(execute: {
-                self.requests.failure()
+                if endpoint != .UNKNOWN {
+                    self.requests.failure()
+                }
             })
             throw error
         }
@@ -76,28 +82,36 @@ open class SP3Session: Session,  ObservableObject {
 
     @discardableResult
     open func getCoopStageScheduleQuery() async throws -> [CoopSchedule] {
-        return try await request(StageScheduleQuery()).data.coopGroupingSchedule.regularSchedules.nodes.map({ CoopSchedule(schedule: $0) })
+        try await request(StageScheduleQuery()).data.coopGroupingSchedule.schedules.map({ CoopSchedule(schedule: $0) })
+    }
+
+    open func getCoopHistoryQuery() async throws -> CoopHistoryQuery.CoopResult {
+        return try await request(CoopHistoryQuery()).data.coopResult
     }
 
     @discardableResult
-    open func getAllCoopHistoryDetailQuery(playTime: Date? = nil, completion: Completion) async throws -> [CoopResult] {
+    open func getAllCoopHistoryDetailQuery(playTime: Date? = nil, upload: Bool = false, completion: Completion) async throws -> [CoopResult] {
         completion(0, 1)
-        let nodes: [CoopHistoryQuery.HistoryGroup] = try await getCoopHistoryQuery().historyGroups.nodes
+        let coopResult: CoopHistoryQuery.CoopResult = try await getCoopHistoryQuery()
+        /// ノード
+        let nodes: [CoopHistoryQuery.HistoryGroup] = coopResult.historyGroups.nodes
+        /// 取得すべきリザルトのID
         let resultIds: [Common.ResultId] = {
             if let playTime = playTime {
                 return nodes.flatMap({ $0.historyDetails.nodes.map({ $0.id }) }).filter({ $0.playTime > playTime })
             }
             return nodes.flatMap({ $0.historyDetails.nodes.map({ $0.id }) })
         }()
-
+        /// 取得するIDがないなら何もせずに返す
         if resultIds.isEmpty {
             completion(1, 1)
             return []
         }
-
+        /// 進捗を更新
         DispatchQueue.main.async(execute: {
             self.requests.append(SPProgress(.COOP_RESULT))
         })
+        /// 並列ダウンロード
         let response: [CoopResult] = try await withThrowingTaskGroup(of: CoopResult.self, body: { task in
             nodes.forEach({ node in
                 node.historyDetails.nodes.forEach({ result in
@@ -108,15 +122,41 @@ open class SP3Session: Session,  ObservableObject {
                     }
                 })
             })
-
             return try await task.reduce(into: [CoopResult]()) { results, result in
                 results.append(result)
                 completion(Float(results.count), Float(resultIds.count))
             }
         })
+        /// 一括アップロード
+        if upload {
+            try await uploadAllCoopHistoryDetailQuery(response)
+        }
+        /// 進捗を更新
         DispatchQueue.main.async(execute: {
             self.requests.success()
         })
+        return response
+    }
+
+    @discardableResult
+    open func uploadAllCoopResultDetailQuery(results: [CoopResult] = [], completion: Completion) async throws -> [CoopStatsResultsQuery.Response] {
+        var count: Int = 0
+        completion(Float(count), Float(results.count))
+
+        DispatchQueue.main.async(execute: {
+            self.requests.append(SPProgress(.STATS))
+        })
+
+        let response: [CoopStatsResultsQuery.Response] = try await results.chunked(by: 200).asyncFlatMap({ result in
+            count += result.count
+            completion(Float(count), Float(results.count))
+            return try await uploadAllCoopHistoryDetailQuery(result)
+        })
+
+        DispatchQueue.main.async(execute: {
+            self.requests.success()
+        })
+        
         return response
     }
 }
@@ -126,7 +166,7 @@ extension SP3Session: Authenticator {
         Task {
             let session: SP3Session = SP3Session()
             do {
-                let account: UserInfo = try await session.refresh(contentId: .SP3)
+                let account: UserInfo = try await session.refreshIfNeeded(contentId: .SP3)
                 completion(.success(account))
             } catch (let error) {
                 completion(.failure(error))
@@ -136,7 +176,12 @@ extension SP3Session: Authenticator {
 
     public func apply(_ credential: UserInfo, to urlRequest: inout URLRequest) {
         if let bulletToken: String = credential.bulletToken {
+            #if DEBUG
             urlRequest.headers.add(.authorization(bearerToken: bulletToken))
+            #else
+            urlRequest.headers.add(.authorization(bearerToken: bulletToken))
+            #endif
+            urlRequest.headers.add(name: "X-Web-View-Ver", value: version)
         }
     }
 
@@ -148,6 +193,7 @@ extension SP3Session: Authenticator {
         return false
     }
 
+    /// GraphQLを利用したリクエスト
     private func request<T>(_ request: T) async throws -> T.ResponseType where T : GraphQL {
         let interceptor: AuthenticationInterceptor<SP3Session>? = {
             guard let account = account else {
@@ -156,6 +202,7 @@ extension SP3Session: Authenticator {
             return AuthenticationInterceptor(authenticator: self, credential: account)
         }()
         do {
+            /// リザルト取得時はプログレスバーを非表示にする
             DispatchQueue.main.async(execute: {
                 if request.hash != .CoopHistoryDetailQuery {
                     self.requests.append(SPProgress(request))
@@ -165,6 +212,7 @@ extension SP3Session: Authenticator {
                 .validationWithNXError()
                 .serializingDecodable(T.ResponseType.self, decoder: decoder)
                 .value
+            /// リザルト取得時はプログレスバーを非表示にする
             DispatchQueue.main.async(execute: {
                 if request.hash != .CoopHistoryDetailQuery {
                     self.requests.success()
@@ -181,23 +229,59 @@ extension SP3Session: Authenticator {
         }
     }
 
-    private func getCoopStageScheduleQuery() async throws -> [StageScheduleQuery.CoopSchedule] {
-        return try await request(StageScheduleQuery()).data.coopGroupingSchedule.regularSchedules.nodes
+    /// 利用したことがあるQRコードを取得する
+    private func getCheckInHistory() async throws -> [CheckinWithQRCodeMutation.CheckInEventId] {
+        try await request(CheckinQuery()).data.checkinHistories.map({ $0.id })
     }
 
-    private func getCoopHistoryQuery() async throws -> CoopHistoryQuery.CoopResult {
-        return try await request(CoopHistoryQuery()).data.coopResult
+    /// 利用していないQRコードをリクエストする
+    @discardableResult
+    public func getCheckInWithQRCode() async throws -> [CheckinWithQRCodeMutation.CreateCheckinHistory] {
+        let eventIdHistories: Set<CheckinWithQRCodeMutation.CheckInEventId> = Set(try await getCheckInHistory())
+        let eventIds: Set<CheckinWithQRCodeMutation.CheckInEventId> = Set(CheckinWithQRCodeMutation.CheckInEventId.allCases).subtracting(Set(eventIdHistories))
+        /// 並列ダウンロード
+        let response: [CheckinWithQRCodeMutation.CreateCheckinHistory] = try await withThrowingTaskGroup(of: CheckinWithQRCodeMutation.CreateCheckinHistory.self, body: { task in
+            eventIds.forEach({ eventId in
+                task.addTask(operation: { [self] in
+                    return try await getCheckInWithQRCodeMutation(eventId: eventId)
+                })
+            })
+            return try await task.reduce(into: [CheckinWithQRCodeMutation.CreateCheckinHistory]()) { results, result in
+                results.append(result)
+            }
+        })
+        return response
     }
 
-    private func getCoopHistoryDetailQuery(resultId: String) async throws -> CoopHistoryDetailQuery.CoopHistoryDetail {
+    func getCheckInWithQRCodeMutation(eventId: String) async throws -> CheckinWithQRCodeMutation.CreateCheckinHistory {
+        return try await request(CheckinWithQRCodeMutation(eventId: eventId)).data.createCheckinHistory
+    }
+
+    private func getCheckInWithQRCodeMutation(eventId: CheckinWithQRCodeMutation.CheckInEventId) async throws -> CheckinWithQRCodeMutation.CreateCheckinHistory {
+        return try await request(CheckinWithQRCodeMutation(eventId: eventId)).data.createCheckinHistory
+    }
+
+    private func getCoopHistoryDetailQuery(resultId: Common.ResultId) async throws -> CoopHistoryDetailQuery.CoopHistoryDetail {
         return try await request(CoopHistoryDetailQuery(resultId: resultId)).data.coopHistoryDetail
+    }
+
+    @discardableResult
+    private func uploadAllCoopHistoryDetailQuery(_ results: [CoopResult]) async throws -> [CoopStatsResultsQuery.Response] {
+        return try await request(CoopStatsResultsQuery(results: results))
+    }
+
+    @discardableResult
+    private func uploadResult(_ result: CoopResult) async throws -> [CoopStatsResultsQuery.Response] {
+        return try await request(CoopStatsResultsQuery(result: result))
     }
 
     private func getCoopHistoryDetailQuery(
         schedule: CoopHistoryQuery.CoopSchedule,
         result: CoopHistoryQuery.HistoryDetail
     ) async throws -> CoopResult {
-        let result: CoopHistoryDetailQuery.CoopHistoryDetail = try await request(CoopHistoryDetailQuery(resultId: result.id.description)).data.coopHistoryDetail
-        return CoopResult(history: schedule, content: result)
+        return CoopResult(
+            history: schedule,
+            content: try await request(CoopHistoryDetailQuery(resultId: result.id)).data.coopHistoryDetail
+        )
     }
 }

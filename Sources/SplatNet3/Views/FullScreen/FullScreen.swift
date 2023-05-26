@@ -7,10 +7,28 @@
 
 import SwiftUI
 
+//struct FullScreen<Content: View>: UIViewControllerRepresentable {
+//    @Binding var isPresented: Bool
+//    let content: () -> Content
+//    let transitionStyle: UIModalTransitionStyle
+//    let presentationStyle: UIModalPresentationStyle
+//    let isModalInPresentation: Bool
+//    let backgroundColor: UIColor
+//
+//    func makeCoordinator() -> Coordinator {
+//    }
+//
+//    func makeUIViewController(context: Context) -> some UIViewController {
+//
+//    }
+//
+//    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
+//    }
+//}
+
 struct FullScreen<Content: View>: UIViewControllerRepresentable {
-    @Environment(\.colorScheme) var colorScheme
     @Binding var isPresented: Bool
-    let content: Content
+    let content: () -> Content
     let transitionStyle: UIModalTransitionStyle
     let presentationStyle: UIModalPresentationStyle
     let isModalInPresentation: Bool
@@ -21,7 +39,7 @@ struct FullScreen<Content: View>: UIViewControllerRepresentable {
          transitionStyle: UIModalTransitionStyle? = nil,
          isModalInPresentation: Bool = true,
          backgroundColor: Color = Color(UIColor(red: 0, green: 0, blue: 0, alpha: 0.3)),
-         content: Content
+         @ViewBuilder content: @escaping () -> Content
     ) {
         self.content = content
         self.transitionStyle = transitionStyle ?? .coverVertical
@@ -42,7 +60,6 @@ struct FullScreen<Content: View>: UIViewControllerRepresentable {
             presentationStyle: presentationStyle,
             isModalInPresentation: isModalInPresentation,
             backgroundColor: backgroundColor,
-            colorScheme: .dark,
             content: content
         )
     }
@@ -58,7 +75,9 @@ struct FullScreen<Content: View>: UIViewControllerRepresentable {
         case true:
             uiViewController.present()
         case false:
-            uiViewController.dismiss()
+//            if !isModalInPresentation {
+                uiViewController.dismiss()
+//            }
         }
     }
 
@@ -90,28 +109,26 @@ struct FullScreen<Content: View>: UIViewControllerRepresentable {
     // This custom view controller
     final class ViewController<Content: View>: UIViewController, UIGestureRecognizerDelegate {
         let coordinator: FullScreen<Content>.Coordinator
-        let hosting: UIHostingController<Content>
+//        let hosting: UIHostingController<Content>
+        let content: () -> Content
         let transitionStyle: UIModalTransitionStyle
         let presentationStyle: UIModalPresentationStyle
         let backgroundColor: UIColor
-        let userInterfaceStyle: UIUserInterfaceStyle
 
         init(coordinator: FullScreen<Content>.Coordinator,
              transitionStyle: UIModalTransitionStyle,
              presentationStyle: UIModalPresentationStyle,
              isModalInPresentation: Bool,
              backgroundColor: UIColor,
-             colorScheme: UIUserInterfaceStyle,
-             content: Content
+             @ViewBuilder content: @escaping () -> Content
         ) {
             self.coordinator = coordinator
-            self.hosting = UIHostingController(rootView: content)
+            self.content = content
+//            self.hosting = UIHostingController(rootView: content)
             self.transitionStyle = transitionStyle
             self.presentationStyle = presentationStyle
             self.backgroundColor = backgroundColor
-            self.userInterfaceStyle = colorScheme
             super.init(nibName: nil, bundle: .main)
-            self.overrideUserInterfaceStyle = colorScheme
             self.isModalInPresentation = isModalInPresentation
         }
 
@@ -136,12 +153,12 @@ struct FullScreen<Content: View>: UIViewControllerRepresentable {
 
         // 表示
         func present() {
+            let hosting: UIHostingController = UIHostingController(rootView: content())
             // Hostingの設定
             hosting.isModalInPresentation = isModalInPresentation
             hosting.modalPresentationStyle = presentationStyle
             hosting.modalTransitionStyle = transitionStyle
             hosting.view.backgroundColor = backgroundColor
-            hosting.overrideUserInterfaceStyle = userInterfaceStyle
             hosting.presentationController?.delegate = coordinator as UIAdaptivePresentationControllerDelegate
 
             if !self.isModalInPresentation {
@@ -163,14 +180,3 @@ struct FullScreen<Content: View>: UIViewControllerRepresentable {
     }
 }
 
-
-private extension ColorScheme {
-    var userInterfaceStyle: UIUserInterfaceStyle {
-        switch self {
-        case .light:
-            return .light
-        case .dark:
-            return .dark
-        }
-    }
-}
